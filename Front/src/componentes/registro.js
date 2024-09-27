@@ -7,6 +7,7 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+
 export function Registro() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -124,15 +125,17 @@ export function Registro() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
-        setErrorMessage(errorData.message || "Error al registrar el usuario.");
+        console.log(errorData.nombre);
+        setErrorMessage(errorData.nombre || errorData.user_id || errorData.email || "Error al registrar el usuario.");
         return;
-      } else {
-        navigate("/");
+
+      }else{
+        navigate("/", { state: { successMessage: "Usuario registrado correctamente." } });
       }
 
       // Si el registro es exitoso, puedes redirigir al usuario o mostrar un mensaje
       console.log("Usuario registrado exitosamente.");
+      
       // Redireccionar o mostrar un mensaje de éxito aquí
     } catch (error) {
       console.error(error);

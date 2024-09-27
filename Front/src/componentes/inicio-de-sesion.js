@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import "../hojas-de-estilo/inicio-de-sesion.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import logo from "../imagenes/logo.png";
+import Alert from '@mui/material/Alert';
 
 export function Formulario({ setUser }) {
   // State para el usuario y la contraseña
   const [usuario, setUsuario] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [error, setError] = useState(""); // Cambiado a cadena para mostrar mensajes específicos
-
+  const location = useLocation();
+  const successMessage = location.state?.successMessage || "";
   // useNavigate para redireccionar después del inicio de sesión exitoso
   const navigate = useNavigate();
 
@@ -95,6 +98,11 @@ export function Formulario({ setUser }) {
             </Link>
           </p>
         </div>
+        {successMessage && (
+          <Alert severity="success">
+            {successMessage}
+          </Alert>
+        )}
         {error && <p className="error-message">{error}</p>}{" "}
         {/* Mostrar mensajes de error */}
       </form>
