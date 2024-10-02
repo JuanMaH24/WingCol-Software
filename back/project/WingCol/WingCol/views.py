@@ -126,7 +126,7 @@ def get_admin(request):
         return Response(combined_data, status=status.HTTP_200_OK)
     except NormalUser.DoesNotExist:
         return Response({"error": "Usuario no existente"}, status=status.HTTP_404_NOT_FOUND)
-    except Cliente.DoesNotExist:
+    except Administrador.DoesNotExist:
         return Response({"error": "Administrador no existente"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
