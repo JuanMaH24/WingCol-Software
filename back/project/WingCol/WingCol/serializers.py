@@ -7,6 +7,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['user_id', 'email', 'roles', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance:
+            self.fields['password'].required = False
+
     def create(self, validated_data):
         user = NormalUser(
             user_id=validated_data['user_id'],

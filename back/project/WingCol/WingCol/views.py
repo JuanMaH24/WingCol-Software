@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes, authentication_classes
-from .auth import ClientAuthentication
+from .auth import ClientAuthentication, AdminAuthentication, RootAuthentication
 from .models import *
 from .serializers import *
 
@@ -17,8 +17,9 @@ def get_all_users(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def get_user(request, id):
+def get_user(request):
     try:
+        id = request.data["user_id"]
         user = NormalUser.objects.get(user_id=id, activo=True)
         serializer = UserSerializer(user, many=False)
         return Response(serializer.data)
@@ -28,8 +29,9 @@ def get_user(request, id):
 @api_view(['GET'])
 @authentication_classes([ClientAuthentication])
 @permission_classes([IsAuthenticated])
-def get_client(request, id):
+def get_client(request):
     try:
+        id = request.data["user_id"]
         user= NormalUser.objects.get(user_id=id, activo=True)
         user_serializer = UserSerializer(user, many=False)
         client = Cliente.objects.get(user_id=id, activo=True)
@@ -68,11 +70,12 @@ def create_client(request):
 def update_client(request):
     request.data['roles'] = 1
     try:
-        user = NormalUser.objects.get(user_id=request.data['user_id'])
-        client = Cliente.objects.get(user_id=request.data['user_id'])
+        user = NormalUser.objects.get(user_id=request.data['user_id'], activo = True)
+        client = Cliente.objects.get(user_id=request.data['user_id'], activo = True)
         user_serializer = UserSerializer(user, data=request.data)
         client_serializer = ClientSerializer(client, data=request.data)
-
+        user_serializer.is_valid()
+        client_serializer.is_valid()
         if user_serializer.is_valid() and client_serializer.is_valid():
             user_serializer.save()
             client_serializer.save()
@@ -91,10 +94,11 @@ def update_client(request):
 @api_view(['PUT'])
 @authentication_classes([ClientAuthentication])
 @permission_classes([IsAuthenticated])
-def delete_client(request, id):
+def delete_client(request):
     try:
-        user = NormalUser.objects.get(user_id=id)
-        client = Cliente.objects.get(user_id=id)
+        id = request.data["user_id"]
+        user = NormalUser.objects.get(user_id=id, activo = True)
+        client = Cliente.objects.get(user_id=id, activo = True)
         
         user.soft_delete()
         client.soft_delete()
@@ -108,8 +112,11 @@ def delete_client(request, id):
     
 
 @api_view(['GET'])
-def get_admin(request, id):
+@authentication_classes([AdminAuthentication, RootAuthentication])
+@permission_classes([IsAuthenticated])
+def get_admin(request):
     try:
+        id = request.data["user_id"]
         user= NormalUser.objects.get(user_id=id, activo=True)
         user_serializer = UserSerializer(user, many=False)
         admin = Administrador.objects.get(user_id=id, activo=True)
@@ -123,10 +130,12 @@ def get_admin(request, id):
         return Response({"error": "Administrador no existente"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
+@authentication_classes([RootAuthentication])
+@permission_classes([IsAuthenticated])
 def create_admin(request):
+    request.data['roles'] = 2
     user_serializer = UserSerializer(data=request.data)
     if user_serializer.is_valid():
-        user_serializer['roles'] = 2
         new_user = user_serializer.save()
         admin_data = request.data.copy()
         admin_data['user_id'] = new_user.user_id
@@ -139,23 +148,25 @@ def create_admin(request):
     return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
+@authentication_classes([AdminAuthentication])
+@permission_classes([IsAuthenticated])
 def update_admin(request):
+    request.data['roles'] = 2
     try:
-        user = NormalUser.objects.get(user_id=request.data['user_id'])
-        admin = Administrador.objects.get(user_id=request.data['user_id'])
+        user = NormalUser.objects.get(user_id=request.data['user_id'], activo = True)
+        admin = Administrador.objects.get(user_id=request.data['user_id'], activo = True)
         user_serializer = UserSerializer(user, data=request.data)
         admin_serializer = AdministradorSerializer(admin, data=request.data)
-        
+        user_serializer.is_valid()
+        admin_serializer.is_valid()
         if user_serializer.is_valid() and admin_serializer.is_valid():
-            user_serializer['roles'] = 2
-            admin_serializer['roles'] = 2
             user_serializer.save()
             admin_serializer.save()
             return Response(admin_serializer.data, status=status.HTTP_202_ACCEPTED)
         
         return Response({
             "user_errors": user_serializer.errors,
-            "client_errors": admin_serializer.errors
+            "admin_errors": admin_serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
     except NormalUser.DoesNotExist:
@@ -164,10 +175,13 @@ def update_admin(request):
         return Response({"error": "Cliente no existente"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
-def delete_admin(request, id):
+@authentication_classes([RootAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_admin(request):
     try:
-        user = NormalUser.objects.get(user_id=id)
-        admin = Administrador.objects.get(user_id=id)
+        id = request.data["user_id"]
+        user = NormalUser.objects.get(user_id=id, activo = True)
+        admin = Administrador.objects.get(user_id=id, activo = True)
         
         user.soft_delete()
         admin.soft_delete()
