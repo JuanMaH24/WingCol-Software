@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from django.utils import timezone
 from .models import *
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,8 +34,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
@@ -64,8 +64,10 @@ class FlightSerializer(serializers.ModelSerializer):
             estado=validated_data['estado']
         )
         flight.save()
-        return flight
-    
+        flight.create_reference()
+        flight.save()
+        return flight  
+
     def update(self, instance, validated_data):
         instance.ciudad_origen = validated_data.get('ciudad_origen', instance.ciudad_origen)
         instance.ciudad_destino = validated_data.get('ciudad_destino', instance.ciudad_destino)
@@ -74,11 +76,14 @@ class FlightSerializer(serializers.ModelSerializer):
         instance.precio = validated_data.get('precio', instance.precio)
         instance.tipo = validated_data.get('tipo', instance.tipo)
         instance.estado = validated_data.get('estado', instance.estado)
+        instance.create_reference()
         instance.save()
-        return instance
+        return instance     
 
-# class SeatSerializer(serializers.ModelSerializers):
-#     class Meta:
-#         model = Sillas
-#         fields = ['id_silla', 'vuelo_id', 'numero', 'clase', 'precio', 'disponible']
-        
+    def validate(self, data):
+        if data['fecha_salida'] >= data['fecha_llegada']:
+            raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
+        if data['fecha_salida'] < timezone.now():
+            raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
+        return data 
+     

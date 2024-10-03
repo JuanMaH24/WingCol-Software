@@ -78,7 +78,7 @@ class Cliente(models.Model):
 	direccion = models.CharField(max_length=50)
 	pais = models.CharField(max_length=20)
 	departamento = models.CharField(max_length=20)
-	municipio = models.CharField(max_lenght=20)
+	municipio = models.CharField(max_length=20)
 	direccion_facturacion = models.CharField(max_length=50)
 	activo = models.BooleanField(default=True)
 
@@ -107,7 +107,6 @@ class Vuelos(models.Model):
 	class EstadoVuelo(models.TextChoices):
 		PROGRAMADO = 'P', 'Programado'
 		REALIZADO = 'R', 'Realizado'
-		CANCELADO = 'C', 'Cancelado'
 
 	class TipoVuelo(models.TextChoices):
 		NACIONAL = 'N', 'Nacional'
@@ -124,8 +123,12 @@ class Vuelos(models.Model):
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
 	activo = models.BooleanField(default=True)
 
+	def soft_delete(self):
+		self.activo = False
+		self.save()
+
 	def create_reference(self):
-		self.referencia = f"{self.ciudad_origen[:3].upper()}{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}"
+		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
 	
 
 class Sillas(models.Model):
@@ -144,6 +147,10 @@ class Sillas(models.Model):
 	clase = models.CharField(max_length=20, choices=ClaseAsiento.choices)
 	estado = models.CharField(max_length=20, choices=EstadoAsiento.choices)
 	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()
 
 
 class ComprasReservas(models.Model):
@@ -169,7 +176,7 @@ class Tiquete(models.Model):
 
 	id_tiquete = models.PositiveIntegerField(primary_key=True)
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
+	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)

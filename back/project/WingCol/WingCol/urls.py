@@ -31,4 +31,9 @@ urlpatterns = [
     path('users/admin/update/', update_admin),
     path('users/admin/delete/', delete_admin),
     path('login/', login),
+    path('flight/create/', create_flight),
+    path('flight/', get_all_flights),
+    path('flight/search/', get_flight_by_name),
+	path('flight/update/', update_flight),
+	path('flight/delete/', delete_flight),
 ]
