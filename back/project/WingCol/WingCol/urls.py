@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from .views import *
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,4 +36,5 @@ urlpatterns = [
     path('flight/search/', get_flight_by_name),
 	path('flight/update/', update_flight),
 	path('flight/delete/', delete_flight),
+    path('password_reset/', include('django_rest_passwordreset.urls')),
 ]

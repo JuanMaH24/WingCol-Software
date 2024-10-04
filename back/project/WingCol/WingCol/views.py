@@ -1,6 +1,9 @@
 from django.db import transaction
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.core.mail import EmailMultiAlternatives
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -299,4 +302,31 @@ def delete_seats(sender, instance, **kwargs):
         except Exception as exception:
             raise exception
 
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    # send an e-mail to the user
+    context = {
+        'current_user': reset_password_token.user,
+        'username': reset_password_token.user.username,
+        'email': reset_password_token.user.email,
+        'reset_password_url': "{}?token={}".format(
+            instance.request.build_absolute_uri(reverse('password_reset:reset-password-confirm')),
+            reset_password_token.key)
+    }
+
+    # render email text
+    email_plaintext_message = "Correo de recuperación de contraseña"
+
+    msg = EmailMultiAlternatives(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "noreply@somehost.local",
+        # to:
+        [reset_password_token.user.email]
+    )
+    msg.attach_alternative(email_html_message, "text/html")
+    msg.send()
     
