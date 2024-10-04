@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from django.utils import timezone
 from .models import *
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,8 +34,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
@@ -47,4 +47,43 @@ class AdministradorSerializer(serializers.ModelSerializer):
         fields = [
             'user_id', 'nombre', 'segundo_nombre', 'apellido', 
             'segundo_apellido', 'genero', 'telefono']
-        
+
+class FlightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vuelos
+        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'fecha_llegada', 'precio', 'tipo', 'estado']
+
+    def create(self, validated_data):
+        flight = Vuelos(
+            ciudad_origen=validated_data['ciudad_origen'],
+            ciudad_destino=validated_data['ciudad_destino'],
+            fecha_salida=validated_data['fecha_salida'],
+            fecha_llegada=validated_data['fecha_llegada'],
+            precio=validated_data['precio'],
+            tipo=validated_data['tipo'],
+            estado=validated_data['estado']
+        )
+        flight.save()
+        flight.create_reference()
+        flight.save()
+        return flight  
+
+    def update(self, instance, validated_data):
+        instance.ciudad_origen = validated_data.get('ciudad_origen', instance.ciudad_origen)
+        instance.ciudad_destino = validated_data.get('ciudad_destino', instance.ciudad_destino)
+        instance.fecha_salida = validated_data.get('fecha_salida', instance.fecha_salida)
+        instance.fecha_llegada = validated_data.get('fecha_llegada', instance.fecha_llegada)
+        instance.precio = validated_data.get('precio', instance.precio)
+        instance.tipo = validated_data.get('tipo', instance.tipo)
+        instance.estado = validated_data.get('estado', instance.estado)
+        instance.create_reference()
+        instance.save()
+        return instance     
+
+    def validate(self, data):
+        if data['fecha_salida'] >= data['fecha_llegada']:
+            raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
+        if data['fecha_salida'] < timezone.now():
+            raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
+        return data 
+     

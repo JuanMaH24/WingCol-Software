@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,7 +26,7 @@ def get_user(request):
         serializer = UserSerializer(user, many=False)
         return Response(serializer.data)
     except NormalUser.DoesNotExist:
-        return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Usuario no existente"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @authentication_classes([ClientAuthentication])
@@ -163,7 +165,6 @@ def update_admin(request):
             user_serializer.save()
             admin_serializer.save()
             return Response(admin_serializer.data, status=status.HTTP_202_ACCEPTED)
-        
         return Response({
             "user_errors": user_serializer.errors,
             "admin_errors": admin_serializer.errors
@@ -202,7 +203,100 @@ def login(request):
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key}, status=status.HTTP_200_OK)
     except KeyError:
-        return Response({"error": "Invalid Request"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Los Datos no son Correctos"}, status=status.HTTP_400_BAD_REQUEST)
     except NormalUser.DoesNotExist:
-        return Response({"error": "User Doesn't Exist"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "El Usuario no fue Encontrado, Debes Registrarte"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['POST'])
+def create_flight(request):
+    flight_serializer = FlightSerializer(data=request.data)
+    if flight_serializer.is_valid():
+        flight_serializer.save()
+        return Response(flight_serializer.data, status=status.HTTP_201_CREATED)
+    return Response(flight_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_all_flights(request):
+    try:
+        flights = Vuelos.objects.get(activo=True)
+        serializer = FlightSerializer(flights, many=True)
+        return Response(serializer.data)
+    except Vuelos.DoesNotExist:
+        return Response({"error": "No hay vuelos disponibles"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])  
+def get_flight_by_city_arrive(request):
+    try:
+        city_arrive = request.data["ciudad_destino"]
+        flight = Vuelos.objects.get(ciudad_destino=city_arrive, activo=True)
+        serializer = FlightSerializer(flight, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Vuelos.DoesNotExist:
+        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def get_flight_by_city_departure(request):
+    try:
+        city_departure = request.data["ciudad_origen"]
+        flight = Vuelos.objects.get(ciudad_origen=city_departure, activo=True)
+        serializer = FlightSerializer(flight, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Vuelos.DoesNotExist:
+        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def get_flight_by_name(request):
+    try:
+        name = request.data["referencia"]
+        flight = Vuelos.objects.get(referencia=name, activo=True)
+        serializer = FlightSerializer(flight, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Vuelos.DoesNotExist:
+        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['PUT'])
+def update_flight(request):
+    id = request.data['id']
+    flight = Vuelos.objects.get(id_vuelo=id, activo=True)
+    flight_serializer = FlightSerializer(flight, request.data)
+    flight_serializer.is_valid()
+    if flight_serializer.is_valid():
+        flight_serializer.save()
+        return Response(flight_serializer.data, status=status.HTTP_202_ACCEPTED)
+    return Response({'errors': flight_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def delete_flight(request):
+    try:
+        id = request.data['id_vuelo']
+        flight = Vuelos.objects.get(id_vuelo=id, activo=True)
+        flight.soft_delete()
+        return Response({"message": "Vuelo borrado correctamente."}, status=status.HTTP_200_OK)
+    except Vuelos.DoesNotExist:
+        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@receiver(post_save, sender=Vuelos)
+def create_seats(sender, instance, created, **kwargs):
+    if created:
+        try:
+            number_seats = 150 if instance.tipo == 'N' else 250
+            for i in range(number_seats):
+                Sillas.objects.create(
+                        id_vuelo=instance, 
+                        ubicacion=f"{i+1}", 
+                        clase='E' if i < number_seats*0.8 else 'P', 
+                        estado='L'
+                    ) 
+        except Exception as exception:
+            raise exception
+        
+@receiver(post_save, sender=Vuelos)
+def delete_seats(sender, instance, **kwargs):
+    if not instance.activo:
+        try:
+            Sillas.objects.filter(id_vuelo=instance, activo=True).update(activo=False)
+        except Exception as exception:
+            raise exception
+
     

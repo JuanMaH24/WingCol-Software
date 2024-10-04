@@ -3,6 +3,7 @@ from .manager import UsersManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.hashers import make_password, check_password
 
+
 class NormalUser(AbstractBaseUser, PermissionsMixin):
 	ROLES = (
 		(1, "Cliente"),
@@ -76,6 +77,8 @@ class Cliente(models.Model):
 	telefono = models.CharField(max_length=20)
 	direccion = models.CharField(max_length=50)
 	pais = models.CharField(max_length=20)
+	departamento = models.CharField(max_length=20)
+	municipio = models.CharField(max_length=20)
 	direccion_facturacion = models.CharField(max_length=50)
 	activo = models.BooleanField(default=True)
 
@@ -104,13 +107,13 @@ class Vuelos(models.Model):
 	class EstadoVuelo(models.TextChoices):
 		PROGRAMADO = 'P', 'Programado'
 		REALIZADO = 'R', 'Realizado'
-		CANCELADO = 'C', 'Cancelado'
 
 	class TipoVuelo(models.TextChoices):
 		NACIONAL = 'N', 'Nacional'
 		INTERNACIONAL = 'I', 'Internacional'
 
-	id_vuelo = models.PositiveIntegerField(primary_key=True)
+	id_vuelo = models.AutoField(primary_key=True)
+	referencia = models.CharField(max_length=20)
 	ciudad_origen = models.CharField(max_length=25)
 	ciudad_destino = models.CharField(max_length=25)
 	precio = models.PositiveIntegerField()
@@ -119,6 +122,13 @@ class Vuelos(models.Model):
 	tipo = models.CharField(max_length=20, choices=TipoVuelo.choices)
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
 	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()
+
+	def create_reference(self):
+		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
 	
 
 class Sillas(models.Model):
@@ -131,12 +141,17 @@ class Sillas(models.Model):
 		RESERVADO = 'R', 'Reservado'
 		OCUPADO = 'O', 'Ocupado'
 
-	id_silla = models.PositiveIntegerField(primary_key=True)
+	id_silla = models.AutoField(primary_key=True)
 	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
 	ubicacion = models.CharField(max_length=5)
 	clase = models.CharField(max_length=20, choices=ClaseAsiento.choices)
 	estado = models.CharField(max_length=20, choices=EstadoAsiento.choices)
 	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()
+
 
 class ComprasReservas(models.Model):
 	class Estado(models.TextChoices):
@@ -161,7 +176,7 @@ class Tiquete(models.Model):
 
 	id_tiquete = models.PositiveIntegerField(primary_key=True)
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
+	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)
@@ -169,7 +184,7 @@ class Tiquete(models.Model):
 
 class Busquedas(models.Model):
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-	ciudad_origen = models.CharField(max_length=25)
-	ciudad_destino = models.CharField(max_length=25)
-	fecha = models.DateTimeField(auto_now_add=True)
-	activo = models.BooleanField(default=True)
+	ciudad_origen = models.CharField(max_length=25, blank=True)
+	ciudad_destino = models.CharField(max_length=25, blank=True)
+	fecha = models.DateTimeField(auto_now_add=True, blank=True)
+	activo = models.BooleanField(default=True, blank=True)
