@@ -1,8 +1,7 @@
 from rest_framework import authentication, permissions, exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authtoken.models import Token
-from .models import NormalUser, Administrador, Root, Cliente
-
+from .models import NormalUser
 class ClientAuthentication(authentication.BaseAuthentication):
 	def authenticate(self, request):
 		token = request.headers.get('Authorization')
@@ -15,9 +14,11 @@ class ClientAuthentication(authentication.BaseAuthentication):
 			if user.roles == 1:
 				return (user, None)
 			else:
-				raise exceptions.AuthenticationFailed('No Permissions Provided')
+				raise ValueError
 		except NormalUser.DoesNotExist:
 			return None
+		except ValueError:
+			raise exceptions.AuthenticationFailed('No Permissions Provided')
 		except:
 			raise exceptions.AuthenticationFailed('Invalid token')
 
@@ -33,9 +34,11 @@ class AdminAuthentication(authentication.BaseAuthentication):
 			if user.roles == 2:
 				return (user, None)
 			else:
-				raise exceptions.AuthenticationFailed('No Permissions Provided')
+				raise ValueError
 		except NormalUser.DoesNotExist:
 			return None
+		except ValueError:
+			raise exceptions.AuthenticationFailed('No Permissions Provided')
 		except:
 			raise exceptions.AuthenticationFailed('Invalid token')
 
@@ -51,8 +54,10 @@ class RootAuthentication(authentication.BaseAuthentication):
 			if user.roles == 3:
 				return (user, None)
 			else:
-				raise exceptions.AuthenticationFailed('No Permissions Provided')
+				raise ValueError
 		except NormalUser.DoesNotExist:
 			return None
+		except ValueError:
+			raise exceptions.AuthenticationFailed('No Permissions Provided')
 		except:
 			raise exceptions.AuthenticationFailed('Invalid token')
