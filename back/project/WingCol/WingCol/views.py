@@ -2,6 +2,8 @@ from django.db import transaction
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.mail import EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from rest_framework.decorators import api_view
@@ -308,27 +310,30 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     context = {
         'current_user': reset_password_token.user,
         'email': reset_password_token.user.email,
-        'reset_password_url': "{}?token={}".format(
-            instance.request.build_absolute_uri(reverse('password_reset:reset-password-confirm')),
-            reset_password_token.key)
+        'token': reset_password_token.key
     }
 
-    email_plaintext_message = "Correo de recuperación de contraseña {token}".format(token=reset_password_token.key)
+    # email_plaintext_message = "Correo de recuperación de contraseña {token}".format(token=reset_password_token.key)
 
-    send_mail(
+    html_message = render_to_string("pruebaplantilla.html", context)
+    email_plaintext_message = strip_tags(html_message)
+
+    msg = EmailMultiAlternatives(
         "Password Reset for {title}".format(title="WingCol"),
         email_plaintext_message,
         "wingcolairlines@gmail.com",
         [reset_password_token.user.email]
     )
 
-    return Response({"message": "correo enviado"}, status=status.HTTP_200_OK)
-    # msg = EmailMultiAlternatives(
+    msg.attach_alternative(html_message, "text/html")
+    msg.send()
+
+    # send_mail(
     #     "Password Reset for {title}".format(title="WingCol"),
     #     email_plaintext_message,
-    #     "noreply@somehost.local",
+    #     "wingcolairlines@gmail.com",
     #     [reset_password_token.user.email]
     # )
-    # msg.attach_alternative(email_html_message, "text/html")
-    # msg.send()
+
+    return Response({"message": "correo enviado"}, status=status.HTTP_200_OK)
     
