@@ -53,11 +53,13 @@ def get_client(request):
 
 @api_view(['POST'])
 def create_client(request):
-    request.data['roles'] = 1
-    user_serializer = UserSerializer(data=request.data)
+    data = request.data.copy()
+    data['roles'] = 1  
+
+    user_serializer = UserSerializer(data=data)
     if user_serializer.is_valid():
         new_user = user_serializer.save()
-        client_data = request.data.copy()
+        client_data = data.copy()
         client_data['user_id'] = new_user.user_id
         client_serializer = ClientSerializer(data=client_data)
         if client_serializer.is_valid():
@@ -75,12 +77,13 @@ def create_client(request):
 @authentication_classes([ClientAuthentication])
 @permission_classes([IsAuthenticated])
 def update_client(request):
-    request.data['roles'] = 1
+    data = request.data.copy()
+    data['roles'] = 1  
     try:
-        user = NormalUser.objects.get(user_id=request.data['user_id'], activo = True)
-        client = Cliente.objects.get(user_id=request.data['user_id'], activo = True)
-        user_serializer = UserSerializer(user, data=request.data)
-        client_serializer = ClientSerializer(client, data=request.data)
+        user = NormalUser.objects.get(user_id=data['user_id'], activo = True)
+        client = Cliente.objects.get(user_id=data['user_id'], activo = True)
+        user_serializer = UserSerializer(user, data=data)
+        client_serializer = ClientSerializer(client, data=data)
         user_serializer.is_valid()
         client_serializer.is_valid()
         if user_serializer.is_valid() and client_serializer.is_valid():
@@ -140,11 +143,12 @@ def get_admin(request):
 @authentication_classes([RootAuthentication])
 @permission_classes([IsAuthenticated])
 def create_admin(request):
-    request.data['roles'] = 2
-    user_serializer = UserSerializer(data=request.data)
+    data = request.data.copy()
+    data['roles'] = 2
+    user_serializer = UserSerializer(data=data)
     if user_serializer.is_valid():
         new_user = user_serializer.save()
-        admin_data = request.data.copy()
+        admin_data = data.copy()
         admin_data['user_id'] = new_user.user_id
         admin_serializer = AdministradorSerializer(data=admin_data)
         if admin_serializer.is_valid():
@@ -158,12 +162,13 @@ def create_admin(request):
 @authentication_classes([AdminAuthentication])
 @permission_classes([IsAuthenticated])
 def update_admin(request):
-    request.data['roles'] = 2
+    data = request.data.copy()
+    data['roles'] = 2
     try:
-        user = NormalUser.objects.get(user_id=request.data['user_id'], activo = True)
-        admin = Administrador.objects.get(user_id=request.data['user_id'], activo = True)
-        user_serializer = UserSerializer(user, data=request.data)
-        admin_serializer = AdministradorSerializer(admin, data=request.data)
+        user = NormalUser.objects.get(user_id=data['user_id'], activo = True)
+        admin = Administrador.objects.get(user_id=data['user_id'], activo = True)
+        user_serializer = UserSerializer(user, data=data)
+        admin_serializer = AdministradorSerializer(admin, data=data)
         user_serializer.is_valid()
         admin_serializer.is_valid()
         if user_serializer.is_valid() and admin_serializer.is_valid():
@@ -306,20 +311,18 @@ def delete_seats(sender, instance, **kwargs):
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
-    # send an e-mail to the user
+    # send an e-mail to the user, post token creation. 
     context = {
         'current_user': reset_password_token.user,
         'email': reset_password_token.user.email,
         'token': reset_password_token.key
     }
 
-    # email_plaintext_message = "Correo de recuperación de contraseña {token}".format(token=reset_password_token.key)
-
     html_message = render_to_string("pruebaplantilla.html", context)
     email_plaintext_message = strip_tags(html_message)
 
     msg = EmailMultiAlternatives(
-        "Password Reset for {title}".format(title="WingCol"),
+        "Recuperación de contraseña - {title}".format(title="WingCol"),
         email_plaintext_message,
         "wingcolairlines@gmail.com",
         [reset_password_token.user.email]
@@ -327,13 +330,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     msg.attach_alternative(html_message, "text/html")
     msg.send()
-
-    # send_mail(
-    #     "Password Reset for {title}".format(title="WingCol"),
-    #     email_plaintext_message,
-    #     "wingcolairlines@gmail.com",
-    #     [reset_password_token.user.email]
-    # )
 
     return Response({"message": "correo enviado"}, status=status.HTTP_200_OK)
     

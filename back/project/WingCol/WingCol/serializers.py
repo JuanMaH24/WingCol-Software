@@ -39,19 +39,22 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Cliente
         fields = ['user_id', 'nombre', 'segundo_nombre','apellido', 'segundo_apellido', 
                   'tipo_documento', 'fecha_nacimiento', 'pais',
-                  'genero', 'telefono', 'direccion', 'direccion_facturacion']
+                  'genero', 'telefono', 'direccion', 'direccion_facturacion', 'user_pic']
+        extra_kwargs = {'user_pic': {'required': False}}
         
 class AdministradorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Administrador
         fields = [
             'user_id', 'nombre', 'segundo_nombre', 'apellido', 
-            'segundo_apellido', 'genero', 'telefono']
+            'segundo_apellido', 'genero', 'telefono', 'admin_pic']
+        extra_kwargs = {'admin_pic': {'required': False}}
 
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vuelos
-        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'fecha_llegada', 'precio', 'tipo', 'estado']
+        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'fecha_llegada', 'precio', 'tipo', 'estado', 'vuelos_pic']
+        extra_kwargs = {'vuelos_pic': {'required': False}}
 
     def create(self, validated_data):
         flight = Vuelos(
@@ -61,7 +64,8 @@ class FlightSerializer(serializers.ModelSerializer):
             fecha_llegada=validated_data['fecha_llegada'],
             precio=validated_data['precio'],
             tipo=validated_data['tipo'],
-            estado=validated_data['estado']
+            estado=validated_data['estado'], 
+            vuelos_pic=validated_data['vuelos_pic']
         )
         flight.save()
         flight.create_reference()
@@ -76,6 +80,7 @@ class FlightSerializer(serializers.ModelSerializer):
         instance.precio = validated_data.get('precio', instance.precio)
         instance.tipo = validated_data.get('tipo', instance.tipo)
         instance.estado = validated_data.get('estado', instance.estado)
+        instance.vuelos_pic=validated_data.get('vuelos_pic', instance.pic)
         instance.create_reference()
         instance.save()
         return instance     

@@ -48,6 +48,7 @@ class Administrador(models.Model):
 	segundo_apellido = models.CharField(max_length=50)
 	genero = models.CharField(max_length=1, choices=Genero.choices)
 	telefono = models.PositiveIntegerField()
+	admin_pic = models.ImageField(upload_to='img/user/', blank=True)
 	activo = models.BooleanField(default=True)
 
 	def soft_delete(self):
@@ -80,6 +81,7 @@ class Cliente(models.Model):
 	departamento = models.CharField(max_length=20)
 	municipio = models.CharField(max_length=20)
 	direccion_facturacion = models.CharField(max_length=50)
+	user_pic = models.ImageField(upload_to='img/user/', blank=True)
 	activo = models.BooleanField(default=True)
 
 	def soft_delete(self):
@@ -121,6 +123,7 @@ class Vuelos(models.Model):
 	fecha_llegada = models.DateTimeField()
 	tipo = models.CharField(max_length=20, choices=TipoVuelo.choices)
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
+	vuelos_pic = models.ImageField(upload_to='img/flight/', blank=True)
 	activo = models.BooleanField(default=True)
 
 	def soft_delete(self):
