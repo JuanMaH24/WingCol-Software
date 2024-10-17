@@ -1,18 +1,16 @@
 import React from "react";
-import "../hojas-de-estilo/añadir-tarjeta.css";
-import "../hojas-de-estilo/editar-tarjetas.css";
 
-export function AñadirTarjeta() {
+export function EditarTarjetas() {
   return (
     <form>
-      <div className="contenedor-principal-añadir-tarjeta">
-        <h1>Añadir tarjeta</h1>
-        <select className="tipo-tarjeta">
+      <div className="contenedor-principal-editar-tarjeta">
+        <h1>Editar tarjetas</h1>
+        <select className="tipo-de-tarjeta-editar">
           <option value="tipo de tarjeta">Tipo de tarjeta</option>
           <option value="D">Tarjeta de debito</option>
           <option value="C">Tarjeta de credito</option>
         </select>
-        <div className="numero-tarjeta">
+        <div className="numero-tarjeta-editar">
           <input
             type="text"
             name="numero-tarjeta"
@@ -20,7 +18,7 @@ export function AñadirTarjeta() {
             required
           />
         </div>
-        <select className="mes-vencimiento" required>
+        <select className="mes-vencimiento-editar" required>
           <option value="mes de vencimiento">mes de vencimiento</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -35,7 +33,7 @@ export function AñadirTarjeta() {
           <option value="11">11</option>
           <option value="12">12</option>
         </select>
-        <select className="año-vencimiento" required>
+        <select className="año-vencimiento-editar" required>
           <option value="año de vencimiento">año de vencimiento</option>
           <option value="2025">2025</option>
           <option value="2026">2026</option>
@@ -49,8 +47,8 @@ export function AñadirTarjeta() {
         <div className="CVV">
           <input type="text" placeholder="Código de seguridad (CVV)" required />
         </div>
-        <div className="boton-crear-tarjeta">
-          <button type="submit">Añadir tarjeta</button>
+        <div className="boton-editar-tarjetas">
+          <button type="submit">Guardar cambios</button>
         </div>
       </div>
     </form>

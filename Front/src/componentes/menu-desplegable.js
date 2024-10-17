@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [role, setRole] = React.useState(3); // Cambia el rol aquí para probar (1: cliente, 2: admin, 3: root)
+  const [role, setRole] = React.useState(2); // Cambia el rol aquí para probar (1: cliente, 2: admin, 3: root)
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
 
@@ -44,6 +44,11 @@ export default function BasicMenu() {
     handleClose();
   };
 
+  const handleEditarTarjeta = () => {
+    navigate("/editar-tarjetas");
+    handleClose();
+  };
+
   return (
     <div className="menu-desplegable">
       <Button
@@ -70,6 +75,7 @@ export default function BasicMenu() {
             <MenuItem onClick={handleEditar}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearTarjeta}>Añadir tarjeta</MenuItem>
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
+            <MenuItem onClick={handleEditarTarjeta}>Editar tarjeta</MenuItem>
           </>
         )}
 

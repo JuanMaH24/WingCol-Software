@@ -21,6 +21,7 @@ import { HomeRoot } from "./componentes/home-root";
 import { EditarVuelo } from "./componentes/editar_vuelo";
 import { RecuperarContraseña } from "./componentes/recuperar-contraseña";
 import { AñadirTarjeta } from "./componentes/añadir-tarjeta";
+import { EditarTarjetas } from "./componentes/editar-tarjetas";
 export default function App() {
   const [user, setUser] = useState(null); // Inicializa el estado
 
@@ -53,6 +54,7 @@ export default function App() {
             element={<RecuperarContraseña />}
           />
           <Route path="/añadir-tarjeta" element={<AñadirTarjeta />} />
+          <Route path="/editar-tarjetas" element={<EditarTarjetas />} />
         </Routes>
       </div>
     </Router>
