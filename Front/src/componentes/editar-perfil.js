@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../hojas-de-estilo/registro.css";
+import "../hojas-de-estilo/editar-perfil.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
 import { getNames, getCode } from "country-list";
@@ -7,7 +7,7 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
-export function Registro() {
+export function EditarPerfil() {
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -134,28 +134,38 @@ export function Registro() {
         return;
       } else {
         navigate("/", {
-          state: { successMessage: "Usuario registrado correctamente." },
+          state: { successMessage: "Perfil actualizado correctamente." },
         });
       }
 
       // Si el registro es exitoso, puedes redirigir al usuario o mostrar un mensaje
-      console.log("Usuario registrado exitosamente.");
+      console.log("Perfil actualizado exitosamente.");
 
       // Redireccionar o mostrar un mensaje de éxito aquí
     } catch (error) {
       console.error(error);
-      setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");
+      setErrorMessage(
+        "Hubo un problema con la actualización. Intenta más tarde."
+      );
     }
   };
 
-  const handleLogin = () => {
-    navigate("/inicio-de-sesion");
+  const handleDelete = () => {
+    const isConfirmed = window.confirm(
+      "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer."
+    );
+    if (isConfirmed) {
+      // Aquí va la lógica para eliminar el perfil
+      console.log("Cuenta eliminada.");
+      // Navegar o mostrar algún mensaje después de la eliminación
+      navigate("/"); // Ejemplo de redirección
+    }
   };
 
   return (
     <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <h1>Registro de usuario</h1>
+      <h1>Editar perfil</h1>
 
       <div className="input-box">
         <input
@@ -230,7 +240,6 @@ export function Registro() {
         <option value="">Género</option>
         <option value="M">Masculino</option>
         <option value="F">Femenino</option>
-        <option value="N">Prefiero no decirlo</option>
         <option value="O">Otro</option>
       </select>
 
@@ -357,7 +366,12 @@ export function Registro() {
       </div>
 
       <div className="boton-registro">
-        <button type="submit">Registrarse</button>
+        <button type="submit">Guardar cambios</button>
+      </div>
+      <div className="boton-eliminar">
+        <button type="submit" onClick={handleDelete}>
+          Eliminar cuenta
+        </button>
       </div>
     </form>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../hojas-de-estilo/registro.css";
+import "../hojas-de-estilo/editar-perfil-admin.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
 import { getNames, getCode } from "country-list";
@@ -7,7 +7,7 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
-export function Registro() {
+export function EditarPerfilAdmin() {
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -83,13 +83,11 @@ export function Registro() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Las contraseñas no coinciden");
       return;
     }
-
+    e.preventDefault();
     setErrorMessage("");
 
     const dataToSend = {
@@ -134,30 +132,40 @@ export function Registro() {
         return;
       } else {
         navigate("/", {
-          state: { successMessage: "Usuario registrado correctamente." },
+          state: { successMessage: "Perfil actualizado correctamente." },
         });
       }
 
       // Si el registro es exitoso, puedes redirigir al usuario o mostrar un mensaje
-      console.log("Usuario registrado exitosamente.");
+      console.log("Perfil actualizado exitosamente.");
 
       // Redireccionar o mostrar un mensaje de éxito aquí
     } catch (error) {
       console.error(error);
-      setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");
+      setErrorMessage(
+        "Hubo un problema con la actualización. Intenta más tarde."
+      );
     }
   };
 
-  const handleLogin = () => {
-    navigate("/inicio-de-sesion");
+  const handleDelete = () => {
+    const isConfirmed = window.confirm(
+      "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer."
+    );
+    if (isConfirmed) {
+      // Aquí va la lógica para eliminar el perfil
+      console.log("Cuenta eliminada.");
+      // Navegar o mostrar algún mensaje después de la eliminación
+      navigate("/"); // Ejemplo de redirección
+    }
   };
 
   return (
-    <form className="registro-principal" onSubmit={handleSubmit}>
+    <form className="contenedor-principal-editar-admin" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <h1>Registro de usuario</h1>
+      <h1>Editar perfil administrador</h1>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="firstName"
@@ -170,7 +178,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="secondName"
@@ -182,7 +190,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="lastName"
@@ -195,7 +203,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="secondLastName"
@@ -208,7 +216,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <PhoneInput
           international
           countryCallingCodeEditable={false}
@@ -223,18 +231,17 @@ export function Registro() {
 
       <select
         name="gender"
-        className="multiples-opciones"
+        className="multiples-opciones-editar-admin"
         onChange={handleChange}
         required
       >
         <option value="">Género</option>
         <option value="M">Masculino</option>
         <option value="F">Femenino</option>
-        <option value="N">Prefiero no decirlo</option>
         <option value="O">Otro</option>
       </select>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="email"
           name="email"
@@ -247,7 +254,7 @@ export function Registro() {
 
       <select
         name="documentType"
-        className="multiples-opciones"
+        className="multiples-opciones-editar-admin"
         onChange={handleDocumentTypeChange}
         required
       >
@@ -257,7 +264,7 @@ export function Registro() {
         <option value="PA">Pasaporte</option>
       </select>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="documentNumber"
@@ -274,7 +281,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="address"
@@ -284,7 +291,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="text"
           name="billingAddress"
@@ -294,7 +301,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           className="fecha-nacimiento"
           type="date"
@@ -306,7 +313,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="password"
           name="password"
@@ -320,7 +327,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-editar-admin">
         <input
           type="password"
           name="confirmPassword"
@@ -334,7 +341,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="selector-paises">
+      <div className="selector-paises-editar-admin">
         <Select
           value={formData.selectedCountry}
           onChange={handleCountryChange}
@@ -347,17 +354,22 @@ export function Registro() {
         />
       </div>
 
-      <div className="error">
+      <div className="error-editar-admin">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
 
-      <div className="foto-de-perfil">
+      <div className="foto-de-perfil-editar-admin">
         <label htmlFor="file">Elija una imagen de perfil </label>
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
-      <div className="boton-registro">
-        <button type="submit">Registrarse</button>
+      <div className="boton-registro-editar-admin">
+        <button type="submit">Guardar cambios</button>
+      </div>
+      <div className="boton-eliminar-editar-admin">
+        <button type="button" onClick={handleDelete}>
+          Eliminar cuenta
+        </button>
       </div>
     </form>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../hojas-de-estilo/registro.css";
+import "../hojas-de-estilo/crear-administrador.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
 import { getNames, getCode } from "country-list";
@@ -7,7 +7,7 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
-export function Registro() {
+export function CrearAdministrador() {
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -148,16 +148,12 @@ export function Registro() {
     }
   };
 
-  const handleLogin = () => {
-    navigate("/inicio-de-sesion");
-  };
-
   return (
-    <form className="registro-principal" onSubmit={handleSubmit}>
+    <form className="contenedor-principal-crear-admin" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <h1>Registro de usuario</h1>
+      <h1>Crear administrador</h1>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="firstName"
@@ -170,7 +166,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="secondName"
@@ -182,7 +178,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="lastName"
@@ -195,7 +191,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="secondLastName"
@@ -208,7 +204,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <PhoneInput
           international
           countryCallingCodeEditable={false}
@@ -223,18 +219,17 @@ export function Registro() {
 
       <select
         name="gender"
-        className="multiples-opciones"
+        className="multiples-opciones-crear-admin"
         onChange={handleChange}
         required
       >
         <option value="">Género</option>
         <option value="M">Masculino</option>
         <option value="F">Femenino</option>
-        <option value="N">Prefiero no decirlo</option>
         <option value="O">Otro</option>
       </select>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="email"
           name="email"
@@ -247,7 +242,7 @@ export function Registro() {
 
       <select
         name="documentType"
-        className="multiples-opciones"
+        className="multiples-opciones-crear-admin"
         onChange={handleDocumentTypeChange}
         required
       >
@@ -257,7 +252,7 @@ export function Registro() {
         <option value="PA">Pasaporte</option>
       </select>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="documentNumber"
@@ -274,7 +269,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="address"
@@ -284,7 +279,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="text"
           name="billingAddress"
@@ -294,7 +289,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           className="fecha-nacimiento"
           type="date"
@@ -306,7 +301,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="password"
           name="password"
@@ -320,7 +315,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="input-box">
+      <div className="input-box-crear-admin">
         <input
           type="password"
           name="confirmPassword"
@@ -334,7 +329,7 @@ export function Registro() {
         />
       </div>
 
-      <div className="selector-paises">
+      <div className="selector-paises-crear-admin">
         <Select
           value={formData.selectedCountry}
           onChange={handleCountryChange}
@@ -347,17 +342,17 @@ export function Registro() {
         />
       </div>
 
-      <div className="error">
+      <div className="error-admin">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
 
-      <div className="foto-de-perfil">
+      <div className="foto-de-perfil-admin">
         <label htmlFor="file">Elija una imagen de perfil </label>
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
-      <div className="boton-registro">
-        <button type="submit">Registrarse</button>
+      <div className="boton-registro-crear-admin">
+        <button type="submit">Crear administrador</button>
       </div>
     </form>
   );
