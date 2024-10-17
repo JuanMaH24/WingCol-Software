@@ -14,7 +14,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: url("./imagenes/fondo-inicio-sesion.jpg") no-repeat;
+  background: url("./imagenes/fondo.jpg") no-repeat;
   background-size: cover;
   background-position: center;
 }

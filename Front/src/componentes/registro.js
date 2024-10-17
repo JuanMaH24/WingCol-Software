@@ -357,7 +357,9 @@ export function Registro() {
       </div>
 
       <div className="boton-registro">
-        <button type="submit">Registrarse</button>
+        <button type="submit" onClick={handleLogin}>
+          Registrarse
+        </button>
       </div>
     </form>
   );
