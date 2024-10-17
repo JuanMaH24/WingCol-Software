@@ -1,0 +1,28 @@
+.contenedor-principal-añadir-tarjeta {
+  font-family: "Poppins", sans-serif;
+  width: 500px;
+  background-color: #0c056d;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(50px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: white;
+  border-radius: 10px;
+  padding: 30px 40px;
+}
+
+.contenedor-principal-añadir-tarjeta h1 {
+  font-family: "Popins", sans-serif;
+}
+
+.contenedor-principal-añadir-tarjeta select {
+  margin-bottom: 10px;
+}
+
+.contenedor-principal-añadir-tarjeta input {
+  margin-bottom: 10px;
+}
+
+.contenedor-principal-añadir-tarjeta button {
+  margin-top: 10px;
+}
