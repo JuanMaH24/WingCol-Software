@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../hojas-de-estilo/editar-perfil-admin.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
@@ -29,12 +29,49 @@ export function EditarPerfilAdmin() {
 
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [documentPattern, setDocumentPattern] = useState("");
+
+  // Cargar datos del perfil del usuario al cargar el componente
+  useEffect(() => {
+    // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
+    async function fetchProfileData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/users/client/profile/"
+        );
+        const userData = await response.json();
+
+        // Rellenar los campos con los datos actuales del usuario
+        setFormData({
+          firstName: userData.nombre || "",
+          secondName: userData.segundo_nombre || "",
+          lastName: userData.apellido || "",
+          secondLastName: userData.segundo_apellido || "",
+          phoneNumber: userData.telefono || "",
+          gender: userData.genero || "",
+          email: userData.email || "",
+          documentType: userData.tipo_documento || "",
+          documentNumber: userData.user_id || "",
+          address: userData.direccion || "",
+          billingAddress: userData.direccion_facturacion || "",
+          birthDate: userData.fecha_nacimiento || "",
+          selectedCountry: userData.pais
+            ? { value: getCode(userData.pais), label: userData.pais }
+            : null,
+          profilePicture: null, // Este campo lo manejará el usuario si sube una nueva imagen
+        });
+      } catch (error) {
+        console.error("Error al cargar el perfil", error);
+      }
+    }
+
+    fetchProfileData();
+  }, []);
 
   const countryOptions = getNames().map((country) => ({
     value: getCode(country),
-    label: country, // Muestra el nombre del país y su código
+    label: country,
   }));
-  const [documentPattern, setDocumentPattern] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,13 +88,12 @@ export function EditarPerfilAdmin() {
       documentType: value,
     }));
 
-    // Actualizar el patrón según el tipo de documento seleccionado
     if (value === "CC") {
-      setDocumentPattern("^[0-9]+$"); // Solo números
+      setDocumentPattern("^[0-9]+$");
     } else if (value === "pasaporte") {
-      setDocumentPattern("^[A-Za-z]{3}[0-9]{6}$"); // 3 letras y 6 números
+      setDocumentPattern("^[A-Za-z]{3}[0-9]{6}$");
     } else {
-      setDocumentPattern(""); // Vacío si no hay selección
+      setDocumentPattern("");
     }
   };
 
@@ -83,51 +119,60 @@ export function EditarPerfilAdmin() {
   };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Las contraseñas no coinciden");
       return;
     }
-    e.preventDefault();
+
     setErrorMessage("");
 
-    const dataToSend = {
-      nombre: formData.firstName,
-      segundo_nombre: formData.secondName,
-      apellido: formData.lastName,
-      segundo_apellido: formData.secondLastName,
-      telefono: formData.phoneNumber,
-      genero: formData.gender,
-      email: formData.email,
-      tipo_documento: formData.documentType,
-      user_id: formData.documentNumber,
-      direccion: formData.address,
-      direccion_facturacion: formData.billingAddress,
-      fecha_nacimiento: formData.birthDate,
-      password: formData.password,
-      // Si quieres incluir la foto de perfil, necesitarías usar FormData
-      pais: formData.selectedCountry["label"], // Si también lo necesitas
-    };
+    // Utilizamos FormData para enviar archivos (la foto de perfil)
+    const dataToSend = new FormData();
+    dataToSend.append("nombre", formData.firstName);
+    dataToSend.append("segundo_nombre", formData.secondName);
+    dataToSend.append("apellido", formData.lastName);
+    dataToSend.append("segundo_apellido", formData.secondLastName);
+    dataToSend.append("telefono", formData.phoneNumber);
+    dataToSend.append("genero", formData.gender);
+    dataToSend.append("email", formData.email);
+    dataToSend.append("tipo_documento", formData.documentType);
+    dataToSend.append("user_id", formData.documentNumber);
+    dataToSend.append("direccion", formData.address);
+    dataToSend.append("direccion_facturacion", formData.billingAddress);
+    dataToSend.append("fecha_nacimiento", formData.birthDate);
+    dataToSend.append(
+      "pais",
+      formData.selectedCountry ? formData.selectedCountry.label : ""
+    );
+
+    // Solo enviar la contraseña si el usuario la cambió
+    if (formData.password) {
+      dataToSend.append("password", formData.password);
+    }
+
+    // Incluir la foto de perfil solo si se ha subido una nueva
+    if (formData.profilePicture) {
+      dataToSend.append("user_pic", formData.profilePicture);
+    }
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/users/client/create/",
+        "http://127.0.0.1:8000/users/client/update/",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataToSend),
+          body: dataToSend,
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData.nombre);
         setErrorMessage(
           errorData.nombre ||
             errorData.user_id ||
             errorData.email ||
-            "Error al registrar el usuario."
+            "Error al actualizar el perfil."
         );
         return;
       } else {
@@ -135,11 +180,6 @@ export function EditarPerfilAdmin() {
           state: { successMessage: "Perfil actualizado correctamente." },
         });
       }
-
-      // Si el registro es exitoso, puedes redirigir al usuario o mostrar un mensaje
-      console.log("Perfil actualizado exitosamente.");
-
-      // Redireccionar o mostrar un mensaje de éxito aquí
     } catch (error) {
       console.error(error);
       setErrorMessage(
@@ -155,7 +195,6 @@ export function EditarPerfilAdmin() {
     if (isConfirmed) {
       // Aquí va la lógica para eliminar el perfil
       console.log("Cuenta eliminada.");
-      // Navegar o mostrar algún mensaje después de la eliminación
       navigate("/"); // Ejemplo de redirección
     }
   };

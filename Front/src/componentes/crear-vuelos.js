@@ -13,6 +13,18 @@ export function CrearVuelos() {
   });
   const navigate = useNavigate();
 
+  const distancias = {
+    "Bogotá-Cali": 300,
+    "Bogotá-Medellín": 230,
+    "Bogotá-Cartagena": 650,
+    "Bogotá-Madrid": 8000,
+    "Bogotá-Miami": 2500,
+    "Cali-Miami": 2700,
+    // Añade más distancias según sea necesario
+  };
+
+  const averageSpeed = 850; // km/h
+
   const capitalesColombia = [
     { value: "Leticia", label: "Leticia (Amazonas)" },
     { value: "Medellín", label: "Medellín (Antioquia)" },
@@ -76,6 +88,14 @@ export function CrearVuelos() {
     }));
   };
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   const handleOrigenChange = (event) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -110,31 +130,97 @@ export function CrearVuelos() {
     return [];
   };
 
+  // Función para calcular la duración del vuelo
+  const calcularTiempoDeVuelo = () => {
+    const origenDestino = `${formData.selectedOrigen}-${formData.selectedDestino}`;
+    const distancia = distancias[origenDestino];
+    if (!distancia) {
+      return "Distancia no disponible";
+    }
+
+    const duracionVueloHoras = distancia / averageSpeed;
+    const duracionVueloMinutos = duracionVueloHoras * 60;
+
+    // Convertir a formato legible (HH:MM)
+    const horas = Math.floor(duracionVueloHoras);
+    const minutos = Math.round((duracionVueloHoras - horas) * 60);
+
+    return `${horas} horas y ${minutos} minutos`;
+  };
+
   const handleDelete = () => {
     const isConfirmed = window.confirm(
       "¿Estás seguro de que quieres cancelar la creación del vuelo?"
     );
     if (isConfirmed) {
       console.log("creacion de vuelo cancelada");
-      navigate("/");
+      navigate("/home-cliente");
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const dataToSend = new FormData();
+
+    // Agregamos los campos al FormData
+    dataToSend.append("ciudad_origen", formData.selectedOrigen);
+    dataToSend.append("ciudad_destino", formData.selectedDestino);
+    dataToSend.append(
+      "fecha_salida",
+      `${formData.fechaSalida}T${formData.horaSalida}:00Z`
+    );
+    dataToSend.append("fecha_llegada", "2024-10-14T15:00:00Z"); // Ajusta la fecha si es necesario
+    dataToSend.append("precio", parseFloat(formData.precio)); // Convertimos a número decimal
+    dataToSend.append("tipo", formData.tipoVuelo);
+    dataToSend.append("estado", "P"); // Estado predeterminado
+
+    // Si tienes una imagen, la puedes agregar usando el campo correspondiente
+    // Supongamos que estás obteniendo la imagen de un campo en el formulario
+    if (formData.flightPic) {
+      dataToSend.append("flight_pic", formData.flightPic); // Añadimos la imagen al FormData
+    } else {
+      dataToSend.append("flight_pic", "imagen.jpg"); // Valor por defecto si no hay imagen
+    }
+
+    try {
+      const response = await fetch("https://tu-backend-api.com/vuelos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (response.ok) {
+        console.log("Vuelo creado exitosamente");
+        navigate("/home-cliente");
+      } else {
+        console.error("Error al crear el vuelo");
+      }
+    } catch (error) {
+      console.error("Error al enviar la petición:", error);
     }
   };
 
   return (
-    <form className="contenedor-principal-vuelos">
+    <form className="contenedor-principal-vuelos" onSubmit={handleSubmit}>
       <img src={LogoCompleto} alt="Logo de WingColombia" className="logo" />
       <h1>Crear vuelos</h1>
       <div className="input-vuelo">
         <input
           type="text"
-          name="numero-de-vuelo"
+          name="vueloNumero"
           placeholder="Número de vuelo"
           maxLength={10}
+          value={formData.vueloNumero}
+          onChange={handleChange}
           required
         />
       </div>
       <div className="selector-vuelo">
         <select
+          name="tipoVuelo"
           value={formData.tipoVuelo}
           onChange={handleTipoVueloChange}
           required
@@ -148,6 +234,7 @@ export function CrearVuelos() {
       </div>
       <div className="selector-vuelo">
         <select
+          name="selectedOrigen"
           value={formData.selectedOrigen}
           onChange={handleOrigenChange}
           required
@@ -164,6 +251,7 @@ export function CrearVuelos() {
       </div>
       <div className="selector-vuelo">
         <select
+          name="selectedDestino"
           value={formData.selectedDestino}
           onChange={handleDestinoChange}
           required
@@ -182,26 +270,38 @@ export function CrearVuelos() {
         <h3>Fecha de salida</h3>
         <input
           type="date"
-          name="fecha-de-salida"
-          min={"2024-10-3"}
-          max={"2026-12-31"}
+          name="fechaSalida"
+          value={formData.fechaSalida}
+          onChange={handleChange}
           required
         />
       </div>
-
       <div className="input-vuelo">
         <h3>Hora de salida</h3>
-        <input type="time" name="hora-de-salida" required />
+        <input
+          type="time"
+          name="horaSalida"
+          value={formData.horaSalida}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div className="input-vuelo">
-        <input type="text" placeholder="Precio tiquete" required />
+        <input
+          type="text"
+          name="precio"
+          placeholder="Precio tiquete"
+          value={formData.precio}
+          onChange={handleChange}
+          required
+        />
       </div>
       <div className="boton-vuelo-container">
         <div className="boton-vuelo">
           <button type="submit">Crear vuelo</button>
         </div>
         <div className="boton-vuelo">
-          <button type="submit" onClick={handleDelete}>
+          <button type="button" onClick={() => navigate("/")}>
             Cancelar
           </button>
         </div>

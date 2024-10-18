@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LogoCompleto from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/editar-vuelo.css";
 import CurrencyInput from "react-currency-input-field";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate, Navigate, useParams } from "react-router-dom";
 
 export function EditarVuelo() {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ export function EditarVuelo() {
     selectedDestino: "",
   });
   const navigate = useNavigate();
+  const { idVuelo } = useParams();
 
   const capitalesColombia = [
     { value: "Leticia", label: "Leticia (Amazonas)" },
@@ -67,6 +68,66 @@ export function EditarVuelo() {
     { value: "Miami", label: "Miami (Estados Unidos)" },
   ];
 
+  useEffect(() => {
+    // Simulación de una llamada a la API para obtener los datos del vuelo
+    const obtenerDatosVuelo = async () => {
+      try {
+        const respuesta = await fetch(`API_URL/vuelos/${idVuelo}`); // Reemplaza con la URL real de la API
+        const data = await respuesta.json();
+        setFormData({
+          vueloNumero: data.vueloNumero,
+          tipoVuelo: data.tipoVuelo,
+          selectedOrigen: data.ciudad_origen,
+          selectedDestino: data.ciudad_destino,
+          fechaSalida: data.fecha_salida.split("T")[0], // Para separar la fecha y hora
+          horaSalida: data.fecha_salida.split("T")[1].slice(0, 5),
+          precio: data.precio,
+        });
+      } catch (error) {
+        console.error("Error al obtener los datos del vuelo:", error);
+      }
+    };
+
+    obtenerDatosVuelo();
+  }, [idVuelo]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const dataToSend = new FormData();
+    dataToSend.append("vueloNumero", formData.vueloNumero);
+    dataToSend.append("tipoVuelo", formData.tipoVuelo);
+    dataToSend.append("ciudad_origen", formData.selectedOrigen);
+    dataToSend.append("ciudad_destino", formData.selectedDestino);
+    dataToSend.append(
+      "fecha_salida",
+      `${formData.fechaSalida}T${formData.horaSalida}:00Z`
+    );
+    dataToSend.append("precio", formData.precio);
+
+    try {
+      const respuesta = await fetch(`API_URL/vuelos/${idVuelo}`, {
+        method: "PUT", // Método de actualización
+        body: dataToSend,
+      });
+
+      if (respuesta.ok) {
+        navigate("/home-cliente"); // Redirigir al usuario a /home-cliente si la actualización fue exitosa
+      } else {
+        console.error("Error al editar el vuelo.");
+      }
+    } catch (error) {
+      console.error("Error al enviar los datos:", error);
+    }
+  };
+
   const handleTipoVueloChange = (event) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -121,22 +182,27 @@ export function EditarVuelo() {
   };
 
   return (
-    <form className="contenedor-principal-vuelos">
+    <form className="contenedor-principal-vuelos" onSubmit={handleSubmit}>
       <img src={LogoCompleto} alt="Logo de WingColombia" className="logo" />
-      <h1>Editar vuelos</h1>
+      <h1>Editar vuelo</h1>
+
       <div className="input-vuelo">
         <input
           type="text"
-          name="numero-de-vuelo"
+          name="vueloNumero"
+          value={formData.vueloNumero}
+          onChange={handleInputChange}
           placeholder="Número de vuelo"
           maxLength={10}
           required
         />
       </div>
+
       <div className="selector-vuelo">
         <select
+          name="tipoVuelo"
           value={formData.tipoVuelo}
-          onChange={handleTipoVueloChange}
+          onChange={handleInputChange}
           required
         >
           <option value="" disabled>
@@ -146,64 +212,91 @@ export function EditarVuelo() {
           <option value="I">Internacional</option>
         </select>
       </div>
+
       <div className="selector-vuelo">
         <select
+          name="selectedOrigen"
           value={formData.selectedOrigen}
-          onChange={handleOrigenChange}
+          onChange={handleInputChange}
           required
         >
           <option value="" disabled>
             Seleccionar origen del vuelo
           </option>
-          {getOrigenOptions().map((origen) => (
-            <option key={origen.value} value={origen.value}>
-              {origen.label}
-            </option>
-          ))}
+          {formData.tipoVuelo === "N"
+            ? capitalesColombia.map((origen) => (
+                <option key={origen.value} value={origen.value}>
+                  {origen.label}
+                </option>
+              ))
+            : origenesInternacionales.map((origen) => (
+                <option key={origen.value} value={origen.value}>
+                  {origen.label}
+                </option>
+              ))}
         </select>
       </div>
+
       <div className="selector-vuelo">
         <select
+          name="selectedDestino"
           value={formData.selectedDestino}
-          onChange={handleDestinoChange}
+          onChange={handleInputChange}
           required
         >
           <option value="" disabled>
             Seleccionar destino del vuelo
           </option>
-          {getDestinoOptions().map((destino) => (
-            <option key={destino.value} value={destino.value}>
-              {destino.label}
-            </option>
-          ))}
+          {formData.tipoVuelo === "N"
+            ? capitalesColombia.map((destino) => (
+                <option key={destino.value} value={destino.value}>
+                  {destino.label}
+                </option>
+              ))
+            : destinosInternacionales.map((destino) => (
+                <option key={destino.value} value={destino.value}>
+                  {destino.label}
+                </option>
+              ))}
         </select>
       </div>
+
       <div className="input-vuelo">
         <h3>Fecha de salida</h3>
         <input
           type="date"
-          name="fecha-de-salida"
-          min={"2024-10-3"}
-          max={"2026-12-31"}
+          name="fechaSalida"
+          value={formData.fechaSalida}
+          onChange={handleInputChange}
           required
         />
       </div>
 
       <div className="input-vuelo">
         <h3>Hora de salida</h3>
-        <input type="time" name="hora-de-salida" required />
+        <input
+          type="time"
+          name="horaSalida"
+          value={formData.horaSalida}
+          onChange={handleInputChange}
+          required
+        />
       </div>
+
       <div className="input-vuelo">
-        <input type="text" placeholder="Precio tiquete" required />
+        <input
+          type="text"
+          name="precio"
+          value={formData.precio}
+          onChange={handleInputChange}
+          placeholder="Precio tiquete"
+          required
+        />
       </div>
+
       <div className="boton-vuelo-container">
         <div className="boton-vuelo">
           <button type="submit">Guardar cambios</button>
-        </div>
-        <div className="boton-vuelo">
-          <button type="submit" onClick={handleDelete}>
-            Cancelar
-          </button>
         </div>
       </div>
     </form>

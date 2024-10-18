@@ -92,56 +92,52 @@ export function CrearAdministrador() {
 
     setErrorMessage("");
 
-    const dataToSend = {
-      nombre: formData.firstName,
-      segundo_nombre: formData.secondName,
-      apellido: formData.lastName,
-      segundo_apellido: formData.secondLastName,
-      telefono: formData.phoneNumber,
-      genero: formData.gender,
-      email: formData.email,
-      tipo_documento: formData.documentType,
-      user_id: formData.documentNumber,
-      direccion: formData.address,
-      direccion_facturacion: formData.billingAddress,
-      fecha_nacimiento: formData.birthDate,
-      password: formData.password,
-      // Si quieres incluir la foto de perfil, necesitarías usar FormData
-      pais: formData.selectedCountry["label"], // Si también lo necesitas
-    };
+    // Usamos FormData para enviar los datos
+    const dataToSend = new FormData();
+    dataToSend.append("nombre", formData.firstName);
+    dataToSend.append("segundo_nombre", formData.secondName);
+    dataToSend.append("apellido", formData.lastName);
+    dataToSend.append("segundo_apellido", formData.secondLastName);
+    dataToSend.append("telefono", formData.phoneNumber);
+    dataToSend.append("genero", formData.gender);
+    dataToSend.append("email", formData.email);
+    dataToSend.append("tipo_documento", formData.documentType);
+    dataToSend.append("user_id", formData.documentNumber);
+    dataToSend.append("direccion", formData.address);
+    dataToSend.append("direccion_facturacion", formData.billingAddress);
+    dataToSend.append("fecha_nacimiento", formData.birthDate);
+    dataToSend.append("password", formData.password);
+    if (formData.profilePicture) {
+      dataToSend.append("profilePicture", formData.profilePicture); // Enviamos la imagen si existe
+    }
+    dataToSend.append("pais", formData.selectedCountry?.label);
 
     try {
       const response = await fetch(
         "http://127.0.0.1:8000/users/client/create/",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataToSend),
+          body: dataToSend, // Enviamos FormData
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData.nombre);
         setErrorMessage(
           errorData.nombre ||
             errorData.user_id ||
             errorData.email ||
-            "Error al registrar el usuario."
+            "Error al registrar el administrador."
         );
         return;
       } else {
-        navigate("/", {
-          state: { successMessage: "Usuario registrado correctamente." },
+        // Redirigir al usuario a /home-root después de la creación exitosa
+        navigate("/home-root", {
+          state: { successMessage: "Administrador creado correctamente." },
         });
       }
 
-      // Si el registro es exitoso, puedes redirigir al usuario o mostrar un mensaje
-      console.log("Usuario registrado exitosamente.");
-
-      // Redireccionar o mostrar un mensaje de éxito aquí
+      console.log("Administrador registrado exitosamente.");
     } catch (error) {
       console.error(error);
       setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");

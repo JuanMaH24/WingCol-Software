@@ -49,6 +49,11 @@ export default function BasicMenu() {
     handleClose();
   };
 
+  const handleEditarPerfilAdmin = () => {
+    navigate("/editar-perfil-admin");
+    handleClose();
+  };
+
   return (
     <div className="menu-desplegable">
       <Button
@@ -74,8 +79,8 @@ export default function BasicMenu() {
           <>
             <MenuItem onClick={handleEditar}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearTarjeta}>Añadir tarjeta</MenuItem>
-            <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
             <MenuItem onClick={handleEditarTarjeta}>Editar tarjeta</MenuItem>
+            <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}
 
@@ -83,7 +88,7 @@ export default function BasicMenu() {
           <>
             <MenuItem onClick={handleEditar}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearVuelo}>Crear vuelo</MenuItem>
-            <MenuItem onClick={handleEditarVuelo}>Editar vuelo</MenuItem>
+            <MenuItem onClick={handleEditarPerfilAdmin}>Editar vuelo</MenuItem>
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}
