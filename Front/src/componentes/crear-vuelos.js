@@ -207,17 +207,7 @@ export function CrearVuelos() {
     <form className="contenedor-principal-vuelos" onSubmit={handleSubmit}>
       <img src={LogoCompleto} alt="Logo de WingColombia" className="logo" />
       <h1>Crear vuelos</h1>
-      <div className="input-vuelo">
-        <input
-          type="text"
-          name="vueloNumero"
-          placeholder="Número de vuelo"
-          maxLength={10}
-          value={formData.vueloNumero}
-          onChange={handleChange}
-          required
-        />
-      </div>
+
       <div className="selector-vuelo">
         <select
           name="tipoVuelo"
@@ -267,6 +257,16 @@ export function CrearVuelos() {
         </select>
       </div>
       <div className="input-vuelo">
+        <input
+          type="text"
+          name="precio"
+          placeholder="Precio tiquete"
+          value={formData.precio}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className="input-vuelo">
         <h3>Fecha de salida</h3>
         <input
           type="date"
@@ -286,16 +286,7 @@ export function CrearVuelos() {
           required
         />
       </div>
-      <div className="input-vuelo">
-        <input
-          type="text"
-          name="precio"
-          placeholder="Precio tiquete"
-          value={formData.precio}
-          onChange={handleChange}
-          required
-        />
-      </div>
+
       <div className="boton-vuelo-container">
         <div className="boton-vuelo">
           <button type="submit">Crear vuelo</button>

@@ -64,7 +64,7 @@ export function RestablecerContraseña() {
             name="codigo"
             placeholder="Ingrese el token suministrado en el correo"
             value={token || ""}
-            readOnly
+            required
           />
         </div>
         <div className="input-box">

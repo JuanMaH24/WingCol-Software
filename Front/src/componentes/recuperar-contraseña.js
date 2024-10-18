@@ -19,7 +19,7 @@ export function RecuperarContraseña() {
 
       if (response.ok) {
         alert("Correo enviado. Verifique su bandeja de entrada.");
-        navigate("/restablecer-contraseña"); // Redirige a la página de restablecer contraseña
+        navigate("/restablecer-contraseña");
       } else {
         alert("Error al enviar el correo. Intente de nuevo.");
       }

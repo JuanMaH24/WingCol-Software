@@ -37,7 +37,7 @@ export default function App() {
           />
           <Route path="/registro" element={<Registro />} />
           <Route
-            path="/restablecer_contraseña"
+            path="/restablecer-contraseña"
             element={<RestablecerContraseña />}
           />
           <Route path="/editar-perfil" element={<EditarPerfil />} />

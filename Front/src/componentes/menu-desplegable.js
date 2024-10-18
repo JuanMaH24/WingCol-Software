@@ -7,9 +7,40 @@ import { useNavigate } from "react-router-dom";
 
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [role, setRole] = React.useState(2); // Cambia el rol aquí para probar (1: cliente, 2: admin, 3: root)
+  const [role, setRole] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    fetchUserRole();
+  }, []);
+
+  const fetchUserRole = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/user/role/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${localStorage.getItem("authToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error en la respuesta del servidor");
+      }
+
+      const data = await response.json();
+      setRole(data.role);
+    } catch (err) {
+      setError("Error al obtener el rol del usuario");
+      console.error("Error al obtener el rol del usuario:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -35,6 +66,7 @@ export default function BasicMenu() {
   };
 
   const handleCerrarSesion = () => {
+    localStorage.removeItem("authToken");
     navigate("/");
     handleClose();
   };
@@ -54,6 +86,14 @@ export default function BasicMenu() {
     handleClose();
   };
 
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div className="menu-desplegable">
       <Button
@@ -64,7 +104,7 @@ export default function BasicMenu() {
         onClick={handleClick}
       >
         <FaUser />
-        <span className="perfil">Perfil</span> {/* Texto al lado del icono */}
+        <span className="perfil">Perfil</span>
       </Button>
       <Menu
         id="basic-menu"

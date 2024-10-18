@@ -46,15 +46,15 @@ export function Formulario({ setUser }) {
         // Guarda el usuario en el estado de la app
         setUser({
           name: data.name, // Por ejemplo, según lo que devuelva tu backend
-          role: data.role, // Asumiendo que el rol viene en la respuesta
+          role: data.roles, // Asumiendo que el rol viene en la respuesta
         });
 
         // Redirigir según el rol del usuario
-        if (data.role === 1) {
+        if (data.roles === 1) {
           navigate("/home-cliente");
-        } else if (data.role === 2) {
+        } else if (data.roles === 2) {
           navigate("/home-cliente");
-        } else if (data.role === 3) {
+        } else if (data.roles === 3) {
           navigate("/home-root");
         }
       } else {
