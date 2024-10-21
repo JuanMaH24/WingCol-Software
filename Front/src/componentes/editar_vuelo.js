@@ -171,13 +171,40 @@ export function EditarVuelo() {
     return [];
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const isConfirmed = window.confirm(
-      "¿Estás seguro de que quieres guardar los cambios realizados?"
+      "¿Estás seguro de que quieres cancelar el vuelo? Esta acción no se puede deshacer."
     );
     if (isConfirmed) {
-      console.log("cambios guardados");
-      navigate("/home-cliente");
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/users/client/delete/",
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              // Asegúrate de incluir el token de autenticación si es necesario
+              // "Authorization": "Bearer " + yourAuthToken
+            },
+          }
+        );
+
+        if (response.ok) {
+          alert("El vuelo ha sido cancelado exitosamente.");
+          navigate("/home-cliente");
+        } else {
+          const errorData = await response.json();
+          alert(
+            "Error al cancelar vuelo: " +
+              (errorData.message || "Por favor, intenta de nuevo más tarde.")
+          );
+        }
+      } catch (error) {
+        console.error("Error al cancelar vuelo:", error);
+        alert(
+          "Hubo un problema al intentar cancelar el vuelo. Por favor, intenta de nuevo más tarde."
+        );
+      }
     }
   };
 
@@ -298,6 +325,11 @@ export function EditarVuelo() {
         <div className="boton-vuelo">
           <button type="submit">Guardar cambios</button>
         </div>
+      </div>
+      <div className="Boton-cancelar-vuelo">
+        <button type="button" onClick={handleDelete}>
+          Cancelar vuelo
+        </button>
       </div>
     </form>
   );

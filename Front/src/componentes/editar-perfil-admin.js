@@ -188,14 +188,40 @@ export function EditarPerfilAdmin() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const isConfirmed = window.confirm(
       "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer."
     );
     if (isConfirmed) {
-      // Aquí va la lógica para eliminar el perfil
-      console.log("Cuenta eliminada.");
-      navigate("/"); // Ejemplo de redirección
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/users/client/delete/",
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              // Asegúrate de incluir el token de autenticación si es necesario
+              // "Authorization": "Bearer " + yourAuthToken
+            },
+          }
+        );
+
+        if (response.ok) {
+          alert("Tu cuenta ha sido eliminada exitosamente.");
+          navigate("/inicio-de-sesion");
+        } else {
+          const errorData = await response.json();
+          alert(
+            "Error al eliminar la cuenta: " +
+              (errorData.message || "Por favor, intenta de nuevo más tarde.")
+          );
+        }
+      } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
+        alert(
+          "Hubo un problema al intentar eliminar tu cuenta. Por favor, intenta de nuevo más tarde."
+        );
+      }
     }
   };
 

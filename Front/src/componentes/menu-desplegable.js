@@ -126,9 +126,9 @@ export default function BasicMenu() {
 
         {role === 2 && (
           <>
-            <MenuItem onClick={handleEditar}>Editar perfil</MenuItem>
+            <MenuItem onClick={handleEditarPerfilAdmin}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearVuelo}>Crear vuelo</MenuItem>
-            <MenuItem onClick={handleEditarPerfilAdmin}>Editar vuelo</MenuItem>
+            <MenuItem onClick={handleEditarVuelo}>Editar vuelo</MenuItem>
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}
