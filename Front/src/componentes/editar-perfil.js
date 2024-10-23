@@ -6,6 +6,7 @@ import { getNames, getCode } from "country-list";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import LocationSelector from "./ciudades";
 
 export function EditarPerfil() {
   const [formData, setFormData] = useState({
@@ -104,17 +105,17 @@ export function EditarPerfil() {
     }));
   };
 
-  const handleCountryChange = (selectedOption) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      selectedCountry: selectedOption,
-    }));
-  };
-
   const handleFileChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       profilePicture: e.target.files[0],
+    }));
+  };
+
+  const handleLocationChange = (locationType, value) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [locationType]: value,
     }));
   };
 
@@ -142,10 +143,9 @@ export function EditarPerfil() {
     dataToSend.append("direccion", formData.address);
     dataToSend.append("direccion_facturacion", formData.billingAddress);
     dataToSend.append("fecha_nacimiento", formData.birthDate);
-    dataToSend.append(
-      "pais",
-      formData.selectedCountry ? formData.selectedCountry.label : ""
-    );
+    dataToSend.append("pais", formData.country);
+    dataToSend.append("departamento", formData.state);
+    dataToSend.append("ciudad", formData.city);
 
     // Solo enviar la contraseña si el usuario la cambió
     if (formData.password) {
@@ -406,18 +406,7 @@ export function EditarPerfil() {
         />
       </div>
 
-      <div className="selector-paises">
-        <Select
-          value={formData.selectedCountry}
-          onChange={handleCountryChange}
-          options={countryOptions}
-          placeholder="Seleccionar país de nacimiento."
-          isSearchable={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          required
-        />
-      </div>
+      <LocationSelector onLocationChange={handleLocationChange} />
 
       <div className="error">
         {errorMessage && <p className="error-message">{errorMessage}</p>}

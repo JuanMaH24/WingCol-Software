@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import "../hojas-de-estilo/editar-perfil-admin.css";
+import "../hojas-de-estilo/registro.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
 import { getNames, getCode } from "country-list";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import LocationSelector from "./ciudades";
 
 export function EditarPerfilAdmin() {
   const [formData, setFormData] = useState({
@@ -104,10 +105,10 @@ export function EditarPerfilAdmin() {
     }));
   };
 
-  const handleCountryChange = (selectedOption) => {
+  const handleLocationChange = (locationType, value) => {
     setFormData((prevState) => ({
       ...prevState,
-      selectedCountry: selectedOption,
+      [locationType]: value,
     }));
   };
 
@@ -142,10 +143,9 @@ export function EditarPerfilAdmin() {
     dataToSend.append("direccion", formData.address);
     dataToSend.append("direccion_facturacion", formData.billingAddress);
     dataToSend.append("fecha_nacimiento", formData.birthDate);
-    dataToSend.append(
-      "pais",
-      formData.selectedCountry ? formData.selectedCountry.label : ""
-    );
+    dataToSend.append("pais", formData.country);
+    dataToSend.append("departamento", formData.state);
+    dataToSend.append("ciudad", formData.city);
 
     // Solo enviar la contraseña si el usuario la cambió
     if (formData.password) {
@@ -226,11 +226,11 @@ export function EditarPerfilAdmin() {
   };
 
   return (
-    <form className="contenedor-principal-editar-admin" onSubmit={handleSubmit}>
+    <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
       <h1>Editar perfil administrador</h1>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="firstName"
@@ -243,7 +243,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="secondName"
@@ -255,7 +255,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="lastName"
@@ -268,7 +268,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="secondLastName"
@@ -281,7 +281,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <PhoneInput
           international
           countryCallingCodeEditable={false}
@@ -296,7 +296,7 @@ export function EditarPerfilAdmin() {
 
       <select
         name="gender"
-        className="multiples-opciones-editar-admin"
+        className="multiples-opciones"
         onChange={handleChange}
         required
       >
@@ -306,7 +306,7 @@ export function EditarPerfilAdmin() {
         <option value="O">Otro</option>
       </select>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="email"
           name="email"
@@ -319,7 +319,7 @@ export function EditarPerfilAdmin() {
 
       <select
         name="documentType"
-        className="multiples-opciones-editar-admin"
+        className="multiples-opciones"
         onChange={handleDocumentTypeChange}
         required
       >
@@ -329,7 +329,7 @@ export function EditarPerfilAdmin() {
         <option value="PA">Pasaporte</option>
       </select>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="documentNumber"
@@ -346,7 +346,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="address"
@@ -356,7 +356,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="text"
           name="billingAddress"
@@ -366,7 +366,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           className="fecha-nacimiento"
           type="date"
@@ -378,7 +378,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="password"
           name="password"
@@ -392,7 +392,7 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="input-box-editar-admin">
+      <div className="input-box">
         <input
           type="password"
           name="confirmPassword"
@@ -406,32 +406,21 @@ export function EditarPerfilAdmin() {
         />
       </div>
 
-      <div className="selector-paises-editar-admin">
-        <Select
-          value={formData.selectedCountry}
-          onChange={handleCountryChange}
-          options={countryOptions}
-          placeholder="Seleccionar país de nacimiento."
-          isSearchable={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          required
-        />
-      </div>
+      <LocationSelector onLocationChange={handleLocationChange} />
 
-      <div className="error-editar-admin">
+      <div className="error">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
 
-      <div className="foto-de-perfil-editar-admin">
+      <div className="foto-de-perfil">
         <label htmlFor="file">Elija una imagen de perfil </label>
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
-      <div className="boton-registro-editar-admin">
+      <div className="boton-registro">
         <button type="submit">Guardar cambios</button>
       </div>
-      <div className="boton-eliminar-editar-admin">
+      <div className="boton-eliminar">
         <button type="button" onClick={handleDelete}>
           Eliminar cuenta
         </button>

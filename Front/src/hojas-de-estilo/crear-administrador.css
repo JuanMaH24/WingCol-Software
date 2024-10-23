@@ -8,22 +8,48 @@
   color: white;
   border-radius: 10px;
   padding: 30px 40px;
-  display: grid; /* Cambiado a grid */
-  grid-template-columns: repeat(2, 1fr); /* Dos columnas iguales */
-  grid-gap: 20px; /* Espacio entre las columnas y filas */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   margin-top: 30px;
   margin-bottom: 30px;
   font-family: "Poppins", sans-serif;
 }
 
 .contenedor-principal-crear-admin h1 {
-  grid-column: span 2; /* Ocupa ambas columnas */
+  width: 100%;
   font-size: 36px;
   text-align: center;
   padding-bottom: 30px;
   font-family: "Poppins", sans-serif;
 }
 
+.contenedor-principal-crear-admin .input-box-crear-admin {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin: 10px 0;
+  width: calc(50% - 10px);
+}
+
+.contenedor-principal-crear-admin .multiples-opciones-crear-admin {
+  cursor: pointer;
+  width: 49%;
+  height: 50px;
+  margin: 10px 0;
+  border-radius: 40px;
+  font-family: Poppins;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #fff;
+}
+
+.multiples-opciones-crear-admin select {
+  padding-left: 20px;
+}
 .contenedor-principal-crear-admin .input-box-crear-admin,
 .contenedor-principal-crear-admin .multiples-opciones-crear-admin,
 .contenedor-principal-crear-admin .selector-paises-crear-admin,

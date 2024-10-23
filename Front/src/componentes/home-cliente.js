@@ -4,6 +4,7 @@ import logo_wingcol from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/home-cliente.css";
 import ImgMediaCard from "./cards";
 import BasicMenu from "./menu-desplegable";
+import { Buscador } from "./buscador";
 
 export function HomeCliente() {
   const navigate = useNavigate();
@@ -22,13 +23,12 @@ export function HomeCliente() {
         <div className="contenedor-logo">
           <img src={logo_wingcol} alt="logo" />
         </div>
-        <div className="barra-de-busqueda">
-          <input type="text" placeholder="Buscar vuelos" />
-        </div>
+
         <div className="menu-desplegable">
           <BasicMenu />
         </div>
       </div>
+      <Buscador />
       <div className="cards-home">
         <ImgMediaCard />
         <ImgMediaCard />

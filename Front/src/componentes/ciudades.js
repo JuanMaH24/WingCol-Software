@@ -1,103 +1,130 @@
 import React, { useState, useEffect } from "react";
 
-// Aquí irían las funciones para obtener el token, países, estados y ciudades (como fetchAuthToken, fetchCountries, etc.)
-
-const LocationSelector = ({ onLocationChange }) => {
+export default function LocationSelector({ onLocationChange }) {
+  const [token, setToken] = useState("");
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [token, setToken] = useState(null);
 
-  // Obtener el token cuando el componente se monta
+  const API_KEY =
+    "LhvPXr1XlSnxF6GrC_oxLhRRkouG1UYDXccTaFvhyUXMS0uQATx5-OtwMNSnRliLSRw"; // Replace with your actual API key
+  const API_URL = "https://www.universal-tutorial.com/api";
+
   useEffect(() => {
-    const getToken = async () => {
-      const authToken = await fetchAuthToken();
-      setToken(authToken);
-    };
-
-    getToken();
+    getAuthToken();
   }, []);
 
-  // Obtener la lista de países cuando se obtiene el token
   useEffect(() => {
     if (token) {
-      const getCountries = async () => {
-        const countriesList = await fetchCountries(token);
-        setCountries(countriesList);
-      };
-
       getCountries();
     }
   }, [token]);
 
-  // Obtener la lista de estados cuando el usuario selecciona un país
   useEffect(() => {
-    if (selectedCountry && token) {
-      const getStates = async () => {
-        const statesList = await fetchStates(token, selectedCountry);
-        setStates(statesList);
-        setCities([]); // Limpiar las ciudades al cambiar el país
-      };
-
-      getStates();
+    if (selectedCountry) {
+      getStates(selectedCountry);
     }
-  }, [selectedCountry, token]);
+  }, [selectedCountry]);
 
-  // Obtener la lista de ciudades cuando el usuario selecciona un estado
   useEffect(() => {
-    if (selectedState && token) {
-      const getCities = async () => {
-        const citiesList = await fetchCities(token, selectedState);
-        setCities(citiesList);
-      };
-
-      getCities();
+    if (selectedState) {
+      getCities(selectedState);
     }
-  }, [selectedState, token]);
+  }, [selectedState]);
 
-  // Manejar el cambio de país
+  const getAuthToken = async () => {
+    try {
+      const response = await fetch(`${API_URL}/getaccesstoken`, {
+        headers: {
+          Accept: "application/json",
+          "api-token": API_KEY,
+          "user-email": "kevin.ossa@utp.edu.co", // Replace with your registered email
+        },
+      });
+      const data = await response.json();
+      setToken(data.auth_token);
+    } catch (error) {
+      console.error("Error fetching auth token:", error);
+    }
+  };
+
+  const getCountries = async () => {
+    try {
+      const response = await fetch(`${API_URL}/countries/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+      const data = await response.json();
+      setCountries(data);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    }
+  };
+
+  const getStates = async (country) => {
+    try {
+      const response = await fetch(`${API_URL}/states/${country}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+      const data = await response.json();
+      setStates(data);
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
+
+  const getCities = async (state) => {
+    try {
+      const response = await fetch(`${API_URL}/cities/${state}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+      const data = await response.json();
+      setCities(data);
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
   const handleCountryChange = (e) => {
     const country = e.target.value;
     setSelectedCountry(country);
     setSelectedState("");
     setSelectedCity("");
-    if (onLocationChange) {
-      onLocationChange({ country, state: "", city: "" });
-    }
+    onLocationChange("country", country);
   };
 
-  // Manejar el cambio de estado
   const handleStateChange = (e) => {
     const state = e.target.value;
     setSelectedState(state);
     setSelectedCity("");
-    if (onLocationChange) {
-      onLocationChange({ country: selectedCountry, state, city: "" });
-    }
+    onLocationChange("state", state);
   };
 
-  // Manejar el cambio de ciudad
   const handleCityChange = (e) => {
     const city = e.target.value;
     setSelectedCity(city);
-    if (onLocationChange) {
-      onLocationChange({
-        country: selectedCountry,
-        state: selectedState,
-        city,
-      });
-    }
+    onLocationChange("city", city);
   };
 
   return (
-    <div>
-      <h2>Selecciona Ubicación</h2>
-      {/* Selector de Países */}
-      <select value={selectedCountry} onChange={handleCountryChange}>
-        <option value="">Selecciona un país</option>
+    <div className="space-y-4">
+      <select
+        value={selectedCountry}
+        onChange={handleCountryChange}
+        className="multiples-opciones"
+      >
+        <option value="">Selecciona el país</option>
         {countries.map((country) => (
           <option key={country.country_name} value={country.country_name}>
             {country.country_name}
@@ -105,31 +132,33 @@ const LocationSelector = ({ onLocationChange }) => {
         ))}
       </select>
 
-      {/* Selector de Estados (se habilita solo si se selecciona un país) */}
-      {states.length > 0 && (
-        <select value={selectedState} onChange={handleStateChange}>
-          <option value="">Selecciona un estado</option>
-          {states.map((state) => (
-            <option key={state.state_name} value={state.state_name}>
-              {state.state_name}
-            </option>
-          ))}
-        </select>
-      )}
+      <select
+        value={selectedState}
+        onChange={handleStateChange}
+        className="multiples-opciones"
+        disabled={!selectedCountry}
+      >
+        <option value="">Selecciona el departamento/estado</option>
+        {states.map((state) => (
+          <option key={state.state_name} value={state.state_name}>
+            {state.state_name}
+          </option>
+        ))}
+      </select>
 
-      {/* Selector de Ciudades (se habilita solo si se selecciona un estado) */}
-      {cities.length > 0 && (
-        <select value={selectedCity} onChange={handleCityChange}>
-          <option value="">Selecciona una ciudad</option>
-          {cities.map((city) => (
-            <option key={city.city_name} value={city.city_name}>
-              {city.city_name}
-            </option>
-          ))}
-        </select>
-      )}
+      <select
+        value={selectedCity}
+        onChange={handleCityChange}
+        className="multiples-opciones"
+        disabled={!selectedState}
+      >
+        <option value="">Selecciona la ciudad</option>
+        {cities.map((city) => (
+          <option key={city.city_name} value={city.city_name}>
+            {city.city_name}
+          </option>
+        ))}
+      </select>
     </div>
   );
-};
-
-export default LocationSelector;
+}

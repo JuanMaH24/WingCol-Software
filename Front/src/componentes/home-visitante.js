@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import logo_wingcol from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/home-visitante.css";
 import ImgMediaCard from "./cards";
+import { Buscador } from "./buscador";
 
 export function HomeVisitante() {
   const navigate = useNavigate();
@@ -21,9 +22,6 @@ export function HomeVisitante() {
         <div className="contenedor-logo">
           <img src={logo_wingcol} alt="logo" />
         </div>
-        <div className="barra-de-busqueda">
-          <input type="text" placeholder="Buscar vuelos" />
-        </div>
         <div className="contenedor-opciones-usuario">
           <button className="boton-iniciar-sesion" onClick={handleLogin}>
             Iniciar sesión
@@ -33,6 +31,7 @@ export function HomeVisitante() {
           </button>
         </div>
       </div>
+      <Buscador />
       <div className="cards-home">
         <ImgMediaCard />
         <ImgMediaCard />

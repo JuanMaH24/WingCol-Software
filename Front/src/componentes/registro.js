@@ -6,6 +6,7 @@ import { getNames, getCode } from "country-list";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import LocationSelector from "./ciudades";
 
 export function Registro() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,9 @@ export function Registro() {
     birthDate: "",
     password: "",
     confirmPassword: "",
-    selectedCountry: null,
+    country: "",
+    state: "",
+    city: "",
     profilePicture: null,
   });
 
@@ -38,11 +41,6 @@ export function Registro() {
 
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-
-  const countryOptions = getNames().map((country) => ({
-    value: getCode(country),
-    label: country,
-  }));
   const [documentPattern, setDocumentPattern] = useState("");
 
   useEffect(() => {
@@ -155,10 +153,10 @@ export function Registro() {
     }));
   };
 
-  const handleCountryChange = (selectedOption) => {
+  const handleLocationChange = (locationType, value) => {
     setFormData((prevState) => ({
       ...prevState,
-      selectedCountry: selectedOption,
+      [locationType]: value,
     }));
   };
 
@@ -199,7 +197,9 @@ export function Registro() {
     dataToSend.append("direccion_facturacion", formData.billingAddress);
     dataToSend.append("fecha_nacimiento", formData.birthDate);
     dataToSend.append("password", formData.password);
-    dataToSend.append("pais", formData.selectedCountry?.label);
+    dataToSend.append("pais", formData.country);
+    dataToSend.append("departamento", formData.state);
+    dataToSend.append("ciudad", formData.city);
 
     try {
       const response = await fetch(
@@ -439,26 +439,10 @@ export function Registro() {
         )}
       </div>
 
-      <div className="selector-paises">
-        <Select
-          value={formData.selectedCountry}
-          onChange={handleCountryChange}
-          options={countryOptions}
-          placeholder="Seleccionar país de nacimiento."
-          isSearchable={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          required
-        />
-      </div>
+      <LocationSelector onLocationChange={handleLocationChange} />
 
       <div className="error">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-      </div>
-
-      <div className="foto-de-perfil">
-        <label htmlFor="file">Elija una imagen de perfil </label>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
       <div className="boton-registro">

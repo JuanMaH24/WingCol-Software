@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import "../hojas-de-estilo/crear-administrador.css";
+import "../hojas-de-estilo/registro.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
 import { getNames, getCode } from "country-list";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import LocationSelector from "./ciudades";
 
 export function CrearAdministrador() {
   const [formData, setFormData] = useState({
@@ -67,11 +68,10 @@ export function CrearAdministrador() {
       phoneNumber: value,
     }));
   };
-
-  const handleCountryChange = (selectedOption) => {
+  const handleLocationChange = (locationType, value) => {
     setFormData((prevState) => ({
       ...prevState,
-      selectedCountry: selectedOption,
+      [locationType]: value,
     }));
   };
 
@@ -107,10 +107,9 @@ export function CrearAdministrador() {
     dataToSend.append("direccion_facturacion", formData.billingAddress);
     dataToSend.append("fecha_nacimiento", formData.birthDate);
     dataToSend.append("password", formData.password);
-    if (formData.profilePicture) {
-      dataToSend.append("profilePicture", formData.profilePicture); // Enviamos la imagen si existe
-    }
-    dataToSend.append("pais", formData.selectedCountry?.label);
+    dataToSend.append("pais", formData.country);
+    dataToSend.append("departamento", formData.state);
+    dataToSend.append("ciudad", formData.city);
 
     try {
       const response = await fetch(
@@ -145,11 +144,11 @@ export function CrearAdministrador() {
   };
 
   return (
-    <form className="contenedor-principal-crear-admin" onSubmit={handleSubmit}>
+    <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
       <h1>Crear administrador</h1>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="firstName"
@@ -162,7 +161,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="secondName"
@@ -174,7 +173,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="lastName"
@@ -187,7 +186,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="secondLastName"
@@ -200,7 +199,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <PhoneInput
           international
           countryCallingCodeEditable={false}
@@ -215,7 +214,7 @@ export function CrearAdministrador() {
 
       <select
         name="gender"
-        className="multiples-opciones-crear-admin"
+        className="multiples-opciones"
         onChange={handleChange}
         required
       >
@@ -225,7 +224,7 @@ export function CrearAdministrador() {
         <option value="O">Otro</option>
       </select>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="email"
           name="email"
@@ -238,7 +237,7 @@ export function CrearAdministrador() {
 
       <select
         name="documentType"
-        className="multiples-opciones-crear-admin"
+        className="multiples-opciones"
         onChange={handleDocumentTypeChange}
         required
       >
@@ -248,7 +247,7 @@ export function CrearAdministrador() {
         <option value="PA">Pasaporte</option>
       </select>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="documentNumber"
@@ -265,7 +264,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="address"
@@ -275,7 +274,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="text"
           name="billingAddress"
@@ -285,7 +284,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           className="fecha-nacimiento"
           type="date"
@@ -297,7 +296,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="password"
           name="password"
@@ -311,7 +310,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box-crear-admin">
+      <div className="input-box">
         <input
           type="password"
           name="confirmPassword"
@@ -325,29 +324,13 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="selector-paises-crear-admin">
-        <Select
-          value={formData.selectedCountry}
-          onChange={handleCountryChange}
-          options={countryOptions}
-          placeholder="Seleccionar país de nacimiento."
-          isSearchable={true}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          required
-        />
-      </div>
+      <LocationSelector onLocationChange={handleLocationChange} />
 
       <div className="error-admin">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
 
-      <div className="foto-de-perfil-admin">
-        <label htmlFor="file">Elija una imagen de perfil </label>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-      </div>
-
-      <div className="boton-registro-crear-admin">
+      <div className="boton-registro">
         <button type="submit">Crear administrador</button>
       </div>
     </form>
