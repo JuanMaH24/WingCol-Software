@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import logo_wingcol from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/home-visitante.css";
-import ImgMediaCard from "./cards";
+import ImgMediaCard from "./cards-home";
 import { Buscador } from "./buscador";
 
 export function HomeVisitante() {

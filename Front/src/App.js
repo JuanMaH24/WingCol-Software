@@ -20,8 +20,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { HomeRoot } from "./componentes/home-root";
 import { EditarVuelo } from "./componentes/editar_vuelo";
 import { RecuperarContraseña } from "./componentes/recuperar-contraseña";
-import { AñadirTarjeta } from "./componentes/añadir-tarjeta";
+import { PaymentForm } from "./componentes/añadir-tarjeta";
 import { EditarTarjetas } from "./componentes/editar-tarjetas";
+import { ResultadosPage } from "./componentes/pagina-resultados";
+
 export default function App() {
   const [user, setUser] = useState(null); // Inicializa el estado
 
@@ -53,8 +55,9 @@ export default function App() {
             path="/recuperar-contraseña"
             element={<RecuperarContraseña />}
           />
-          <Route path="/añadir-tarjeta" element={<AñadirTarjeta />} />
+          <Route path="/añadir-tarjeta" element={<PaymentForm />} />
           <Route path="/editar-tarjetas" element={<EditarTarjetas />} />
+          <Route path="/resultados" element={<ResultadosPage />} />
         </Routes>
       </div>
     </Router>

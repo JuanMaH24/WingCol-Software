@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { RowRadioButtonsGroup } from "./Botones-buscador";
 import "../hojas-de-estilo/buscador.css";
+import vuelosData from "./vuelos-ejemplos.json";
+import { useNavigate } from "react-router-dom";
 
 const Origen = [
   { value: "Leticia", label: "Leticia (Amazonas)" },
@@ -86,6 +88,9 @@ const Destinos = [
 export function Buscador() {
   const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
+  const [resultados, setResultados] = useState([]);
+  const [fechaSalida, setFechaSalida] = useState("");
+  const navigate = useNavigate();
 
   // Maneja el cambio de selección de origen
   const handleOrigenChange = (event) => {
@@ -95,6 +100,18 @@ export function Buscador() {
   // Maneja el cambio de selección de destino
   const handleDestinoChange = (event) => {
     setDestino(event.target.value);
+  };
+
+  const handleBuscarClick = () => {
+    const vuelosFiltrados = vuelosData.filter((vuelo) => {
+      return (
+        (!origen || vuelo.ciudad_origen === origen) &&
+        (!destino || vuelo.ciudad_destino === destino) &&
+        (!fechaSalida || vuelo.fecha_salida.startsWith(fechaSalida))
+      );
+    });
+
+    navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
   };
 
   return (
@@ -125,7 +142,7 @@ export function Buscador() {
         </div>
       </div>
       <div className="Boton-buscar">
-        <button>Buscar</button>
+        <button onClick={handleBuscarClick}>Buscar</button>
       </div>
     </div>
   );
