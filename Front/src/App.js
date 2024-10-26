@@ -21,7 +21,7 @@ import { HomeRoot } from "./componentes/home-root";
 import { EditarVuelo } from "./componentes/editar_vuelo";
 import { RecuperarContraseña } from "./componentes/recuperar-contraseña";
 import { PaymentForm } from "./componentes/añadir-tarjeta";
-import { EditarTarjetas } from "./componentes/editar-tarjetas";
+import { PaymentFormEditarTarjeta } from "./componentes/editar-tarjetas";
 import { ResultadosPage } from "./componentes/pagina-resultados";
 
 export default function App() {
@@ -55,8 +55,11 @@ export default function App() {
             path="/recuperar-contraseña"
             element={<RecuperarContraseña />}
           />
-          <Route path="/añadir-tarjeta" element={<PaymentForm />} />
-          <Route path="/editar-tarjetas" element={<EditarTarjetas />} />
+          <Route path="/añadir-tarjetas" element={<PaymentForm />} />
+          <Route
+            path="/editar-tarjetas"
+            element={<PaymentFormEditarTarjeta />}
+          />
           <Route path="/resultados" element={<ResultadosPage />} />
         </Routes>
       </div>
