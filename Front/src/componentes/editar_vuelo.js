@@ -180,7 +180,7 @@ export function EditarVuelo() {
         const response = await fetch(
           "http://127.0.0.1:8000/users/client/delete/",
           {
-            method: "DELETE",
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
               // Asegúrate de incluir el token de autenticación si es necesario

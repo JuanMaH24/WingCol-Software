@@ -161,7 +161,7 @@ export function EditarPerfilAdmin() {
       const response = await fetch(
         "http://127.0.0.1:8000/users/client/update/",
         {
-          method: "POST",
+          method: "PUT",
           body: dataToSend,
         }
       );
@@ -197,12 +197,13 @@ export function EditarPerfilAdmin() {
         const response = await fetch(
           "http://127.0.0.1:8000/users/client/delete/",
           {
-            method: "DELETE",
+            method: "PUT", //
             headers: {
               "Content-Type": "application/json",
               // Asegúrate de incluir el token de autenticación si es necesario
               // "Authorization": "Bearer " + yourAuthToken
             },
+            body: JSON.stringify({ action: "delete_account" }), // Incluye el cuerpo si el backend espera algún dato
           }
         );
 

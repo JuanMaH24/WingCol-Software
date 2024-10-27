@@ -27,6 +27,36 @@ export function PaymentForm() {
     setState((prev) => ({ ...prev, focus: evt.target.name }));
   };
 
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+    const { number, expiry, cvc, name } = state;
+
+    try {
+      const response = await fetch("http://tu-api-url.com/api/tarjetas/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          number,
+          expiry,
+          cvc,
+          name,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Tarjeta añadida exitosamente");
+        navigate("/home-cliente");
+      } else {
+        alert("Hubo un error al añadir la tarjeta. Inténtalo nuevamente.");
+      }
+    } catch (error) {
+      console.error("Error al añadir la tarjeta:", error);
+      alert("Error en la conexión. Inténtalo nuevamente.");
+    }
+  };
+
   return (
     <div
       style={{
@@ -50,7 +80,7 @@ export function PaymentForm() {
         name={state.name}
         focused={state.focus}
       />
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           type="tel"
           name="number"
@@ -130,7 +160,7 @@ export function PaymentForm() {
             type="submit"
             style={{ marginTop: "10px", marginBottom: "10px" }}
           >
-            Añadir targeta
+            Añadir tarjeta
           </button>
           <button onClick={handleHome}>Cancelar</button>
         </div>
