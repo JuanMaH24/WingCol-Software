@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from .views import *
 from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('login/', login),
     path('flight/create/', create_flight),
     path('flight/', get_all_flights),
+    path('api/token/', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='token_obtain_pair'),
     path('flight/search/', get_flight_by_name),
 	path('flight/update/', update_flight),
 	path('flight/delete/', delete_flight),
