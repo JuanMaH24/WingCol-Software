@@ -1,0 +1,63 @@
+.contenedor-principal-home .barra-navegacion {
+  background-color: white;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: flex-start; /* Distribuye el espacio entre el logo y las opciones */
+  align-items: center; /* Alinea los elementos verticalmente en el centro */
+  padding: 10px 20px;
+  font-family: "Poppins", sans-serif;
+  gap: 20px;
+}
+
+.contenedor-principal-home .contenedor-logo img {
+  width: 220px;
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.contenedor-principal-home .contenedor-opciones-usuario {
+  display: flex;
+  gap: 10px; /* Añade espacio entre los botones */
+  margin-left: auto;
+}
+
+.contenedor-principal-home .contenedor-opciones-usuario .boton-iniciar-sesion,
+.boton-registrarse {
+  width: auto; /* Ajusta el ancho automáticamente */
+}
+
+.contenedor-principal-home .barra-de-busqueda {
+  flex-grow: 0;
+  width: 600px;
+  padding-left: 20px;
+}
+
+.contenedor-principal-home .barra-de-busqueda input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f1f1; /* Cambiar a un gris claro para mayor visibilidad */
+  width: 100%; /* Ajusta el ancho para que no ocupe el 100% */
+  height: 50px; /* Aumenta la altura para hacerla más grande */
+  font-size: 18px; /* Tamaño de texto más grande */
+  color: black;
+  border: 2px solid #ccc; /* Agrega un borde para mayor visibilidad */
+  border-radius: 40px; /* Bordes redondeados */
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para que resalte sobre el fondo */
+}
+
+.contenedor-principal-home .barra-de-busqueda input::placeholder {
+  color: #888; /* Cambia el color del placeholder a gris más visible */
+}
+
+.contenedor-principal-home .cards-home {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px; /* Añade espacio entre las tarjetas */
+  flex-wrap: wrap; /* Permite que las tarjetas se envuelvan a la siguiente línea si no hay suficiente espacio */
+}

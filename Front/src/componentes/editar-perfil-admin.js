@@ -8,7 +8,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
 
-export function Registro() {
+export function EditarPerfilAdmin() {
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -24,102 +24,55 @@ export function Registro() {
     birthDate: "",
     password: "",
     confirmPassword: "",
-    country: "",
-    state: "",
-    city: "",
+    selectedCountry: null,
     profilePicture: null,
-  });
-
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    documentNumber: "",
-    password: "",
-    confirmPassword: "",
   });
 
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [documentPattern, setDocumentPattern] = useState("");
 
+  // Cargar datos del perfil del usuario al cargar el componente
   useEffect(() => {
-    validateForm();
-  }, [formData]);
+    // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
+    async function fetchProfileData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/users/client/profile/"
+        );
+        const userData = await response.json();
 
-  const validateForm = () => {
-    let newErrors = { ...errors };
-
-    // Validate firstName
-    // Validate firstName
-    if (
-      formData.firstName &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.firstName) // Eliminamos '\s' para no aceptar espacios
-    ) {
-      newErrors.firstName =
-        "El nombre no puede contener espacios, números o caracteres especiales";
-    } else {
-      newErrors.firstName = "";
-    }
-
-    // Validate lastName
-    if (
-      formData.lastName &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.lastName) // Eliminamos '\s' para no aceptar espacios
-    ) {
-      newErrors.lastName =
-        "El apellido no puede contener espacios, números o caracteres especiales";
-    } else {
-      newErrors.lastName = "";
-    }
-
-    // Validate email
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Por favor, introduce un correo electrónico válido";
-    } else {
-      newErrors.email = "";
-    }
-
-    // Validate documentNumber
-    if (formData.documentNumber) {
-      if (
-        formData.documentType === "CC" &&
-        !/^[0-9]+$/.test(formData.documentNumber)
-      ) {
-        newErrors.documentNumber =
-          "El número de cédula debe contener solo números";
-      } else if (
-        formData.documentType === "PA" &&
-        !/^[A-Za-z]{3}[0-9]{6}$/.test(formData.documentNumber)
-      ) {
-        newErrors.documentNumber =
-          "El número de pasaporte debe tener 3 letras seguidas de 6 números";
-      } else {
-        newErrors.documentNumber = "";
+        // Rellenar los campos con los datos actuales del usuario
+        setFormData({
+          firstName: userData.nombre || "",
+          secondName: userData.segundo_nombre || "",
+          lastName: userData.apellido || "",
+          secondLastName: userData.segundo_apellido || "",
+          phoneNumber: userData.telefono || "",
+          gender: userData.genero || "",
+          email: userData.email || "",
+          documentType: userData.tipo_documento || "",
+          documentNumber: userData.user_id || "",
+          address: userData.direccion || "",
+          billingAddress: userData.direccion_facturacion || "",
+          birthDate: userData.fecha_nacimiento || "",
+          selectedCountry: userData.pais
+            ? { value: getCode(userData.pais), label: userData.pais }
+            : null,
+          profilePicture: null, // Este campo lo manejará el usuario si sube una nueva imagen
+        });
+      } catch (error) {
+        console.error("Error al cargar el perfil", error);
       }
     }
 
-    // Validate password
-    if (formData.password && formData.password.length < 8) {
-      newErrors.password = "La contraseņa debe tener al menos 8 caracteres";
-    } else if (formData.password && /\s/.test(formData.password)) {
-      newErrors.password = "La contraseņa no puede contener espacios en blanco";
-    } else {
-      newErrors.password = "";
-    }
+    fetchProfileData();
+  }, []);
 
-    // Validate confirmPassword
-    if (
-      formData.confirmPassword &&
-      formData.confirmPassword !== formData.password
-    ) {
-      newErrors.confirmPassword = "Las contraseņas no coinciden";
-    } else {
-      newErrors.confirmPassword = "";
-    }
-
-    setErrors(newErrors);
-  };
+  const countryOptions = getNames().map((country) => ({
+    value: getCode(country),
+    label: country,
+  }));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -134,12 +87,11 @@ export function Registro() {
     setFormData((prevState) => ({
       ...prevState,
       documentType: value,
-      documentNumber: "", // Reset document number when type changes
     }));
 
     if (value === "CC") {
       setDocumentPattern("^[0-9]+$");
-    } else if (value === "PA") {
+    } else if (value === "pasaporte") {
       setDocumentPattern("^[A-Za-z]{3}[0-9]{6}$");
     } else {
       setDocumentPattern("");
@@ -170,20 +122,15 @@ export function Registro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if there are any errors
-    if (Object.values(errors).some((error) => error !== "")) {
-      setErrorMessage(
-        "Por favor, corrige los errores antes de enviar el formulario."
-      );
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Las contraseñas no coinciden");
       return;
     }
 
     setErrorMessage("");
 
-    // Crea un nuevo objeto FormData
+    // Utilizamos FormData para enviar archivos (la foto de perfil)
     const dataToSend = new FormData();
-
-    // Agrega los datos del formulario a FormData
     dataToSend.append("nombre", formData.firstName);
     dataToSend.append("segundo_nombre", formData.secondName);
     dataToSend.append("apellido", formData.lastName);
@@ -196,16 +143,25 @@ export function Registro() {
     dataToSend.append("direccion", formData.address);
     dataToSend.append("direccion_facturacion", formData.billingAddress);
     dataToSend.append("fecha_nacimiento", formData.birthDate);
-    dataToSend.append("password", formData.password);
     dataToSend.append("pais", formData.country);
     dataToSend.append("departamento", formData.state);
     dataToSend.append("ciudad", formData.city);
 
+    // Solo enviar la contraseña si el usuario la cambió
+    if (formData.password) {
+      dataToSend.append("password", formData.password);
+    }
+
+    // Incluir la foto de perfil solo si se ha subido una nueva
+    if (formData.profilePicture) {
+      dataToSend.append("user_pic", formData.profilePicture);
+    }
+
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/users/client/create/",
+        "http://127.0.0.1:8000/users/client/update/",
         {
-          method: "POST",
+          method: "PUT",
           body: dataToSend,
         }
       );
@@ -216,42 +172,76 @@ export function Registro() {
           errorData.nombre ||
             errorData.user_id ||
             errorData.email ||
-            "Error al registrar el usuario."
+            "Error al actualizar el perfil."
         );
         return;
       } else {
         navigate("/", {
-          state: { successMessage: "Usuario registrado correctamente." },
+          state: { successMessage: "Perfil actualizado correctamente." },
         });
       }
-
-      console.log("Usuario registrado exitosamente.");
     } catch (error) {
       console.error(error);
-      setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");
+      setErrorMessage(
+        "Hubo un problema con la actualización. Intenta más tarde."
+      );
+    }
+  };
+
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm(
+      "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer."
+    );
+    if (isConfirmed) {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/users/client/delete/",
+          {
+            method: "PUT", //
+            headers: {
+              "Content-Type": "application/json",
+              // Asegúrate de incluir el token de autenticación si es necesario
+              // "Authorization": "Bearer " + yourAuthToken
+            },
+            body: JSON.stringify({ action: "delete_account" }), // Incluye el cuerpo si el backend espera algún dato
+          }
+        );
+
+        if (response.ok) {
+          alert("Tu cuenta ha sido eliminada exitosamente.");
+          navigate("/inicio-de-sesion");
+        } else {
+          const errorData = await response.json();
+          alert(
+            "Error al eliminar la cuenta: " +
+              (errorData.message || "Por favor, intenta de nuevo más tarde.")
+          );
+        }
+      } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
+        alert(
+          "Hubo un problema al intentar eliminar tu cuenta. Por favor, intenta de nuevo más tarde."
+        );
+      }
     }
   };
 
   return (
     <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <h1>Registro de usuario</h1>
+      <h1>Editar perfil administrador</h1>
 
       <div className="input-box">
         <input
           type="text"
           name="firstName"
           placeholder="Primer nombre"
-          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           required
           title="El nombre no puede tener espacios o números"
           maxLength={50}
           onChange={handleChange}
-          value={formData.firstName}
         />
-        {errors.firstName && (
-          <p className="error-message">{errors.firstName}</p>
-        )}
       </div>
 
       <div className="input-box">
@@ -259,11 +249,10 @@ export function Registro() {
           type="text"
           name="secondName"
           placeholder="Segundo nombre"
-          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           title="El campo no puede tener espacios o números"
           maxLength={50}
           onChange={handleChange}
-          value={formData.secondName}
         />
       </div>
 
@@ -273,13 +262,11 @@ export function Registro() {
           name="lastName"
           placeholder="Primer apellido"
           maxLength={50}
-          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           required
           title="El campo no puede tener espacios o números"
           onChange={handleChange}
-          value={formData.lastName}
         />
-        {errors.lastName && <p className="error-message">{errors.lastName}</p>}
       </div>
 
       <div className="input-box">
@@ -288,11 +275,10 @@ export function Registro() {
           name="secondLastName"
           placeholder="Segundo apellido"
           maxLength={50}
-          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           required
           title="El campo no puede tener espacios o números"
           onChange={handleChange}
-          value={formData.secondLastName}
         />
       </div>
 
@@ -314,12 +300,10 @@ export function Registro() {
         className="multiples-opciones"
         onChange={handleChange}
         required
-        value={formData.gender}
       >
         <option value="">Género</option>
         <option value="M">Masculino</option>
         <option value="F">Femenino</option>
-        <option value="N">Prefiero no decirlo</option>
         <option value="O">Otro</option>
       </select>
 
@@ -331,9 +315,7 @@ export function Registro() {
           required
           maxLength={50}
           onChange={handleChange}
-          value={formData.email}
         />
-        {errors.email && <p className="error-message">{errors.email}</p>}
       </div>
 
       <select
@@ -341,7 +323,6 @@ export function Registro() {
         className="multiples-opciones"
         onChange={handleDocumentTypeChange}
         required
-        value={formData.documentType}
       >
         <option value="">Tipo de documento</option>
         <option value="CC">Cédula</option>
@@ -358,16 +339,12 @@ export function Registro() {
           minLength={10}
           required
           onChange={handleChange}
-          value={formData.documentNumber}
           title={
             formData.documentType === "CC"
               ? "Solo números"
               : "3 letras y 6 números"
           }
         />
-        {errors.documentNumber && (
-          <p className="error-message">{errors.documentNumber}</p>
-        )}
       </div>
 
       <div className="input-box">
@@ -377,7 +354,6 @@ export function Registro() {
           placeholder="Dirección"
           maxLength={50}
           onChange={handleChange}
-          value={formData.address}
         />
       </div>
 
@@ -388,7 +364,6 @@ export function Registro() {
           placeholder="Dirección de facturación"
           maxLength={50}
           onChange={handleChange}
-          value={formData.billingAddress}
         />
       </div>
 
@@ -401,7 +376,6 @@ export function Registro() {
           max={"2006-12-31"}
           required
           onChange={handleChange}
-          value={formData.birthDate}
         />
       </div>
 
@@ -409,34 +383,28 @@ export function Registro() {
         <input
           type="password"
           name="password"
-          placeholder="Contraseņa"
+          placeholder="Contraseña"
           maxLength={20}
           minLength={8}
           pattern="^[^\s]+$"
-          title="La contraseņa no puede tener espacios en blanco"
+          title="La contraseña no puede tener espacios en blanco"
           required
           onChange={handleChange}
-          value={formData.password}
         />
-        {errors.password && <p className="error-message">{errors.password}</p>}
       </div>
 
       <div className="input-box">
         <input
           type="password"
           name="confirmPassword"
-          placeholder="Confirmar contraseņa"
+          placeholder="Confirmar contraseña"
           maxLength={20}
           minLength={8}
           pattern="^[^\s]+$"
-          title="La contraseņa no puede tener espacios"
+          title="La contraseña no puede tener espacios"
           required
           onChange={handleChange}
-          value={formData.confirmPassword}
         />
-        {errors.confirmPassword && (
-          <p className="error-message">{errors.confirmPassword}</p>
-        )}
       </div>
 
       <LocationSelector onLocationChange={handleLocationChange} />
@@ -445,8 +413,18 @@ export function Registro() {
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
 
+      <div className="foto-de-perfil">
+        <label htmlFor="file">Elija una imagen de perfil </label>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+      </div>
+
       <div className="boton-registro">
-        <button type="submit">Registrarse</button>
+        <button type="submit">Guardar cambios</button>
+      </div>
+      <div className="boton-eliminar">
+        <button type="button" onClick={handleDelete}>
+          Eliminar cuenta
+        </button>
       </div>
     </form>
   );

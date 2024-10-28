@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import "../hojas-de-estilo/inicio-de-sesion.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import logo from "../imagenes/logo.png";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 export function Formulario({ setUser }) {
   // State para el usuario y la contraseña
@@ -47,10 +46,17 @@ export function Formulario({ setUser }) {
         // Guarda el usuario en el estado de la app
         setUser({
           name: data.name, // Por ejemplo, según lo que devuelva tu backend
+          role: data.roles, // Asumiendo que el rol viene en la respuesta
         });
 
-        // Redireccionar a la página principal
-        navigate("/home");
+        // Redirigir según el rol del usuario
+        if (data.roles === 1) {
+          navigate("/home-cliente");
+        } else if (data.roles === 2) {
+          navigate("/home-cliente");
+        } else if (data.roles === 3) {
+          navigate("/home-root");
+        }
       } else {
         // Muestra el error devuelto por el backend
         setError(data.message || "Error en el inicio de sesión");
@@ -87,7 +93,9 @@ export function Formulario({ setUser }) {
           <FaLock className="icono" />
         </div>
         <div className="recordar-contraseña">
-          <a href="#">¿Olvidaste tu contraseña?</a>
+          <Link to="/recuperar-contraseña" variant="#">
+            ¿Olvidaste tu contraseña?
+          </Link>
         </div>
         <button>Iniciar sesión</button>
         <div className="link-registrarse">
@@ -98,11 +106,7 @@ export function Formulario({ setUser }) {
             </Link>
           </p>
         </div>
-        {successMessage && (
-          <Alert severity="success">
-            {successMessage}
-          </Alert>
-        )}
+        {successMessage && <Alert severity="success">{successMessage}</Alert>}
         {error && <p className="error-message">{error}</p>}{" "}
         {/* Mostrar mensajes de error */}
       </form>

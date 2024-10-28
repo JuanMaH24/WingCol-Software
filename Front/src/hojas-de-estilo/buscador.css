@@ -1,0 +1,107 @@
+.Contenedor-buscador {
+  display: flex;
+  flex-direction: colum;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f8ff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.fila-tipo-vuelo {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.botones-buscador {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.fila-filtros {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Contenedor-filtros {
+  margin-right: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  height: 50px;
+}
+
+select {
+  width: 220px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.fechas {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.fechas input[type="date"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.Boton-buscar {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.Boton-buscar button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.Boton-buscar button:hover {
+  background-color: #444;
+}
+
+input,
+select {
+  font-family: "Poppins", sans-serif;
+}
+
+.Contenedor-buscador input,
+.Contenedor-buscador select {
+  background-color: #fff;
+  color: #333;
+}
+
+.Contenedor-buscador select:focus,
+.Contenedor-buscador input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.fechas {
+  display: flex;
+  flex-direction: column; /* Apila el label sobre el input */
+}
+
+label {
+  width: 100%; /* Extiende el label a lo largo del contenedor */
+  margin-bottom: -15px;
+  margin-top: -10px;
+}
