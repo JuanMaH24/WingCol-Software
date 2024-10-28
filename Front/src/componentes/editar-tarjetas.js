@@ -11,6 +11,7 @@ export function PaymentFormEditarTarjeta() {
     name: "",
     focus: "",
   });
+  const apiHost = process.env.REACT_APP_API_HOST;
 
   const navigate = useNavigate();
   const [originalState, setOriginalState] = useState(null);
@@ -19,7 +20,7 @@ export function PaymentFormEditarTarjeta() {
   useEffect(() => {
     const fetchCardData = async () => {
       try {
-        const response = await fetch("http://tu-api-url.com/api/tarjetas/");
+        const response = await fetch(`${apiHost}/cards/`);
         const data = await response.json();
         setState({
           number: data.number,
@@ -53,7 +54,7 @@ export function PaymentFormEditarTarjeta() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          "http://tu-api-url.com/api/tarjetas/eliminar",
+          `${apiHost}/cards/delete/`,
           {
             method: "POST",
             headers: {
@@ -100,7 +101,7 @@ export function PaymentFormEditarTarjeta() {
     if (hasChanges()) {
       try {
         const response = await fetch(
-          "http://tu-api-url.com/api/tarjetas/actualizar",
+          `${apiHost}/cards/update/`,
           {
             method: "POST",
             headers: {

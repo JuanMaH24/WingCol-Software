@@ -2,6 +2,7 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { getUser } from "../services/jwt-decode";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -17,23 +18,11 @@ export default function BasicMenu() {
     fetchUserRole();
   }, []);
 
-  const fetchUserRole = async () => {
+  const fetchUserRole = () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/user/role/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error en la respuesta del servidor");
-      }
-
-      const data = await response.json();
-      setRole(data.role);
+      const data = getUser();
+      setRole(data.roles);
     } catch (err) {
       setError("Error al obtener el rol del usuario");
       console.error("Error al obtener el rol del usuario:", err);
@@ -66,7 +55,8 @@ export default function BasicMenu() {
   };
 
   const handleCerrarSesion = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
     navigate("/");
     handleClose();
   };

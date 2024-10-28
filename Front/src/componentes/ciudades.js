@@ -9,10 +9,10 @@ export default function LocationSelector({ onLocationChange }) {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
 
-  const API_KEY =
-    "LhvPXr1XlSnxF6GrC_oxLhRRkouG1UYDXccTaFvhyUXMS0uQATx5-OtwMNSnRliLSRw"; // Replace with your actual API key
-  const API_URL = "https://www.universal-tutorial.com/api";
-
+  const CITY_API_KEY = process.env.REACT_APP_CITY_API_KEY; // Replace with your actual API key
+  const CITY_API_URL = process.env.REACT_APP_CITY_API_URL;
+  const CITY_API_MAIL = process.env.REACT_APP_CITY_API_MAIL;
+  
   useEffect(() => {
     getAuthToken();
   }, []);
@@ -37,11 +37,11 @@ export default function LocationSelector({ onLocationChange }) {
 
   const getAuthToken = async () => {
     try {
-      const response = await fetch(`${API_URL}/getaccesstoken`, {
+      const response = await fetch(`${CITY_API_URL}/getaccesstoken`, {
         headers: {
           Accept: "application/json",
-          "api-token": API_KEY,
-          "user-email": "kevin.ossa@utp.edu.co", // Replace with your registered email
+          "api-token": CITY_API_KEY,
+          "user-email": CITY_API_MAIL, // Replace with your registered email
         },
       });
       const data = await response.json();
@@ -53,7 +53,7 @@ export default function LocationSelector({ onLocationChange }) {
 
   const getCountries = async () => {
     try {
-      const response = await fetch(`${API_URL}/countries/`, {
+      const response = await fetch(`${CITY_API_URL}/countries/`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -68,7 +68,7 @@ export default function LocationSelector({ onLocationChange }) {
 
   const getStates = async (country) => {
     try {
-      const response = await fetch(`${API_URL}/states/${country}`, {
+      const response = await fetch(`${CITY_API_URL}/states/${country}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -83,7 +83,7 @@ export default function LocationSelector({ onLocationChange }) {
 
   const getCities = async (state) => {
     try {
-      const response = await fetch(`${API_URL}/cities/${state}`, {
+      const response = await fetch(`${CITY_API_URL}/cities/${state}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",

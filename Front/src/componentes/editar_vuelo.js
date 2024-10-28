@@ -5,6 +5,7 @@ import CurrencyInput from "react-currency-input-field";
 import { Link, useNavigate, Navigate, useParams } from "react-router-dom";
 
 export function EditarVuelo() {
+  const apiHost = process.env.REACT_APP_API_HOST;
   const [formData, setFormData] = useState({
     vueloNumero: "",
     tipoVuelo: "", // Nacional o Internacional
@@ -178,7 +179,7 @@ export function EditarVuelo() {
     if (isConfirmed) {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/users/client/delete/",
+          `${apiHost}/flight/update/`,
           {
             method: "PUT",
             headers: {

@@ -4,6 +4,7 @@ import "react-credit-cards-2/dist/lib/styles.scss";
 import { useNavigate } from "react-router-dom";
 
 export function PaymentForm() {
+  const apiHost = process.env.REACT_APP_API_HOST;
   const [state, setState] = useState({
     number: "",
     expiry: "",
@@ -32,7 +33,7 @@ export function PaymentForm() {
     const { number, expiry, cvc, name } = state;
 
     try {
-      const response = await fetch("http://tu-api-url.com/api/tarjetas/", {
+      const response = await fetch(`${apiHost}/cards/create/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

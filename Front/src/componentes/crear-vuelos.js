@@ -162,6 +162,7 @@ export function CrearVuelos() {
     event.preventDefault();
 
     const dataToSend = new FormData();
+    const apiHost = process.env.REACT_APP_API_HOST;
 
     // Agregamos los campos al FormData
     dataToSend.append("ciudad_origen", formData.selectedOrigen);
@@ -184,7 +185,7 @@ export function CrearVuelos() {
     }
 
     try {
-      const response = await fetch("https://tu-backend-api.com/vuelos", {
+      const response = await fetch(`${apiHost}/flight/create/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

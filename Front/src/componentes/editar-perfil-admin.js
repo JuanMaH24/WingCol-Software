@@ -9,6 +9,7 @@ import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
 
 export function EditarPerfilAdmin() {
+  const apiHost = process.env.REACT_APP_API_HOST;
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -38,7 +39,7 @@ export function EditarPerfilAdmin() {
     async function fetchProfileData() {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/users/client/profile/"
+          `${apiHost}/users/admin/`
         );
         const userData = await response.json();
 
@@ -159,7 +160,7 @@ export function EditarPerfilAdmin() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/users/client/update/",
+        `${apiHost}/users/admin/update/`,
         {
           method: "PUT",
           body: dataToSend,
@@ -195,7 +196,7 @@ export function EditarPerfilAdmin() {
     if (isConfirmed) {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/users/client/delete/",
+          `${apiHost}/users/admin/delete/`,
           {
             method: "PUT", //
             headers: {

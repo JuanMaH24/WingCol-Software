@@ -9,6 +9,7 @@ import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
 
 export function Registro() {
+  const apiHost = process.env.REACT_APP_API_HOST;
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -203,7 +204,7 @@ export function Registro() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/users/client/create/",
+        `${apiHost}/users/client/create/`,
         {
           method: "POST",
           body: dataToSend,

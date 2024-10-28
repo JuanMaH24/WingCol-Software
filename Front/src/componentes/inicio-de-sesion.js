@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../hojas-de-estilo/inicio-de-sesion.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
+import { getUser } from "../services/jwt-decode";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import logo from "../imagenes/logo.png";
 import Alert from "@mui/material/Alert";
@@ -18,6 +19,7 @@ export function Formulario({ setUser }) {
 
   // Función para manejar el submit
   const handleSubmit = async (e) => {
+    const apiHost = process.env.REACT_APP_API_HOST;
     e.preventDefault();
     if (usuario === "" || contraseña === "") {
       setError("Todos los campos son obligatorios");
@@ -26,7 +28,7 @@ export function Formulario({ setUser }) {
 
     try {
       // Realiza la petición al backend
-      const response = await fetch("http://127.0.0.1:8000/login/", {
+      const response = await fetch(`${apiHost}/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,20 +43,18 @@ export function Formulario({ setUser }) {
 
       if (response.ok) {
         // Guarda el token en localStorage
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
 
         // Guarda el usuario en el estado de la app
-        setUser({
-          name: data.name, // Por ejemplo, según lo que devuelva tu backend
-          role: data.roles, // Asumiendo que el rol viene en la respuesta
-        });
+        const user = getUser();
 
         // Redirigir según el rol del usuario
-        if (data.roles === 1) {
+        if (user.roles === 1) {
           navigate("/home-cliente");
-        } else if (data.roles === 2) {
+        } else if (user.roles === 2) {
           navigate("/home-cliente");
-        } else if (data.roles === 3) {
+        } else if (user.roles === 3) {
           navigate("/home-root");
         }
       } else {

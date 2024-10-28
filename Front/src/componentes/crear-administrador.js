@@ -9,6 +9,7 @@ import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
 
 export function CrearAdministrador() {
+  const apiHost = process.env.REACT_APP_API_HOST;
   const [formData, setFormData] = useState({
     firstName: "",
     secondName: "",
@@ -113,7 +114,7 @@ export function CrearAdministrador() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/users/client/create/",
+        `${apiHost}/users/admin/create/`,
         {
           method: "POST",
           body: dataToSend, // Enviamos FormData

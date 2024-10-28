@@ -8,8 +8,9 @@ export function RecuperarContraseña() {
 
   // Función para enviar el email
   const handleSendEmail = async () => {
+    const apiHost = process.env.REACT_APP_API_HOST;
     try {
-      const response = await fetch("http://127.0.0.1:8000/password_reset/", {
+      const response = await fetch(`${apiHost}/password_reset/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

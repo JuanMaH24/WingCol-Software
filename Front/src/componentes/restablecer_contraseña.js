@@ -8,7 +8,7 @@ export function RestablecerContraseña() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-
+  const apiHost = process.env.REACT_APP_API_HOST;
   // Obtener el token de la URL
   const token = searchParams.get("token");
 
@@ -28,7 +28,7 @@ export function RestablecerContraseña() {
     // Lógica para enviar la nueva contraseña junto con el token
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/password_reset/confirm/token=/" + token,
+        `${apiHost}/password_reset/confirm/token=/` + token,
         {
           method: "POST",
           headers: {
