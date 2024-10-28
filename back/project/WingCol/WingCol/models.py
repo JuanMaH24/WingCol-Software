@@ -121,6 +121,7 @@ class Vuelos(models.Model):
 	precio = models.PositiveIntegerField()
 	fecha_salida = models.DateTimeField()
 	fecha_llegada = models.DateTimeField()
+	duracion = models.FloatField()
 	tipo = models.CharField(max_length=20, choices=TipoVuelo.choices)
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
 	vuelos_pic = models.ImageField(upload_to='img/flight/', blank=True)
@@ -130,9 +131,15 @@ class Vuelos(models.Model):
 		self.activo = False
 		self.save()
 
+	def calculate_duration(self):
+		difference = self.fecha_salida - self.fecha_llegada
+		difference_in_hours = difference.total_seconds() / 3600
+		self.duracion = round(difference_in_hours, 2)
+		self.save
+
 	def create_reference(self):
 		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
-	
+		self.save
 
 class Sillas(models.Model):
 	class ClaseAsiento(models.TextChoices):
@@ -163,7 +170,7 @@ class ComprasReservas(models.Model):
 		CANCELADO = 'CAN', 'Cancelado'
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
-	id_cr = models.PositiveIntegerField(primary_key=True)
+	id_cr = models.AutoField(primary_key=True)
 	estado = models.CharField(max_length=20, choices=Estado.choices)
 	valor = models.PositiveIntegerField()
 	activo = models.BooleanField(default=True)
@@ -177,7 +184,7 @@ class Tiquete(models.Model):
 		MANO = 'EM', 'Equipaje de mano'
 		MALETA = 'MB', 'Maleta de bodega'
 
-	id_tiquete = models.PositiveIntegerField(primary_key=True)
+	id_tiquete = models.AutoField(primary_key=True)
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
@@ -190,4 +197,3 @@ class Busquedas(models.Model):
 	ciudad_origen = models.CharField(max_length=25, blank=True)
 	ciudad_destino = models.CharField(max_length=25, blank=True)
 	fecha = models.DateTimeField(auto_now_add=True, blank=True)
-	activo = models.BooleanField(default=True, blank=True)

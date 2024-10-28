@@ -1,20 +1,25 @@
-from django.db import transaction
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.core.mail import EmailMultiAlternatives, send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.urls import reverse
-from django_rest_passwordreset.signals import reset_password_token_created
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes, authentication_classes
+from django.dispatch import receiver
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.db.models import Q
+from django.db.models.signals import post_save
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from rest_framework.response import Response
+from django.urls import reverse
+from rest_framework import status
+from datetime import datetime
 from .auth import ClientAuthentication, AdminAuthentication, RootAuthentication
 from .models import *
 from .serializers import *
+
+
 
 
 @api_view(['GET'])
@@ -221,7 +226,10 @@ def login(request):
 def create_flight(request):
     flight_serializer = FlightSerializer(data=request.data)
     if flight_serializer.is_valid():
-        flight_serializer.save()
+        flight = flight_serializer.save()
+        flight.create_reference()
+        flight.calculate_duration()
+        # flight.save()
         return Response(flight_serializer.data, status=status.HTTP_201_CREATED)
     return Response(flight_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -233,33 +241,26 @@ def get_all_flights(request):
         return Response(serializer.data)
     except Vuelos.DoesNotExist:
         return Response({"error": "No hay vuelos disponibles"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def get_flights(request):
+    try:
+        data = request.data
+        city_arrive = data.get("ciudad_destino")
+        city_departure = data.get("ciudad_origen")
+        date = data.get("fecha_salida")
 
-@api_view(['GET'])  
-def get_flight_by_city_arrive(request):
-    try:
-        city_arrive = request.data["ciudad_destino"]
-        flight = Vuelos.objects.get(ciudad_destino=city_arrive, activo=True)
-        serializer = FlightSerializer(flight, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Vuelos.DoesNotExist:
-        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-    
-@api_view(['GET'])
-def get_flight_by_city_departure(request):
-    try:
-        city_departure = request.data["ciudad_origen"]
-        flight = Vuelos.objects.get(ciudad_origen=city_departure, activo=True)
-        serializer = FlightSerializer(flight, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Vuelos.DoesNotExist:
-        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-    
-@api_view(['GET'])
-def get_flight_by_name(request):
-    try:
-        name = request.data["referencia"]
-        flight = Vuelos.objects.get(referencia=name, activo=True)
-        serializer = FlightSerializer(flight, many=False)
+        search_query = Q(activo =True)
+        if city_arrive:
+            search_query &= Q(ciudad_destino=city_arrive)
+        if city_departure:
+            search_query &= Q(ciudad_origen=city_departure)
+        if date:
+            arrive_date = datetime.strptime(date, "%Y-%m-%d").date()
+            search_query &= Q(fecha_salida__date=date)
+        flights = Vuelos.objects.filter(search_query)
+        # search_serializer = SearchSerializer(request.data)
+        serializer = FlightSerializer(flights, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Vuelos.DoesNotExist:
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
@@ -271,7 +272,9 @@ def update_flight(request):
     flight_serializer = FlightSerializer(flight, request.data)
     flight_serializer.is_valid()
     if flight_serializer.is_valid():
-        flight_serializer.save()
+        flight = flight_serializer.save()
+        flight.create_reference()
+        flight.save()
         return Response(flight_serializer.data, status=status.HTTP_202_ACCEPTED)
     return Response({'errors': flight_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -284,7 +287,6 @@ def delete_flight(request):
         return Response({"message": "Vuelo borrado correctamente."}, status=status.HTTP_200_OK)
     except Vuelos.DoesNotExist:
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
 
 @receiver(post_save, sender=Vuelos)
 def create_seats(sender, instance, created, **kwargs):
@@ -311,7 +313,7 @@ def delete_seats(sender, instance, **kwargs):
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
-    # send an e-mail to the user, post token creation. 
+    print("deberia enviar correo")
     context = {
         'current_user': reset_password_token.user,
         'email': reset_password_token.user.email,
@@ -332,4 +334,5 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     msg.send()
 
     return Response({"message": "correo enviado"}, status=status.HTTP_200_OK)
+
     
