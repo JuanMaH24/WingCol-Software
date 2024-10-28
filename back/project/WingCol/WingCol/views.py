@@ -214,6 +214,7 @@ def login(request):
             return Response({"error": "Invalid Password"}, status=status.HTTP_401_UNAUTHORIZED)
 
         refresh = RefreshToken.for_user(user)
+        refresh['roles'] = user.roles
 
         return Response({
             'refresh': str(refresh),
