@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from .models import *
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,7 +74,19 @@ class SearchSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
         if data['fecha_salida'] < timezone.now():
             raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
-        return data
+        return data 
+    
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Añadir atributos personalizados al token
+        token['roles'] = user.roles
+
+        return token
+
      
 class CardSerializer(serializers.ModelSerializer):
     class Meta:

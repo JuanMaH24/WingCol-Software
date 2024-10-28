@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes, authentication_classes
@@ -212,13 +214,19 @@ def delete_admin(request):
 @api_view(['POST'])
 def login(request):
     try:
-        user = NormalUser.objects.get(email=request.data['email'], activo=True)
+        user = NormalUser.objects.get(email=request.data['email'], activo=True)  
         if not user.check_password(request.data['password']):
             return Response({"error": "Invalid Password"}, status=status.HTTP_401_UNAUTHORIZED)
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key}, status=status.HTTP_200_OK)
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+    
     except KeyError:
-        return Response({"error": "Los Datos no son Correctos"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Los Datos no son Correctos"}, status=status.HTTP_400_BAD_REQUEST)  
     except NormalUser.DoesNotExist:
         return Response({"error": "El Usuario no fue Encontrado, Debes Registrarte"}, status=status.HTTP_404_NOT_FOUND)
     

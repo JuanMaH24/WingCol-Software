@@ -32,16 +32,30 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ]
+}
 
-AUTH_TOKEN_VALIDITY = timedelta(minutes=1)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'user_id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_OBTAIN_SERIALIZER': 'path.to.CustomTokenObtainPairSerializer',
+}
+
+
+# AUTH_TOKEN_VALIDITY = timedelta(minutes=1)
 
 
 # Application definition
@@ -57,6 +71,7 @@ INSTALLED_APPS = [
     'cloudinary',
 	"rest_framework",
 	"rest_framework.authtoken",
+    'rest_framework_simplejwt',
 	"corsheaders",
     "django_rest_passwordreset",
     "WingCol",
