@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { RowRadioButtonsGroup } from "./Botones-buscador";
 import "../hojas-de-estilo/buscador.css";
-import vuelosData from "./vuelos-ejemplos.json";
 import { useNavigate } from "react-router-dom";
 
 const Origen = [
@@ -102,16 +101,23 @@ export function Buscador() {
     setDestino(event.target.value);
   };
 
-  const handleBuscarClick = () => {
-    const vuelosFiltrados = vuelosData.filter((vuelo) => {
-      return (
-        (!origen || vuelo.ciudad_origen === origen) &&
-        (!destino || vuelo.ciudad_destino === destino) &&
-        (!fechaSalida || vuelo.fecha_salida.startsWith(fechaSalida))
+  const handleBuscarClick = async () => {
+    try {
+      const response = await fetch(
+        `https://tu-backend.com/api/vuelos?origen=${origen}&destino=${destino}&fecha_salida=${fechaSalida}`
       );
-    });
 
-    navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
+      if (!response.ok) {
+        throw new Error("Error al obtener los vuelos");
+      }
+
+      const vuelosFiltrados = await response.json();
+
+      // Redirigir a la página de resultados con los vuelos obtenidos
+      navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
