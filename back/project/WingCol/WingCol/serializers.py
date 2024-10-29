@@ -97,6 +97,10 @@ class CardSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['fecha_expiracion'] < timezone.now():
             raise serializers.ValidationError('La fecha de expiración debe ser mayor a la fecha actual')
+        if data['id_tarjeta'] < 0:
+            raise serializers.ValidationError('El id de la tarjeta no puede ser negativo')
+        if data['saldo'] < 0:
+            raise serializers.ValidationError('El saldo no puede ser negativo')
         return data
     
 class TicketSerializer(serializers.ModelSerializer):

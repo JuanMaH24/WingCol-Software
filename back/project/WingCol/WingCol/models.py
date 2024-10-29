@@ -97,10 +97,10 @@ class Tarjetas(models.Model):
 	class TipoTarjeta(models.TextChoices):
 		DEBITO = 'D', 'Débito'
 		CREDITO = 'C', 'Crédito'
-	id_tarjeta = models.PositiveIntegerField(primary_key=True) 
+	id_tarjeta = models.CharField(primary_key=True, max_length=20) 
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	tipo_tarjeta = models.CharField(max_length=20, choices=TipoTarjeta.choices)
-	vvc = models.PositiveIntegerField()
+	vvc = models.PositiveIntegerField(max_length=4)
 	fecha_expiracion = models.DateField()
 	saldo = models.IntegerField()
 	activo = models.BooleanField(default=True)
@@ -121,7 +121,7 @@ class Vuelos(models.Model):
 	precio = models.PositiveIntegerField()
 	fecha_salida = models.DateTimeField()
 	fecha_llegada = models.DateTimeField()
-	duracion = models.FloatField()
+	duracion = models.FloatField(blank=True, null=True)
 	tipo = models.CharField(max_length=20, choices=TipoVuelo.choices)
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
 	vuelos_pic = models.ImageField(upload_to='img/flight/', blank=True)
@@ -131,15 +131,12 @@ class Vuelos(models.Model):
 		self.activo = False
 		self.save()
 
-	def calculate_duration(self):
-		difference = self.fecha_salida - self.fecha_llegada
-		difference_in_hours = difference.total_seconds() / 3600
-		self.duracion = round(difference_in_hours, 2)
-		self.save
-
 	def create_reference(self):
 		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
-		self.save
+
+	def calculate_duration(self):
+		duracion = round((self.fecha_llegada - self.fecha_salida).seconds / 3600, 2)
+		self.duracion = duracion
 
 class Sillas(models.Model):
 	class ClaseAsiento(models.TextChoices):

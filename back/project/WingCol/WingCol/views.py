@@ -219,7 +219,7 @@ def login(request):
             return Response({"error": "Invalid Password"}, status=status.HTTP_401_UNAUTHORIZED)
 
         refresh = RefreshToken.for_user(user)
-
+        refresh['roles'] = user.roles
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -231,13 +231,15 @@ def login(request):
         return Response({"error": "El Usuario no fue Encontrado, Debes Registrarte"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
+@authentication_classes([AdminAuthentication])
+@permission_classes([IsAuthenticated])
 def create_flight(request):
     flight_serializer = FlightSerializer(data=request.data)
     if flight_serializer.is_valid():
         flight = flight_serializer.save()
         flight.create_reference()
         flight.calculate_duration()
-        # flight.save()
+        flight.save()
         return Response(flight_serializer.data, status=status.HTTP_201_CREATED)
     return Response(flight_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -257,7 +259,6 @@ def get_flights(request):
         city_arrive = data.get("ciudad_destino")
         city_departure = data.get("ciudad_origen")
         date = data.get("fecha_salida")
-
         search_query = Q(activo =True)
         if city_arrive:
             search_query &= Q(ciudad_destino=city_arrive)
@@ -265,7 +266,7 @@ def get_flights(request):
             search_query &= Q(ciudad_origen=city_departure)
         if date:
             arrive_date = datetime.strptime(date, "%Y-%m-%d").date()
-            search_query &= Q(fecha_salida__date=date)
+            search_query &= Q(fecha_salida__date=arrive_date)
         flights = Vuelos.objects.filter(search_query)
         # search_serializer = SearchSerializer(request.data)
         serializer = FlightSerializer(flights, many=True)
@@ -274,6 +275,8 @@ def get_flights(request):
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['PUT'])
+@authentication_classes([AdminAuthentication])
+@permission_classes([IsAuthenticated])
 def update_flight(request):
     id = request.data['id']
     flight = Vuelos.objects.get(id_vuelo=id, activo=True)
@@ -287,6 +290,8 @@ def update_flight(request):
     return Response({'errors': flight_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
+@authentication_classes([RootAuthentication])
+@permission_classes([IsAuthenticated])
 def delete_flight(request):
     try:
         id = request.data['id_vuelo']
@@ -295,6 +300,43 @@ def delete_flight(request):
         return Response({"message": "Vuelo borrado correctamente."}, status=status.HTTP_200_OK)
     except Vuelos.DoesNotExist:
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+def create_card(request):
+    try:
+        card_serializer = CardSerializer(data=request.data)
+        if card_serializer.is_valid():
+            card_serializer.save()
+            return Response(card_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(card_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except KeyError:
+        return Response({"error": "Datos incorrectos"}, status=status.HTTP_400_BAD_REQUEST)
+
+def get_card(request):
+    try:
+        user_id = request.data['id_cliente']
+        card = Tarjetas.objects.get(id_cliente=user_id, activo=True)
+        card_serializer = CardSerializer(card, many=True)
+    
+        return Response(card_serializer.data, status=status.HTTP_200_OK)
+    except Tarjetas.DoesNotExist:
+        return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+
+
+def delete_card(request):
+    id = request.data['id_tarjeta']
+    card = Tarjetas.objects.get(id_tarjeta=id, activo=True)
+    card.soft_delete()
+    return Response({"message": "Tarjeta borrada correctamente."}, status=status.HTTP_200_OK)
+
+def update_card(request):
+    id = request.data['id_tarjeta']
+    card = Tarjetas.objects.get(id_tarjeta=id, activo=True)
+    card_serializer = CardSerializer(card, request.data)
+    card_serializer.is_valid()
+    if card_serializer.is_valid():
+        card_serializer.save()
+        return Response(card_serializer.data, status=status.HTTP_202_ACCEPTED)
+    return Response({'errors': card_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @receiver(post_save, sender=Vuelos)
 def create_seats(sender, instance, created, **kwargs):
