@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-} from "react-router-dom"; // Importa Navigate
+  useLocation,
+} from "react-router-dom";
+import { getUser } from "./services/jwt-decode";
 import { Formulario } from "./componentes/inicio-de-sesion";
 import { Home } from "./componentes/home";
 import { Registro } from "./componentes/registro";
@@ -24,43 +26,190 @@ import { PaymentForm } from "./componentes/añadir-tarjeta";
 import { PaymentFormEditarTarjeta } from "./componentes/editar-tarjetas";
 import { ResultadosPage } from "./componentes/pagina-resultados";
 
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+  const token = localStorage.getItem("access");
+  const location = useLocation();
+  const user = getUser();
+
+  if (!user) {
+    return <Navigate to="/home-visitante" state={{ from: location }} replace />;
+  }
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+};
+
+const PublicRoute = ({ children }) => {
+  const token = localStorage.getItem("access");
+  const user = getUser();
+
+  if (user) {
+    if (user && user.role === 3) {
+      return <Navigate to="/home-root" replace />;
+    }
+    return <Navigate to="/home-cliente" replace />;
+  }
+
+  return children;
+};
+
 export default function App() {
-  const [user, setUser] = useState(null); // Inicializa el estado
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access");
+    if (token) {
+      const userData = getUser();
+      setUser(userData);
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <Router>
       <div className="App">
         <Routes>
-          {/* Redirige la ruta raíz (/) a /home-visitante */}
-          <Route path="/" element={<Navigate to="/home-visitante" />} />
+          {/* Rutas públicas */}
           <Route
-            path="/home"
-            element={<Home user={user} setUser={setUser} />}
+            path="/"
+            element={
+              <Navigate
+                to={
+                  user
+                    ? user.role === 3
+                      ? "/home-root"
+                      : "/home-cliente"
+                    : "/home-visitante"
+                }
+              />
+            }
           />
-          <Route path="/registro" element={<Registro />} />
           <Route
-            path="/restablecer-contraseña"
-            element={<RestablecerContraseña />}
+            path="/home-visitante"
+            element={
+              <PublicRoute>
+                <HomeVisitante />
+              </PublicRoute>
+            }
           />
-          <Route path="/editar-perfil" element={<EditarPerfil />} />
-          <Route path="/crear-administrador" element={<CrearAdministrador />} />
-          <Route path="/editar-perfil-admin" element={<EditarPerfilAdmin />} />
-          <Route path="/crear-vuelos" element={<CrearVuelos />} />
-          <Route path="/home-visitante" element={<HomeVisitante />} />
-          <Route path="/home-cliente" element={<HomeCliente />} />
-          <Route path="/home-root" element={<HomeRoot />} />
-          <Route path="/editar-vuelos" element={<EditarVuelo />} />
-          <Route path="/inicio-de-sesion" element={<Formulario />} />
+          <Route
+            path="/inicio-de-sesion"
+            element={
+              <PublicRoute>
+                <Formulario />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/registro"
+            element={
+              <PublicRoute>
+                <Registro />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/recuperar-contraseña"
             element={<RecuperarContraseña />}
           />
-          <Route path="/añadir-tarjetas" element={<PaymentForm />} />
+          <Route
+            path="/restablecer-contraseña"
+            element={<RestablecerContraseña />}
+          />
+
+          {/* Rutas protegidas */}
+          <Route
+            path="/home-cliente"
+            element={
+              <ProtectedRoute allowedRoles={[1, 2]}>
+                <HomeCliente />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editar-perfil"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <EditarPerfil />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crear-administrador"
+            element={
+              <ProtectedRoute allowedRoles={[3]}>
+                <CrearAdministrador />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editar-perfil-admin"
+            element={
+              <ProtectedRoute allowedRoles={[2]}>
+                <EditarPerfilAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crear-vuelos"
+            element={
+              <ProtectedRoute allowedRoles={[2]}>
+                <CrearVuelos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home-root"
+            element={
+              <ProtectedRoute allowedRoles={[3]}>
+                <HomeRoot />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editar-vuelos"
+            element={
+              <ProtectedRoute allowedRoles={[2]}>
+                <EditarVuelo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/añadir-tarjetas"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <PaymentForm />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/editar-tarjetas"
-            element={<PaymentFormEditarTarjeta />}
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <PaymentFormEditarTarjeta />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/resultados" element={<ResultadosPage />} />
+          <Route
+            path="/resultados"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <ResultadosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/unauthorized"
+            element={<div>No tienes permiso para acceder a esta página.</div>}
+          />
         </Routes>
       </div>
     </Router>
