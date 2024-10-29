@@ -22,6 +22,7 @@ export default function BasicMenu() {
     try {
       setLoading(true);
       const data = getUser();
+      console.log(data);
       setRole(data.roles);
     } catch (err) {
       setError("Error al obtener el rol del usuario");

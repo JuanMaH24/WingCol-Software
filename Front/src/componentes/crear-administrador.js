@@ -28,7 +28,7 @@ export function CrearAdministrador() {
     selectedCountry: null,
     profilePicture: null,
   });
-
+  const jwtToken = localStorage.getItem('access');
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -116,13 +116,18 @@ export function CrearAdministrador() {
       const response = await fetch(
         `${apiHost}/users/admin/create/`,
         {
+
           method: "POST",
-          body: dataToSend, // Enviamos FormData
+          headers: {
+            "Authorization": `Bearer ${jwtToken}`
+          },
+          body: dataToSend, 
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log(errorData);
         setErrorMessage(
           errorData.nombre ||
             errorData.user_id ||

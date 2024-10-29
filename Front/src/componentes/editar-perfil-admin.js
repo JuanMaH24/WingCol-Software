@@ -5,6 +5,7 @@ import Select from "react-select";
 import { getNames, getCode } from "country-list";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
+import { getUser } from "../services/jwt-decode";
 import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
 
@@ -32,24 +33,35 @@ export function EditarPerfilAdmin() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [documentPattern, setDocumentPattern] = useState("");
+  const currentUser = getUser();
+  const jwtToken = localStorage.getItem('access');
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
 
   // Cargar datos del perfil del usuario al cargar el componente
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
     async function fetchProfileData() {
+      console.log(currentUser.user_id);
       try {
+        const params = new URLSearchParams({user_id: currentUser.user_id});
         const response = await fetch(
-          `${apiHost}/users/admin/`
+          `${apiHost}/users/admin/?${params.toString()}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${jwtToken}`
+            }
+          }
         );
         const userData = await response.json();
-
+        console.log(userData);
+        console.log("pais:", userData.pais);
         // Rellenar los campos con los datos actuales del usuario
         setFormData({
-          firstName: userData.nombre || "",
+          firstName: String(userData.nombre) || "",
           secondName: userData.segundo_nombre || "",
           lastName: userData.apellido || "",
           secondLastName: userData.segundo_apellido || "",
-          phoneNumber: userData.telefono || "",
+          phoneNumber: String(userData.telefono) || "",
           gender: userData.genero || "",
           email: userData.email || "",
           documentType: userData.tipo_documento || "",
@@ -120,6 +132,10 @@ export function EditarPerfilAdmin() {
     }));
   };
 
+  const handleCheckboxChange = (e) => {
+    setShowPasswordFields(e.target.checked);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -163,6 +179,9 @@ export function EditarPerfilAdmin() {
         `${apiHost}/users/admin/update/`,
         {
           method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${jwtToken}`
+          },
           body: dataToSend,
         }
       );
@@ -237,6 +256,7 @@ export function EditarPerfilAdmin() {
           type="text"
           name="firstName"
           placeholder="Primer nombre"
+          value={formData.firstName}
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           required
           title="El nombre no puede tener espacios o números"
@@ -249,6 +269,7 @@ export function EditarPerfilAdmin() {
         <input
           type="text"
           name="secondName"
+          value={formData.secondName}
           placeholder="Segundo nombre"
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           title="El campo no puede tener espacios o números"
@@ -262,6 +283,7 @@ export function EditarPerfilAdmin() {
           type="text"
           name="lastName"
           placeholder="Primer apellido"
+          value={formData.lastName}
           maxLength={50}
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           required
@@ -276,6 +298,7 @@ export function EditarPerfilAdmin() {
           name="secondLastName"
           placeholder="Segundo apellido"
           maxLength={50}
+          value={formData.secondLastName}
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$"
           required
           title="El campo no puede tener espacios o números"
@@ -300,6 +323,7 @@ export function EditarPerfilAdmin() {
         name="gender"
         className="multiples-opciones"
         onChange={handleChange}
+        value={formData.gender}
         required
       >
         <option value="">Género</option>
@@ -312,6 +336,7 @@ export function EditarPerfilAdmin() {
         <input
           type="email"
           name="email"
+          value={formData.email}
           placeholder="Correo electrónico"
           required
           maxLength={50}
@@ -323,6 +348,7 @@ export function EditarPerfilAdmin() {
         name="documentType"
         className="multiples-opciones"
         onChange={handleDocumentTypeChange}
+        value={formData.documentType}
         required
       >
         <option value="">Tipo de documento</option>
@@ -336,6 +362,7 @@ export function EditarPerfilAdmin() {
           type="text"
           name="documentNumber"
           placeholder="Número de documento"
+          value={formData.documentNumber}
           pattern={documentPattern}
           minLength={10}
           required
@@ -347,68 +374,50 @@ export function EditarPerfilAdmin() {
           }
         />
       </div>
+      
+      {showPasswordFields && (
+        <div className="input-box">
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            maxLength={20}
+            minLength={8}
+            pattern="^[^\s]+$"
+            title="La contraseña no puede tener espacios en blanco"
+            required
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
-      <div className="input-box">
-        <input
-          type="text"
-          name="address"
-          placeholder="Dirección"
-          maxLength={50}
-          onChange={handleChange}
-        />
+      {showPasswordFields && (
+        <div className="input-box">
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirmar contraseña"
+            maxLength={20}
+            minLength={8}
+            pattern="^[^\s]+$"
+            title="La contraseña no puede tener espacios"
+            required
+            onChange={handleChange}
+          />
+        </div>
+      )}
+
+      <div class="form-check">
+        <input class="form-check-input" 
+        checked={showPasswordFields}
+        onChange={handleCheckboxChange} 
+        type="radio" 
+        name="flexRadioDefault" 
+        id="flexRadioDefault1"/>
+        <label class="form-check-label" for="flexRadioDefault1">
+          Cambiar contraseña
+        </label>
       </div>
-
-      <div className="input-box">
-        <input
-          type="text"
-          name="billingAddress"
-          placeholder="Dirección de facturación"
-          maxLength={50}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="input-box">
-        <input
-          className="fecha-nacimiento"
-          type="date"
-          name="birthDate"
-          min={"1940-01-01"}
-          max={"2006-12-31"}
-          required
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="input-box">
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          maxLength={20}
-          minLength={8}
-          pattern="^[^\s]+$"
-          title="La contraseña no puede tener espacios en blanco"
-          required
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="input-box">
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirmar contraseña"
-          maxLength={20}
-          minLength={8}
-          pattern="^[^\s]+$"
-          title="La contraseña no puede tener espacios"
-          required
-          onChange={handleChange}
-        />
-      </div>
-
-      <LocationSelector onLocationChange={handleLocationChange} />
 
       <div className="error">
         {errorMessage && <p className="error-message">{errorMessage}</p>}

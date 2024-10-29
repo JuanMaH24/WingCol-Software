@@ -4,13 +4,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function RestablecerContraseña() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); // Para obtener el token de la URL
+  // const [searchParams] = useSearchParams(); // Para obtener el token de la URL
   const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const apiHost = process.env.REACT_APP_API_HOST;
   // Obtener el token de la URL
-  const token = searchParams.get("token");
+  // const token = searchParams.get("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +29,7 @@ export function RestablecerContraseña() {
     // Lógica para enviar la nueva contraseña junto con el token
     try {
       const response = await fetch(
-        `${apiHost}/password_reset/confirm/token=/` + token,
+        `${apiHost}/password_reset/confirm/?token=` + token,
         {
           method: "POST",
           headers: {
@@ -61,9 +62,10 @@ export function RestablecerContraseña() {
         <div className="input-box">
           <input
             type="text"
-            name="codigo"
+            name="token"
             placeholder="Ingrese el token suministrado en el correo"
-            value={token || ""}
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
             required
           />
         </div>
