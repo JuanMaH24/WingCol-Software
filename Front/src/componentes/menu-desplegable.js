@@ -64,7 +64,7 @@ export default function BasicMenu() {
   };
 
   const handleCrearTarjeta = () => {
-    navigate("/añadir-tarjeta");
+    navigate("/añadir-tarjetas");
     handleClose();
   };
 

@@ -90,6 +90,8 @@ export function Buscador() {
   const [resultados, setResultados] = useState([]);
   const [fechaSalida, setFechaSalida] = useState("");
   const navigate = useNavigate();
+  const apiHost = process.env.REACT_APP_API_HOST;
+
 
   // Maneja el cambio de selección de origen
   const handleOrigenChange = (event) => {
@@ -103,16 +105,16 @@ export function Buscador() {
 
   const handleBuscarClick = async () => {
     try {
+      const params = new URLSearchParams({ciudad_origen: origen, ciudad_destino: destino, fecha_salida: fechaSalida});
       const response = await fetch(
-        `https://tu-backend.com/api/vuelos?origen=${origen}&destino=${destino}&fecha_salida=${fechaSalida}`
+        `${apiHost}/flight/search/?${params.toString()}`,
       );
 
       if (!response.ok) {
         throw new Error("Error al obtener los vuelos");
       }
-
       const vuelosFiltrados = await response.json();
-
+      console.log(vuelosFiltrados);
       // Redirigir a la página de resultados con los vuelos obtenidos
       navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
     } catch (error) {

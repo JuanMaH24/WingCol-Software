@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/lib/styles.scss";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,22 @@ export function PaymentForm() {
     focus: "",
   });
 
+
+  const [minDate,setMinDate] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = formatDate(today);
+    setMinDate(formattedDate);
+  }, []);
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const handleHome = () => {
     navigate("/home-cliente");
@@ -76,7 +91,7 @@ export function PaymentForm() {
       <h1 style={{ fontFamily: "Poppins" }}>Añadir tarjeta de pago</h1>
       <Cards
         number={state.number}
-        expiry={state.expiry}
+        expiry={`${state.expiry.slice(5, 7)}${state.expiry.slice(2, 4)}`}
         cvc={state.cvc}
         name={state.name}
         focused={state.focus}
@@ -107,6 +122,8 @@ export function PaymentForm() {
           value={state.name}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          // pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          title="El campo no puede tener números"
           required
           maxLength={40}
           style={{
@@ -119,15 +136,15 @@ export function PaymentForm() {
           }}
         />
         <input
-          type="tel"
+          type="date"
           name="expiry"
           placeholder="Expiry"
           value={state.expiry}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          title="Formato inválido. Usa MMDD, donde MM es el mes (01-12) y DD es el día (01-31)."
+          min={minDate}
           required
-          maxLength={4}
-          pattern="\d*"
           style={{
             width: "100%",
             marginTop: "10px",

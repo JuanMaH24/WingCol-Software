@@ -173,7 +173,7 @@ export default function App() {
             }
           />
           <Route
-            path="/editar-vuelos"
+            path="/editar-vuelos/:id"
             element={
               <ProtectedRoute allowedRoles={[2]}>
                 <EditarVuelo />
@@ -199,9 +199,7 @@ export default function App() {
           <Route
             path="/resultados"
             element={
-              <ProtectedRoute allowedRoles={[1]}>
                 <ResultadosPage />
-              </ProtectedRoute>
             }
           />
           <Route

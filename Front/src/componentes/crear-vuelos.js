@@ -27,7 +27,7 @@ export function CrearVuelos() {
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const day = String(date.getDate() + 1).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
@@ -169,9 +169,10 @@ export function CrearVuelos() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const dataToSend = new FormData();
     const apiHost = process.env.REACT_APP_API_HOST;
     const jwtToken = localStorage.getItem('access');
+    const dataToSend = new FormData(); 
+    console.log(`${formData.fechaSalida}T${formData.horaSalida}:00Z`);
 
     // Agregamos los campos al FormData
     dataToSend.append("ciudad_origen", formData.selectedOrigen);
@@ -180,8 +181,8 @@ export function CrearVuelos() {
       "fecha_salida",
       `${formData.fechaSalida}T${formData.horaSalida}:00Z`
     );
-    // dataToSend.append("fecha_llegada", "2024-10-14T15:00:00Z"); // Ajusta la fecha si es necesario
-    dataToSend.append("precio", parseFloat(formData.precio)); // Convertimos a número decimal
+    dataToSend.append("fecha_llegada", "2024-12-14T15:00:00Z"); // Ajusta la fecha si es necesario
+    dataToSend.append("precio", formData.precio); // Convertimos a número decimal
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("estado", "P"); // Estado predeterminado
     dataToSend.append("duracion",formData.duracion)
@@ -194,22 +195,22 @@ export function CrearVuelos() {
       dataToSend.append("flight_pic", "imagen.jpg"); // Valor por defecto si no hay imagen
     }
 
-    console.log(JSON.stringify(dataToSend))
+    console.log(dataToSend);
 
     try {
       const response = await fetch(`${apiHost}/flight/create/`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${jwtToken}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend),
+        body: dataToSend,
       });
 
       if (response.ok) {
         console.log("Vuelo creado exitosamente");
         navigate("/home-cliente");
       } else {
+        console.log(response);
         console.error("Error al crear el vuelo");
       }
     } catch (error) {
@@ -219,7 +220,7 @@ export function CrearVuelos() {
 
   return (
     <form className="contenedor-principal-vuelos" onSubmit={handleSubmit}>
-      <img src={LogoCompleto} alt="Logo de WingColombia" className="logo" />
+      <img src={LogoCompleto} alt="Logo de WingCol" className="logo" />
       <h1>Crear vuelos</h1>
 
       <div className="selector-vuelo">
@@ -272,10 +273,11 @@ export function CrearVuelos() {
       </div>
       <div className="input-vuelo">
         <input
-          type="text"
+          type="number"
           name="precio"
-          placeholder="Precio tiquete"
+          placeholder="Precio COP"
           value={formData.precio}
+          min={0}
           onChange={handleChange}
           required
         />
@@ -297,6 +299,18 @@ export function CrearVuelos() {
           type="time"
           name="horaSalida"
           value={formData.horaSalida}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="input-vuelo">
+        <h3>Tiempo de vuelo (min)</h3>
+        <input
+          type="number"
+          name="duracion"
+          value={formData.duracion}
+          min={0}
           onChange={handleChange}
           required
         />

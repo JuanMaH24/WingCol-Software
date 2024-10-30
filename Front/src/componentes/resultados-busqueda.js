@@ -1,7 +1,35 @@
 import React from "react";
 import "../hojas-de-estilo/resultados-busqueda.css"; // Asegúrate de tener un archivo CSS para los estilos
+import { getUser } from "../services/jwt-decode";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 
 export default function ResultadosVuelos({ vuelos }) {
+  const [role, setRole] = React.useState(null);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    fetchUserRole();
+  }, []);
+  const fetchUserRole = () => {
+    try {
+      // setLoading(true);
+      const data = getUser();
+      console.log(data);
+      setRole(data.roles);
+    } catch (err) {
+      // setError("Error al obtener el rol del usuario");
+      console.error("Error al obtener el rol del usuario:", err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const handleEditarVuelo = (e) => {
+    const { name } = e.target;
+    navigate(`/editar-vuelos/${name}`);
+    // handleClose();
+  };
+
   return (
     <div className="resultados-vuelos">
       <h1>Resultados de la Búsqueda</h1>
@@ -26,8 +54,19 @@ export default function ResultadosVuelos({ vuelos }) {
                   <strong>Precio:</strong> ${vuelo.precio}
                 </p>
                 <div className="botones-container">
-                  <button>Reservar</button>
-                  <button>Comprar</button>
+                  {
+                    (role != 2 || !role) && (
+                      <>
+                        <button>Reservar</button>
+                        <button>Comprar</button>
+                      </>
+                    )
+                  }
+                  {(role === 2) && (
+                    <>
+                      <button name={1} onClick={handleEditarVuelo}>Editar vuelo</button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -13,8 +13,8 @@ export function EditarVuelo() {
     selectedDestino: "",
   });
   const navigate = useNavigate();
-  const { idVuelo } = useParams();
-
+  const { id } = useParams();
+  const jwtToken = localStorage.getItem("access");
   const capitalesColombia = [
     { value: "Leticia", label: "Leticia (Amazonas)" },
     { value: "Medellín", label: "Medellín (Antioquia)" },
@@ -73,11 +73,19 @@ export function EditarVuelo() {
     // Simulación de una llamada a la API para obtener los datos del vuelo
     const obtenerDatosVuelo = async () => {
       try {
-        const respuesta = await fetch(`API_URL/vuelos/${idVuelo}`); // Reemplaza con la URL real de la API
-        const data = await respuesta.json();
+        const params = new URLSearchParams({id_vuelo: id});
+        const response = await fetch(
+          `${apiHost}/flight/?${params.toString()}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${jwtToken}`
+            }
+          }
+        ); // Reemplaza con la URL real de la API
+        const data = await response.json();
         setFormData({
-          vueloNumero: data.vueloNumero,
-          tipoVuelo: data.tipoVuelo,
+          estado: data.estado,
+          tipoVuelo: data.tipo,
           selectedOrigen: data.ciudad_origen,
           selectedDestino: data.ciudad_destino,
           fechaSalida: data.fecha_salida.split("T")[0], // Para separar la fecha y hora
@@ -90,7 +98,7 @@ export function EditarVuelo() {
     };
 
     obtenerDatosVuelo();
-  }, [idVuelo]);
+  }, [id]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -103,8 +111,8 @@ export function EditarVuelo() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const dataToSend = new FormData();
-    dataToSend.append("vueloNumero", formData.vueloNumero);
-    dataToSend.append("tipoVuelo", formData.tipoVuelo);
+    dataToSend.append("estado", formData.estado);
+    dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("ciudad_origen", formData.selectedOrigen);
     dataToSend.append("ciudad_destino", formData.selectedDestino);
     dataToSend.append(
@@ -114,7 +122,7 @@ export function EditarVuelo() {
     dataToSend.append("precio", formData.precio);
 
     try {
-      const respuesta = await fetch(`API_URL/vuelos/${idVuelo}`, {
+      const respuesta = await fetch(`API_URL/vuelos/${id}`, {
         method: "PUT", // Método de actualización
         body: dataToSend,
       });
