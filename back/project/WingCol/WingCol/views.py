@@ -40,7 +40,7 @@ def get_user(request):
 @permission_classes([IsAuthenticated])
 def get_client(request):
     try:
-        id = request.data["user_id"]
+        id = request.query_params.get('user_id')
         user= NormalUser.objects.get(user_id=id, activo=True)
         user_serializer = UserSerializer(user, many=False)
         client = Cliente.objects.get(user_id=id, activo=True)
@@ -128,11 +128,11 @@ def delete_client(request):
 @permission_classes([IsAuthenticated])
 def get_admin(request):
     try:
-        id = request.data["user_id"]
+        id = request.query_params.get('user_id')
         user= NormalUser.objects.get(user_id=id, activo=True)
         user_serializer = UserSerializer(user, many=False)
         admin = Administrador.objects.get(user_id=id, activo=True)
-        admin_serializer = Administrador(admin, many=False)
+        admin_serializer = AdministradorSerializer(admin, many=False)
         combined_data = user_serializer.data.copy() 
         combined_data.update(admin_serializer.data)
         return Response(combined_data, status=status.HTTP_200_OK)
