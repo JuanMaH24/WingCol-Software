@@ -231,8 +231,8 @@ def login(request):
         return Response({"error": "El Usuario no fue Encontrado, Debes Registrarte"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
-@authentication_classes([AdminAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([AdminAuthentication])
+# @permission_classes([IsAuthenticated])
 def create_flight(request):
     flight_serializer = FlightSerializer(data=request.data)
     if flight_serializer.is_valid():
@@ -242,6 +242,19 @@ def create_flight(request):
         flight.save()
         return Response(flight_serializer.data, status=status.HTTP_201_CREATED)
     return Response(flight_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+# @authentication_classes([AdminAuthentication])
+# @permission_classes([IsAuthenticated])
+def get_flight(request):
+    try:
+        flight_id = request.query_params.get("id_vuelo")
+        flight = Vuelos.objects.get(id_vuelo=flight_id)
+        print(flight)
+        serializer = FlightSerializer(flight)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Vuelos.DoesNotExist:
+        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def get_all_flights(request):
@@ -300,16 +313,22 @@ def delete_flight(request):
     except Vuelos.DoesNotExist:
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['POST'])
 def create_card(request):
     try:
+        print("creando")
         card_serializer = CardSerializer(data=request.data)
+        print("si creó")
         if card_serializer.is_valid():
+            print("checado")
             card_serializer.save()
             return Response(card_serializer.data, status=status.HTTP_201_CREATED)
         return Response(card_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except KeyError:
+
         return Response({"error": "Datos incorrectos"}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
 def get_card(request):
     try:
         user_id = request.query_params.get('id_cliente')
@@ -320,13 +339,14 @@ def get_card(request):
     except Tarjetas.DoesNotExist:
         return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
-
+@api_view(['PUT'])
 def delete_card(request):
     id = request.data['id_tarjeta']
     card = Tarjetas.objects.get(id_tarjeta=id, activo=True)
     card.soft_delete()
     return Response({"message": "Tarjeta borrada correctamente."}, status=status.HTTP_200_OK)
 
+@api_view(['PUT'])
 def update_card(request):
     id = request.data['id_tarjeta']
     card = Tarjetas.objects.get(id_tarjeta=id, activo=True)
