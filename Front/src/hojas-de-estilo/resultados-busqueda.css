@@ -1,0 +1,124 @@
+.resultados-vuelos {
+  font-family: "Poppins", sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  color: white;
+}
+
+.resultados-vuelos h3 {
+  color: white;
+  font-family: "Poppins", sans-serif;
+  margin-bottom: 20px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.vuelos-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vuelo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #a039d4;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.vuelo-detalles {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.vuelo-tiempo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tiempo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.aeropuerto {
+  font-size: 14px;
+  color: #666;
+}
+
+.vuelo-duracion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #666;
+}
+
+.duracion-linea {
+  width: 100px;
+  height: 2px;
+  background-color: #0077be;
+  position: relative;
+}
+
+.duracion-linea::after {
+  content: "✈️";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.duracion-texto {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.vuelo-precio {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0077be;
+}
+
+.vuelo-imagen {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.imagen-vuelo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.botones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-left: auto;
+}
+
+.botones-container button {
+  background-color: white;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 150px; /* Ancho fijo para los botones */
+}
+
+.botones-container button:hover {
+  background-color: #77008f;
+}
