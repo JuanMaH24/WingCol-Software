@@ -35,8 +35,12 @@ urlpatterns = [
     path('flight/create/', create_flight),
     path('flight/', get_all_flights),
     path('api/token/', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='token_obtain_pair'),
-    path('flight/search/', get_flight_by_name),
+    path('flight/search/', get_flights),
 	path('flight/update/', update_flight),
 	path('flight/delete/', delete_flight),
+    path('card/create/', create_card),
+	path('card/update/', update_card),
+	path('card/delete/', delete_card),
+	path('card/', get_card),
     path('password_reset/', include('django_rest_passwordreset.urls')),
 ]

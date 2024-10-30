@@ -97,10 +97,10 @@ class Tarjetas(models.Model):
 	class TipoTarjeta(models.TextChoices):
 		DEBITO = 'D', 'Débito'
 		CREDITO = 'C', 'Crédito'
-	id_tarjeta = models.PositiveIntegerField(primary_key=True) 
+	id_tarjeta = models.CharField(primary_key=True, max_length=20) 
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	tipo_tarjeta = models.CharField(max_length=20, choices=TipoTarjeta.choices)
-	vvc = models.PositiveIntegerField()
+	vvc = models.PositiveIntegerField(max_length=4)
 	fecha_expiracion = models.DateField()
 	saldo = models.IntegerField()
 	activo = models.BooleanField(default=True)
@@ -121,6 +121,7 @@ class Vuelos(models.Model):
 	precio = models.PositiveIntegerField()
 	fecha_salida = models.DateTimeField()
 	fecha_llegada = models.DateTimeField()
+	duracion = models.FloatField(blank=True, null=True)
 	tipo = models.CharField(max_length=20, choices=TipoVuelo.choices)
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
 	vuelos_pic = models.ImageField(upload_to='img/flight/', blank=True)
@@ -132,7 +133,10 @@ class Vuelos(models.Model):
 
 	def create_reference(self):
 		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
-	
+
+	def calculate_duration(self):
+		duracion = round((self.fecha_llegada - self.fecha_salida).seconds / 3600, 2)
+		self.duracion = duracion
 
 class Sillas(models.Model):
 	class ClaseAsiento(models.TextChoices):
@@ -163,7 +167,7 @@ class ComprasReservas(models.Model):
 		CANCELADO = 'CAN', 'Cancelado'
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
-	id_cr = models.PositiveIntegerField(primary_key=True)
+	id_cr = models.AutoField(primary_key=True)
 	estado = models.CharField(max_length=20, choices=Estado.choices)
 	valor = models.PositiveIntegerField()
 	activo = models.BooleanField(default=True)
@@ -177,7 +181,7 @@ class Tiquete(models.Model):
 		MANO = 'EM', 'Equipaje de mano'
 		MALETA = 'MB', 'Maleta de bodega'
 
-	id_tiquete = models.PositiveIntegerField(primary_key=True)
+	id_tiquete = models.AutoField(primary_key=True)
 	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
@@ -190,4 +194,3 @@ class Busquedas(models.Model):
 	ciudad_origen = models.CharField(max_length=25, blank=True)
 	ciudad_destino = models.CharField(max_length=25, blank=True)
 	fecha = models.DateTimeField(auto_now_add=True, blank=True)
-	activo = models.BooleanField(default=True, blank=True)
