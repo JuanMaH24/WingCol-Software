@@ -59,12 +59,12 @@ export default function BasicMenu() {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     window.location.reload();
-    navigate("/"); 
+    navigate("/");
     // handleClose();
   };
 
   const handleCrearTarjeta = () => {
-    navigate("/añadir-tarjetas");
+    navigate("/lista-tarjetas");
     handleClose();
   };
 

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import LogoCompleto from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/crear_vuelos.css";
 import CurrencyInput from "react-currency-input-field";
@@ -13,9 +13,10 @@ export function CrearVuelos() {
     precio: "",
     fechaSalida: "",
     horaSalida: "",
-    duracion:"",
+    duracion: "",
+    flightPic: null, // Imagen del vuelo
   });
-  const [minDate,setMinDate] = useState("");
+  const [minDate, setMinDate] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,8 +27,8 @@ export function CrearVuelos() {
 
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate() + 1).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate() + 1).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -166,12 +167,19 @@ export function CrearVuelos() {
     return `${horas} horas y ${minutos} minutos`;
   };
 
+  const handleFileChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      flightPic: e.target.files[0],
+    }));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const apiHost = process.env.REACT_APP_API_HOST;
-    const jwtToken = localStorage.getItem('access');
-    const dataToSend = new FormData(); 
+    const jwtToken = localStorage.getItem("access");
+    const dataToSend = new FormData();
     console.log(`${formData.fechaSalida}T${formData.horaSalida}:00Z`);
 
     // Agregamos los campos al FormData
@@ -185,7 +193,7 @@ export function CrearVuelos() {
     dataToSend.append("precio", formData.precio); // Convertimos a número decimal
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("estado", "P"); // Estado predeterminado
-    dataToSend.append("duracion",formData.duracion)
+    dataToSend.append("duracion", formData.duracion);
 
     // Si tienes una imagen, la puedes agregar usando el campo correspondiente
     // Supongamos que estás obteniendo la imagen de un campo en el formulario
@@ -201,7 +209,7 @@ export function CrearVuelos() {
       const response = await fetch(`${apiHost}/flight/create/`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${jwtToken}`,
+          Authorization: `Bearer ${jwtToken}`,
         },
         body: dataToSend,
       });
@@ -288,7 +296,7 @@ export function CrearVuelos() {
           type="date"
           name="fechaSalida"
           value={formData.fechaSalida}
-          min ={minDate}
+          min={minDate}
           onChange={handleChange}
           required
         />
@@ -314,6 +322,10 @@ export function CrearVuelos() {
           onChange={handleChange}
           required
         />
+      </div>
+      <div className="foto-de-perfil">
+        <label htmlFor="file">Elija una imagen de vuelo </label>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
       <div className="boton-vuelo-container">

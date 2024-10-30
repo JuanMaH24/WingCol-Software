@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { RowRadioButtonsGroup } from "./Botones-buscador";
 import "../hojas-de-estilo/buscador.css";
 import { useNavigate } from "react-router-dom";
+import Vuelos from "./vuelos-ejemplos.json";
 
 const Origen = [
   { value: "Leticia", label: "Leticia (Amazonas)" },
@@ -92,7 +93,6 @@ export function Buscador() {
   const navigate = useNavigate();
   const apiHost = process.env.REACT_APP_API_HOST;
 
-
   // Maneja el cambio de selección de origen
   const handleOrigenChange = (event) => {
     setOrigen(event.target.value);
@@ -102,12 +102,16 @@ export function Buscador() {
   const handleDestinoChange = (event) => {
     setDestino(event.target.value);
   };
-
+  /*
   const handleBuscarClick = async () => {
     try {
-      const params = new URLSearchParams({ciudad_origen: origen, ciudad_destino: destino, fecha_salida: fechaSalida});
+      const params = new URLSearchParams({
+        ciudad_origen: origen,
+        ciudad_destino: destino,
+        fecha_salida: fechaSalida,
+      });
       const response = await fetch(
-        `${apiHost}/flight/search/?${params.toString()}`,
+        `${apiHost}/flight/search/?${params.toString()}`
       );
 
       if (!response.ok) {
@@ -115,6 +119,26 @@ export function Buscador() {
       }
       const vuelosFiltrados = await response.json();
       console.log(vuelosFiltrados);
+      // Redirigir a la página de resultados con los vuelos obtenidos
+      navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  */
+
+  const handleBuscarClick = () => {
+    try {
+      // Filtra los vuelos desde el JSON importado
+      const vuelosFiltrados = Vuelos.filter(
+        (vuelo) =>
+          vuelo.ciudad_origen === origen &&
+          vuelo.ciudad_destino === destino &&
+          vuelo.fecha_salida === fechaSalida
+      );
+
+      console.log(vuelosFiltrados);
+
       // Redirigir a la página de resultados con los vuelos obtenidos
       navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
     } catch (error) {

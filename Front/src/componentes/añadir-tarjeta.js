@@ -11,10 +11,11 @@ export function PaymentForm() {
     cvc: "",
     name: "",
     focus: "",
+    cardtype: "",
+    currencycard: "",
   });
 
-
-  const [minDate,setMinDate] = useState("");
+  const [minDate, setMinDate] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,13 +26,13 @@ export function PaymentForm() {
 
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
-  const handleHome = () => {
-    navigate("/home-cliente");
+  const handleListatarjeta = () => {
+    navigate("/lista-tarjetas");
   };
 
   const handleInputChange = (evt) => {
@@ -45,7 +46,7 @@ export function PaymentForm() {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const { number, expiry, cvc, name } = state;
+    const { number, expiry, cvc, name, cardtype, currencycard } = state;
 
     try {
       const response = await fetch(`${apiHost}/cards/create/`, {
@@ -58,6 +59,8 @@ export function PaymentForm() {
           expiry,
           cvc,
           name,
+          cardtype,
+          currencycard,
         }),
       });
 
@@ -97,6 +100,22 @@ export function PaymentForm() {
         focused={state.focus}
       />
       <form onSubmit={handleSubmit}>
+        <select
+          className="tipo-tarjeta"
+          value={state.cardtype}
+          style={{ marginTop: "10px" }}
+          required
+        >
+          <option value="tipo de tarjeta" style={{ color: "black" }}>
+            Tipo de tarjeta
+          </option>
+          <option value="D" style={{ color: "black" }}>
+            Tarjeta de debito
+          </option>
+          <option value="C" style={{ color: "black" }}>
+            Tarjeta de credito
+          </option>
+        </select>
         <input
           type="tel"
           name="number"
@@ -173,6 +192,13 @@ export function PaymentForm() {
             margin: "auto",
           }}
         />
+        <input
+          type="number"
+          min={0}
+          placeholder="Saldo/Cupo de la tarjeta"
+          value={state.currencycard}
+          required
+        />
         <div className="botones-tarjetas">
           <button
             type="submit"
@@ -180,7 +206,7 @@ export function PaymentForm() {
           >
             Añadir tarjeta
           </button>
-          <button onClick={handleHome}>Cancelar</button>
+          <button onClick={handleListatarjeta}>Cancelar</button>
         </div>
       </form>
     </div>

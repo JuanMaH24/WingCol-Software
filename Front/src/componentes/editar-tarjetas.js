@@ -10,11 +10,12 @@ export function PaymentFormEditarTarjeta() {
     cvc: "",
     name: "",
     focus: "",
+    cardtype: "",
+    currencycard: "",
   });
   const apiHost = process.env.REACT_APP_API_HOST;
 
-  
-  const [minDate,setMinDate] = useState("");
+  const [minDate, setMinDate] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,8 +26,8 @@ export function PaymentFormEditarTarjeta() {
 
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
   const [originalState, setOriginalState] = useState(null);
@@ -43,6 +44,8 @@ export function PaymentFormEditarTarjeta() {
           cvc: data.cvc,
           name: data.name,
           focus: "",
+          cardtype: data.cardtype,
+          currencycard: data.currencycard,
         });
       } catch (error) {
         console.error("Error al cargar la tarjeta:", error);
@@ -68,16 +71,13 @@ export function PaymentFormEditarTarjeta() {
     );
     if (confirmDelete) {
       try {
-        const response = await fetch(
-          `${apiHost}/cards/delete/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ number: state.number }), // Enviar la información necesaria para identificar la tarjeta
-          }
-        );
+        const response = await fetch(`${apiHost}/cards/delete/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ number: state.number }), // Enviar la información necesaria para identificar la tarjeta
+        });
 
         if (response.ok) {
           alert("Tarjeta eliminada exitosamente.");
@@ -102,12 +102,18 @@ export function PaymentFormEditarTarjeta() {
     }
   };
 
+  const handleListaTarjeta = () => {
+    navigate("/lista-tarjetas");
+  };
+
   const hasChanges = () => {
     return (
       state.number !== originalState.number ||
       state.expiry !== originalState.expiry ||
       state.cvc !== originalState.cvc ||
-      state.name !== originalState.name
+      state.name !== originalState.name ||
+      state.cardtype !== originalState.cardtype ||
+      state.currencycard !== originalState.currencycard
     );
   };
 
@@ -115,16 +121,13 @@ export function PaymentFormEditarTarjeta() {
     evt.preventDefault();
     if (hasChanges()) {
       try {
-        const response = await fetch(
-          `${apiHost}/cards/update/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(state),
-          }
-        );
+        const response = await fetch(`${apiHost}/cards/update/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(state),
+        });
 
         if (response.ok) {
           alert("Tarjeta actualizada exitosamente.");
@@ -168,6 +171,22 @@ export function PaymentFormEditarTarjeta() {
         focused={state.focus}
       />
       <form onSubmit={handleSubmit}>
+        <select
+          className="tipo-tarjeta"
+          value={state.cardtype}
+          style={{ marginTop: "10px" }}
+          required
+        >
+          <option value="tipo de tarjeta" style={{ color: "black" }}>
+            Tipo de tarjeta
+          </option>
+          <option value="D" style={{ color: "black" }}>
+            Tarjeta de debito
+          </option>
+          <option value="C" style={{ color: "black" }}>
+            Tarjeta de credito
+          </option>
+        </select>
         <input
           type="tel"
           name="number"
@@ -221,6 +240,7 @@ export function PaymentFormEditarTarjeta() {
             margin: "auto",
           }}
         />
+
         <input
           type="tel"
           name="cvc"
@@ -239,6 +259,13 @@ export function PaymentFormEditarTarjeta() {
             margin: "auto",
           }}
         />
+        <input
+          type="number"
+          min={0}
+          placeholder="Saldo de la tarjeta"
+          value={state.currencycard}
+          required
+        />
         <div className="botones-tarjetas">
           <button
             type="submit"
@@ -246,7 +273,7 @@ export function PaymentFormEditarTarjeta() {
           >
             Guardar cambios
           </button>
-          <button type="button" onClick={handleCancel}>
+          <button type="button" onClick={handleListaTarjeta}>
             Cancelar
           </button>
           <button
