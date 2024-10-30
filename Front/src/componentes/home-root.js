@@ -30,7 +30,6 @@ export function HomeRoot() {
         <button type="submit" onClick={handleCrearAdmin}>
           Crear administrador
         </button>
-        <button type="submit">Eliminar administrador</button>
       </div>
     </div>
   );

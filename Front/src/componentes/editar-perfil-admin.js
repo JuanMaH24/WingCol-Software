@@ -218,16 +218,19 @@ export function EditarPerfilAdmin() {
           {
             method: "PUT", //
             headers: {
+              "Authorization": `Bearer ${jwtToken}`,
               "Content-Type": "application/json",
               // Asegúrate de incluir el token de autenticación si es necesario
               // "Authorization": "Bearer " + yourAuthToken
             },
-            body: JSON.stringify({ action: "delete_account" }), // Incluye el cuerpo si el backend espera algún dato
+            body: JSON.stringify({user_id: currentUser.user_id}), // Incluye el cuerpo si el backend espera algún dato
           }
         );
 
         if (response.ok) {
           alert("Tu cuenta ha sido eliminada exitosamente.");
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
           navigate("/inicio-de-sesion");
         } else {
           const errorData = await response.json();
