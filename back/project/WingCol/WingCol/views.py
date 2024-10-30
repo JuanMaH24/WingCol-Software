@@ -231,8 +231,8 @@ def login(request):
         return Response({"error": "El Usuario no fue Encontrado, Debes Registrarte"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
-# @authentication_classes([AdminAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([AdminAuthentication])
+@permission_classes([IsAuthenticated])
 def create_flight(request):
     flight_serializer = FlightSerializer(data=request.data)
     if flight_serializer.is_valid():
@@ -243,8 +243,8 @@ def create_flight(request):
     return Response(flight_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-# @authentication_classes([AdminAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([AdminAuthentication])
+@permission_classes([IsAuthenticated])
 def get_flight(request):
     try:
         flight_id = request.query_params.get("id_vuelo")
