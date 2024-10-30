@@ -16,19 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from .views import *
-from django.urls import path
+from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', get_all_users),
-    path('users/<int:id>', get_user),
-    path('users/client/<int:id>', get_client), 
+    path('allusers/', get_all_users),
+    path('users/', get_user),
+    path('users/client/', get_client), 
     path('users/client/create/', create_client),
     path('users/client/update/', update_client),
-    path('users/client/delete/<int:id>', delete_client),
-    path('users/admin/<int:id>', get_admin), 
+    path('users/client/delete/', delete_client),
+    path('users/admin/', get_admin), 
     path('users/admin/create/', create_admin),
     path('users/admin/update/', update_admin),
-    path('users/admin/delete/<int:id>', delete_admin),
+    path('users/admin/delete/', delete_admin),
     path('login/', login),
+    path('flight/create/', create_flight),
+    path('flight/', get_all_flights),
+    path('api/token/', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='token_obtain_pair'),
+    path('flight/search/', get_flight_by_name),
+	path('flight/update/', update_flight),
+	path('flight/delete/', delete_flight),
+    path('password_reset/', include('django_rest_passwordreset.urls')),
 ]

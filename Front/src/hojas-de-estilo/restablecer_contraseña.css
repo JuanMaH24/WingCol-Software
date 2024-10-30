@@ -1,0 +1,41 @@
+.contenedor-principal {
+  font-family: "Poppins", sans-serif;
+  width: 500px;
+  background-color: #0c056d;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: white;
+  border-radius: 10px;
+  padding: 30px 40px;
+}
+
+.contenedor-principal h1 {
+  color: white;
+  display: block;
+  margin: auto;
+}
+
+.contenedor-principal .input-box {
+  padding: 10px 0 10px 0;
+}
+
+.contenedor-principal .boton-confirmar {
+  padding-top: 10px;
+}
+.boton-confirmar button {
+  display: block;
+  margin: auto;
+  border-radius: 40px;
+  width: 75%;
+  height: 45px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+}

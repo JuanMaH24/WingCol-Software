@@ -1,0 +1,91 @@
+@import "react-phone-number-input/style.css";
+
+.contenedor-principal-editar-admin {
+  width: 1000px;
+  background-color: #0c056d;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: white;
+  border-radius: 10px;
+  padding: 30px 40px;
+  display: grid; /* Usamos grid */
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+  grid-gap: 20px; /* Espacio entre columnas */
+  font-family: "Poppins", sans-serif;
+}
+
+.contenedor-principal-editar-admin h1 {
+  grid-column: span 2; /* Ocupa las dos columnas */
+  font-size: 36px;
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.contenedor-principal-editar-admin .input-box-editar-admin,
+.contenedor-principal-editar-admin .multiples-opciones-editar-admin,
+.contenedor-principal-editar-admin .selector-paises-editar-admin,
+.contenedor-principal-editar-admin .foto-de-perfil-editar-admin,
+.contenedor-principal-editar-admin .boton-registro-editar-admin,
+.contenedor-principal-editar-admin .boton-eliminar-editar-admin {
+  width: 100%; /* Ocupar el ancho completo de su columna */
+}
+
+.boton-registro-editar-admin {
+  grid-column: span 2; /* Botón de registro ocupa ambas columnas */
+}
+
+.boton-eliminar-editar-admin {
+  grid-column: span 2; /* Botón de eliminar ocupa ambas columnas */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.boton-eliminar-editar-admin .boton-registro-editar-admin button:hover {
+  color: grey;
+}
+
+.boton-registro-editar-admin button,
+.boton-eliminar-editar-admin button {
+  width: 100%;
+  height: 45px;
+  background-color: #fff;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  font-weight: 700;
+}
+
+.boton-eliminar-editar-admin button {
+  background-color: red;
+  color: #fff;
+}
+
+.logo-completo {
+  width: 20%;
+  grid-column: span 2; /* Logo ocupa ambas columnas */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 430px) {
+  .contenedor-principal-editar-admin {
+    width: 90%;
+    grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+  }
+
+  .contenedor-principal-editar-admin .input-box-editar-admin,
+  .contenedor-principal-editar-admin .multiples-opciones-editar-admin,
+  .contenedor-principal-editar-admin .selector-paises-editar-admin,
+  .contenedor-principal-editar-admin .foto-de-perfil-editar-admin,
+  .contenedor-principal-editar-admin .boton-registro-editar-admin,
+  .contenedor-principal-editar-admin .boton-eliminar-editar-admin {
+    width: 100%; /* Ocupar el 100% del ancho en pantallas pequeñas */
+  }
+}

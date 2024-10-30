@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import "../hojas-de-estilo/inicio-de-sesion.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { getUser } from "../services/jwt-decode";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import logo from "../imagenes/logo.png";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 export function Formulario({ setUser }) {
   // State para el usuario y la contraseña
@@ -19,6 +19,7 @@ export function Formulario({ setUser }) {
 
   // Función para manejar el submit
   const handleSubmit = async (e) => {
+    const apiHost = process.env.REACT_APP_API_HOST;
     e.preventDefault();
     if (usuario === "" || contraseña === "") {
       setError("Todos los campos son obligatorios");
@@ -27,7 +28,7 @@ export function Formulario({ setUser }) {
 
     try {
       // Realiza la petición al backend
-      const response = await fetch("http://127.0.0.1:8000/login/", {
+      const response = await fetch(`${apiHost}/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,15 +43,20 @@ export function Formulario({ setUser }) {
 
       if (response.ok) {
         // Guarda el token en localStorage
-        localStorage.setItem("token", data.token);
-
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        
         // Guarda el usuario en el estado de la app
-        setUser({
-          name: data.name, // Por ejemplo, según lo que devuelva tu backend
-        });
-
-        // Redireccionar a la página principal
-        navigate("/home");
+        const user = getUser();
+        
+        // Redirigir según el rol del usuario
+        if (user.roles === 1) {
+          navigate("/home-cliente");
+        } else if (user.roles === 2) {
+          navigate("/home-cliente");
+        } else if (user.roles === 3) {
+          navigate("/home-root");
+        }
       } else {
         // Muestra el error devuelto por el backend
         setError(data.message || "Error en el inicio de sesión");
@@ -87,7 +93,9 @@ export function Formulario({ setUser }) {
           <FaLock className="icono" />
         </div>
         <div className="recordar-contraseña">
-          <a href="#">¿Olvidaste tu contraseña?</a>
+          <Link to="/recuperar-contraseña" variant="#">
+            ¿Olvidaste tu contraseña?
+          </Link>
         </div>
         <button>Iniciar sesión</button>
         <div className="link-registrarse">
@@ -98,11 +106,7 @@ export function Formulario({ setUser }) {
             </Link>
           </p>
         </div>
-        {successMessage && (
-          <Alert severity="success">
-            {successMessage}
-          </Alert>
-        )}
+        {successMessage && <Alert severity="success">{successMessage}</Alert>}
         {error && <p className="error-message">{error}</p>}{" "}
         {/* Mostrar mensajes de error */}
       </form>
