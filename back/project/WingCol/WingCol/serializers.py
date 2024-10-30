@@ -53,8 +53,8 @@ class AdministradorSerializer(serializers.ModelSerializer):
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vuelos
-        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'duracion', 'fecha_llegada', 'precio', 'tipo', 'estado', 'vuelos_pic']
-        extra_kwargs = {'vuelos_pic': {'required': False}, 'id_vuelo': {'read_only': True}}
+        fields = ['id_vuelo', 'referencia', 'ciudad_origen', 'ciudad_destino', 'fecha_salida', 'duracion', 'fecha_llegada', 'precio', 'tipo', 'estado', 'vuelos_pic']
+        extra_kwargs = {'vuelos_pic': {'required': False}, 'id_vuelo': {'read_only': True}, 'referencia': {'read_only': True}}
 
     def validate(self, data):
         # if data['fecha_salida'] >= data['fecha_llegada']:

@@ -137,9 +137,9 @@ class Vuelos(models.Model):
 	def create_reference(self):
 		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
 
-	def calculate_duration(self):
-		duracion = round((self.fecha_llegada - self.fecha_salida).seconds / 3600, 2)
-		self.duracion = duracion
+	# def calculate_duration(self):
+	# 	duracion = round((self.fecha_llegada - self.fecha_salida).seconds / 3600, 2)
+	# 	self.duracion = duracion
 
 class Sillas(models.Model):
 	class ClaseAsiento(models.TextChoices):
