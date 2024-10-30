@@ -238,7 +238,6 @@ def create_flight(request):
     if flight_serializer.is_valid():
         flight = flight_serializer.save()
         flight.create_reference()
-        flight.calculate_duration()
         flight.save()
         return Response(flight_serializer.data, status=status.HTTP_201_CREATED)
     return Response(flight_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
