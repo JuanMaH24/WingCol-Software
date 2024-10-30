@@ -57,14 +57,17 @@ export default function App() {
   };
 
   useEffect(() => {
-    try {
-      const currentUser = getUser();
-      setUser(currentUser);
-      setIsLoading(false);
-    } catch (err) {
-      setUser(null);
-      setIsLoading(false);
+    const getCurrentUser = async () => {
+      try {
+        const currentUser = await getUser();
+        setUser(currentUser);
+        setIsLoading(false);
+      } catch (err) {
+        setUser(null);
+        setIsLoading(false);
+      }
     }
+    getCurrentUser()
   }, []);
 
   if (isLoading) {
