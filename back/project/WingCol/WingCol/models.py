@@ -2,6 +2,7 @@ from django.db import models
 from .manager import UsersManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class NormalUser(AbstractBaseUser, PermissionsMixin):
@@ -97,13 +98,15 @@ class Tarjetas(models.Model):
 	class TipoTarjeta(models.TextChoices):
 		DEBITO = 'D', 'Débito'
 		CREDITO = 'C', 'Crédito'
-	id_tarjeta = models.CharField(primary_key=True, max_length=20) 
-	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	id_tarjeta = models.BigIntegerField(primary_key=True) 
+	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	tipo_tarjeta = models.CharField(max_length=20, choices=TipoTarjeta.choices)
-	vvc = models.PositiveIntegerField(max_length=4)
+	vvc = models.PositiveIntegerField(
+		validators=[MinValueValidator(100), MaxValueValidator(9999)]
+	)
 	fecha_expiracion = models.DateField()
-	saldo = models.IntegerField()
-	activo = models.BooleanField(default=True)
+	saldo = models.IntegerField(blank=True, null=True)
+	activo = models.BooleanField(default=True) 
 
 class Vuelos(models.Model):
 	class EstadoVuelo(models.TextChoices):
@@ -120,7 +123,7 @@ class Vuelos(models.Model):
 	ciudad_destino = models.CharField(max_length=25)
 	precio = models.PositiveIntegerField()
 	fecha_salida = models.DateTimeField()
-	fecha_llegada = models.DateTimeField()
+	fecha_llegada = models.DateTimeField(blank=True, null=True)
 	duracion = models.FloatField(blank=True, null=True)
 	tipo = models.CharField(max_length=20, choices=TipoVuelo.choices)
 	estado = models.CharField(max_length=20, choices=EstadoVuelo.choices)
@@ -165,7 +168,7 @@ class ComprasReservas(models.Model):
 		COMPRADO = 'COM', 'Comprado'
 		RESERVADO = 'RES', 'Reservado'
 		CANCELADO = 'CAN', 'Cancelado'
-	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
 	id_cr = models.AutoField(primary_key=True)
 	estado = models.CharField(max_length=20, choices=Estado.choices)
@@ -182,7 +185,7 @@ class Tiquete(models.Model):
 		MALETA = 'MB', 'Maleta de bodega'
 
 	id_tiquete = models.AutoField(primary_key=True)
-	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
@@ -190,7 +193,7 @@ class Tiquete(models.Model):
 	activo = models.BooleanField(default=True)
 
 class Busquedas(models.Model):
-	id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	ciudad_origen = models.CharField(max_length=25, blank=True)
 	ciudad_destino = models.CharField(max_length=25, blank=True)
 	fecha = models.DateTimeField(auto_now_add=True, blank=True)

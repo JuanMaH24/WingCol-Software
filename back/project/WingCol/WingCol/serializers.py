@@ -53,12 +53,12 @@ class AdministradorSerializer(serializers.ModelSerializer):
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vuelos
-        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'fecha_llegada', 'precio', 'tipo', 'estado', 'vuelos_pic']
-        extra_kwargs = {'vuelos_pic': {'required': False}}
+        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'duracion', 'fecha_llegada', 'precio', 'tipo', 'estado', 'vuelos_pic']
+        extra_kwargs = {'vuelos_pic': {'required': False}, 'id_vuelo': {'read_only': True}}
 
     def validate(self, data):
-        if data['fecha_salida'] >= data['fecha_llegada']:
-            raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
+        # if data['fecha_salida'] >= data['fecha_llegada']:
+        #     raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
         if data['fecha_salida'] < timezone.now():
             raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
         return data 
@@ -70,8 +70,8 @@ class SearchSerializer(serializers.ModelSerializer):
         extra_kwargs = {'vuelos_pic': {'required': False}}
 
     def validate(self, data):
-        if data['fecha_salida'] >= data['fecha_llegada']:
-            raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
+        # if data['fecha_salida'] >= data['fecha_llegada']:
+        #     raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
         if data['fecha_salida'] < timezone.now():
             raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
         return data 
@@ -89,16 +89,16 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
      
 class CardSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source="clientes.user_id")
     class Meta:
         model = Tarjetas
-        fields = ['id_tarjeta', 'id_cliente', 'tipo_tarjeta', 'vvc', 'fecha_expiracion', 'saldo']
-        extra_kwargs = {'saldo': {'required': False}}
+        fields = ['id_tarjeta', 'user_id', 'tipo_tarjeta', 'vvc', 'fecha_expiracion']
 
     def validate(self, data):
-        if data['fecha_expiracion'] < timezone.now():
-            raise serializers.ValidationError('La fecha de expiración debe ser mayor a la fecha actual')
         if data['id_tarjeta'] < 0:
             raise serializers.ValidationError('El id de la tarjeta no puede ser negativo')
+        if len(str(data['id_tarjeta'])) != 16:
+            raise serializers.ValidationError('La longitud del id no es valida')
         if data['saldo'] < 0:
             raise serializers.ValidationError('El saldo no puede ser negativo')
         return data
