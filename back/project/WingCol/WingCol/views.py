@@ -33,7 +33,7 @@ def get_all_users(request):
 @api_view(['GET'])
 def get_user(request):
     try:
-        id = request.data["user_id"]
+        id = request.query_params.get("user_id")
         user = NormalUser.objects.get(user_id=id, activo=True)
         serializer = UserSerializer(user, many=False)
         return Response(serializer.data)
@@ -45,7 +45,7 @@ def get_user(request):
 @permission_classes([IsAuthenticated])
 def get_client(request):
     try:
-        id = request.data["user_id"]
+        id = request.query_params.get("user_id")
         user= NormalUser.objects.get(user_id=id, activo=True)
         user_serializer = UserSerializer(user, many=False)
         client = Cliente.objects.get(user_id=id, activo=True)
@@ -113,7 +113,7 @@ def update_client(request):
 @permission_classes([IsAuthenticated])
 def delete_client(request):
     try:
-        id = request.data["user_id"]
+        id = request.query_params.get("user_id")
         user = NormalUser.objects.get(user_id=id, activo = True)
         client = Cliente.objects.get(user_id=id, activo = True)
         
@@ -133,7 +133,7 @@ def delete_client(request):
 @permission_classes([IsAuthenticated])
 def get_admin(request):
     try:
-        id = request.data["user_id"]
+        id = request.query_params.get("user_id")
         user= NormalUser.objects.get(user_id=id, activo=True)
         user_serializer = UserSerializer(user, many=False)
         admin = Administrador.objects.get(user_id=id, activo=True)
@@ -255,10 +255,9 @@ def get_all_flights(request):
 @api_view(['GET'])
 def get_flights(request):
     try:
-        data = request.data
-        city_arrive = data.get("ciudad_destino")
-        city_departure = data.get("ciudad_origen")
-        date = data.get("fecha_salida")
+        city_arrive = request.query_params.get("ciudad_destino")
+        city_departure = request.query_params.get("ciudad_origen")
+        date = request.query_params.get("fecha_salida")
         search_query = Q(activo =True)
         if city_arrive:
             search_query &= Q(ciudad_destino=city_arrive)
@@ -313,7 +312,7 @@ def create_card(request):
 
 def get_card(request):
     try:
-        user_id = request.data['id_cliente']
+        user_id = request.query_params.get('id_cliente')
         card = Tarjetas.objects.get(id_cliente=user_id, activo=True)
         card_serializer = CardSerializer(card, many=True)
     
