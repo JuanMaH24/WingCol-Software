@@ -26,47 +26,45 @@ import { PaymentForm } from "./componentes/añadir-tarjeta";
 import { PaymentFormEditarTarjeta } from "./componentes/editar-tarjetas";
 import { ResultadosPage } from "./componentes/pagina-resultados";
 
-const ProtectedRoute = ({ children, allowedRoles = [] }) => {
-  const token = localStorage.getItem("access");
-  const location = useLocation();
-  const user = getUser();
-
-  if (!user) {
-    return <Navigate to="/home-visitante" state={{ from: location }} replace />;
-  }
-
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
-  }
-
-  return children;
-};
-
-const PublicRoute = ({ children }) => {
-  const token = localStorage.getItem("access");
-  const user = getUser();
-
-  if (user) {
-    if (user && user.role === 3) {
-      return <Navigate to="/home-root" replace />;
-    }
-    return <Navigate to="/home-cliente" replace />;
-  }
-
-  return children;
-};
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+    const location = useLocation();
+  
+    if (!user) {
+      return <Navigate to="/" state={{ from: location }} replace />;
+    }
+  
+    if (allowedRoles.length > 0 && !allowedRoles.includes(user.roles)) {
+      return <Navigate to="/unauthorized" replace />;
+    }
+  
+    return children;
+  };
+  
+  const PublicRoute = ({ children }) => {
+    if (user) {
+      if (user && user.roles === 3) {
+        return <Navigate to="/home-root" replace />;
+      }
+      return <Navigate to="/home-cliente" replace />;
+    }
+  
+    return children;
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (token) {
-      const userData = getUser();
-      setUser(userData);
+    try {
+      const currentUser = getUser();
+      setUser(currentUser);
+      setIsLoading(false);
+    } catch (err) {
+      setUser(null);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   if (isLoading) {
@@ -84,7 +82,7 @@ export default function App() {
               <Navigate
                 to={
                   user
-                    ? user.role === 3
+                    ? user.roles === 3
                       ? "/home-root"
                       : "/home-cliente"
                     : "/home-visitante"

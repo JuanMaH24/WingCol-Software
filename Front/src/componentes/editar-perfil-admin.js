@@ -41,7 +41,6 @@ export function EditarPerfilAdmin() {
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
     async function fetchProfileData() {
-      console.log(currentUser.user_id);
       try {
         const params = new URLSearchParams({user_id: currentUser.user_id});
         const response = await fetch(

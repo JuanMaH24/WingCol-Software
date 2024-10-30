@@ -58,8 +58,9 @@ export default function BasicMenu() {
   const handleCerrarSesion = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
-    navigate("/");
-    handleClose();
+    window.location.reload();
+    navigate("/"); 
+    // handleClose();
   };
 
   const handleCrearTarjeta = () => {

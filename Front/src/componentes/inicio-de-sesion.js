@@ -45,10 +45,10 @@ export function Formulario({ setUser }) {
         // Guarda el token en localStorage
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
-
+        
         // Guarda el usuario en el estado de la app
         const user = getUser();
-
+        
         // Redirigir según el rol del usuario
         if (user.roles === 1) {
           navigate("/home-cliente");

@@ -163,6 +163,7 @@ export function CrearVuelos() {
 
     const dataToSend = new FormData();
     const apiHost = process.env.REACT_APP_API_HOST;
+    const jwtToken = localStorage.getItem('access');
 
     // Agregamos los campos al FormData
     dataToSend.append("ciudad_origen", formData.selectedOrigen);
@@ -171,7 +172,7 @@ export function CrearVuelos() {
       "fecha_salida",
       `${formData.fechaSalida}T${formData.horaSalida}:00Z`
     );
-    dataToSend.append("fecha_llegada", "2024-10-14T15:00:00Z"); // Ajusta la fecha si es necesario
+    // dataToSend.append("fecha_llegada", "2024-10-14T15:00:00Z"); // Ajusta la fecha si es necesario
     dataToSend.append("precio", parseFloat(formData.precio)); // Convertimos a número decimal
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("estado", "P"); // Estado predeterminado
@@ -184,10 +185,13 @@ export function CrearVuelos() {
       dataToSend.append("flight_pic", "imagen.jpg"); // Valor por defecto si no hay imagen
     }
 
+    console.log(JSON.stringify(dataToSend))
+
     try {
       const response = await fetch(`${apiHost}/flight/create/`, {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${jwtToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSend),
