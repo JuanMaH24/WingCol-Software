@@ -230,7 +230,7 @@ export function EditarVuelo() {
         <select
           name="tipoVuelo"
           value={formData.tipoVuelo}
-          onChange={handleInputChange}
+          onChange={handleTipoVueloChange}
           required
         >
           <option value="" disabled>
@@ -245,14 +245,14 @@ export function EditarVuelo() {
         <select
           name="selectedOrigen"
           value={formData.selectedOrigen}
-          onChange={handleInputChange}
+          onChange={handleOrigenChange}
           required
         >
           <option value="" disabled>
             Seleccionar origen del vuelo
           </option>
           {formData.tipoVuelo === "N"
-            ? capitalesColombia.map((origen) => (
+            ? getOrigenOptions.map((origen) => (
                 <option key={origen.value} value={origen.value}>
                   {origen.label}
                 </option>
@@ -269,14 +269,14 @@ export function EditarVuelo() {
         <select
           name="selectedDestino"
           value={formData.selectedDestino}
-          onChange={handleInputChange}
+          onChange={handleDestinoChange}
           required
         >
           <option value="" disabled>
             Seleccionar destino del vuelo
           </option>
           {formData.tipoVuelo === "N"
-            ? capitalesColombia.map((destino) => (
+            ? getDestinoOptions.map((destino) => (
                 <option key={destino.value} value={destino.value}>
                   {destino.label}
                 </option>

@@ -221,7 +221,7 @@ export function Registro() {
         );
         return;
       } else {
-        navigate("/", {
+        navigate("/inicio-de-sesion", {
           state: { successMessage: "Usuario registrado correctamente." },
         });
       }

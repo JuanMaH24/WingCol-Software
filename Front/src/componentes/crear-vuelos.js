@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import LogoCompleto from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/crear_vuelos.css";
 import CurrencyInput from "react-currency-input-field";
@@ -10,8 +10,26 @@ export function CrearVuelos() {
     tipoVuelo: "", // Nacional o Internacional
     selectedOrigen: "",
     selectedDestino: "",
+    precio: "",
+    fechaSalida: "",
+    horaSalida: "",
+    duracion:"",
   });
+  const [minDate,setMinDate] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = formatDate(today);
+    setMinDate(formattedDate);
+  }, []);
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const distancias = {
     "Bogotá-Cali": 300,
@@ -148,16 +166,6 @@ export function CrearVuelos() {
     return `${horas} horas y ${minutos} minutos`;
   };
 
-  const handleDelete = () => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que quieres cancelar la creación del vuelo?"
-    );
-    if (isConfirmed) {
-      console.log("creacion de vuelo cancelada");
-      navigate("/home-cliente");
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -176,6 +184,7 @@ export function CrearVuelos() {
     dataToSend.append("precio", parseFloat(formData.precio)); // Convertimos a número decimal
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("estado", "P"); // Estado predeterminado
+    dataToSend.append("duracion",formData.duracion)
 
     // Si tienes una imagen, la puedes agregar usando el campo correspondiente
     // Supongamos que estás obteniendo la imagen de un campo en el formulario
@@ -277,6 +286,7 @@ export function CrearVuelos() {
           type="date"
           name="fechaSalida"
           value={formData.fechaSalida}
+          min ={minDate}
           onChange={handleChange}
           required
         />
@@ -297,7 +307,7 @@ export function CrearVuelos() {
           <button type="submit">Crear vuelo</button>
         </div>
         <div className="boton-vuelo">
-          <button type="button" onClick={() => navigate("/")}>
+          <button type="button" onClick={() => navigate("/home-cliente")}>
             Cancelar
           </button>
         </div>
