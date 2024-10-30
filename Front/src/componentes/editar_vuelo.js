@@ -75,7 +75,7 @@ export function EditarVuelo() {
       try {
         const params = new URLSearchParams({id_vuelo: id});
         const response = await fetch(
-          `${apiHost}/flight/?${params.toString()}`,
+          `${apiHost}/flight/get/?${params.toString()}`,
           {
             headers: {
               "Authorization": `Bearer ${jwtToken}`
@@ -83,6 +83,7 @@ export function EditarVuelo() {
           }
         ); // Reemplaza con la URL real de la API
         const data = await response.json();
+        console.log(data);
         setFormData({
           estado: data.estado,
           tipoVuelo: data.tipo,
@@ -90,7 +91,9 @@ export function EditarVuelo() {
           selectedDestino: data.ciudad_destino,
           fechaSalida: data.fecha_salida.split("T")[0], // Para separar la fecha y hora
           horaSalida: data.fecha_salida.split("T")[1].slice(0, 5),
+          duracion: data.duracion,
           precio: data.precio,
+          idVuelo: data.id_vuelo
         });
       } catch (error) {
         console.error("Error al obtener los datos del vuelo:", error);
@@ -111,6 +114,7 @@ export function EditarVuelo() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const dataToSend = new FormData();
+
     dataToSend.append("estado", formData.estado);
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("ciudad_origen", formData.selectedOrigen);
@@ -119,11 +123,15 @@ export function EditarVuelo() {
       "fecha_salida",
       `${formData.fechaSalida}T${formData.horaSalida}:00Z`
     );
+    dataToSend.append("id", formData.idVuelo);
     dataToSend.append("precio", formData.precio);
 
     try {
-      const respuesta = await fetch(`API_URL/vuelos/${id}`, {
+      const respuesta = await fetch(`${apiHost}/flight/update/`, {
         method: "PUT", // Método de actualización
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`,
+        },
         body: dataToSend,
       });
 
@@ -187,11 +195,12 @@ export function EditarVuelo() {
     if (isConfirmed) {
       try {
         const response = await fetch(
-          `${apiHost}/flight/update/`,
+          `${apiHost}/flight/delete/`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
+              "Authorization": `Bearer ${jwtToken}`,
               // Asegúrate de incluir el token de autenticación si es necesario
               // "Authorization": "Bearer " + yourAuthToken
             },
@@ -222,7 +231,7 @@ export function EditarVuelo() {
       <img src={LogoCompleto} alt="Logo de WingColombia" className="logo" />
       <h1>Editar vuelo</h1>
 
-      <div className="input-vuelo">
+      {/* <div className="input-vuelo">
         <input
           type="text"
           name="vueloNumero"
@@ -232,7 +241,7 @@ export function EditarVuelo() {
           maxLength={10}
           required
         />
-      </div>
+      </div> */}
 
       <div className="selector-vuelo">
         <select
@@ -260,7 +269,7 @@ export function EditarVuelo() {
             Seleccionar origen del vuelo
           </option>
           {formData.tipoVuelo === "N"
-            ? getOrigenOptions.map((origen) => (
+            ? getOrigenOptions().map((origen) => (
                 <option key={origen.value} value={origen.value}>
                   {origen.label}
                 </option>
@@ -284,7 +293,7 @@ export function EditarVuelo() {
             Seleccionar destino del vuelo
           </option>
           {formData.tipoVuelo === "N"
-            ? getDestinoOptions.map((destino) => (
+            ? getDestinoOptions().map((destino) => (
                 <option key={destino.value} value={destino.value}>
                   {destino.label}
                 </option>
@@ -296,6 +305,18 @@ export function EditarVuelo() {
               ))}
         </select>
       </div>
+
+      <div className="input-vuelo">
+        <input
+          type="text"
+          name="precio"
+          value={formData.precio}
+          onChange={handleInputChange}
+          placeholder="Precio tiquete"
+          required
+        />
+      </div>
+
 
       <div className="input-vuelo">
         <h3>Fecha de salida</h3>
@@ -320,12 +341,13 @@ export function EditarVuelo() {
       </div>
 
       <div className="input-vuelo">
+        <h3>Tiempo de vuelo (min)</h3>
         <input
-          type="text"
-          name="precio"
-          value={formData.precio}
+          type="number"
+          name="duracion"
+          value={formData.duracion}
+          min={0}
           onChange={handleInputChange}
-          placeholder="Precio tiquete"
           required
         />
       </div>
