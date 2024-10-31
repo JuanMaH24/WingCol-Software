@@ -301,7 +301,7 @@ def update_flight(request):
     return Response({'errors': flight_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-@authentication_classes([RootAuthentication])
+@authentication_classes([AdminAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_flight(request):
     try:
