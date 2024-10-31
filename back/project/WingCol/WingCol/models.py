@@ -99,14 +99,18 @@ class Tarjetas(models.Model):
 		DEBITO = 'D', 'Débito'
 		CREDITO = 'C', 'Crédito'
 	id_tarjeta = models.BigIntegerField(primary_key=True) 
-	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
 	tipo_tarjeta = models.CharField(max_length=20, choices=TipoTarjeta.choices)
 	vvc = models.PositiveIntegerField(
 		validators=[MinValueValidator(100), MaxValueValidator(9999)]
 	)
 	fecha_expiracion = models.DateField()
 	saldo = models.IntegerField(blank=True, null=True)
-	activo = models.BooleanField(default=True) 
+	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save() 
 
 class Vuelos(models.Model):
 	class EstadoVuelo(models.TextChoices):

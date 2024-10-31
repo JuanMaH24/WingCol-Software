@@ -89,18 +89,16 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
      
 class CardSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(source="clientes.user_id")
+    # user_id = serializers.PrimaryKeyRelatedField(queryset=NormalUser.objects.all())
     class Meta:
         model = Tarjetas
-        fields = ['id_tarjeta', 'user_id', 'tipo_tarjeta', 'vvc', 'fecha_expiracion']
+        fields = ['id_tarjeta', 'user_id', 'tipo_tarjeta', 'vvc', 'fecha_expiracion', 'saldo']
 
     def validate(self, data):
         if data['id_tarjeta'] < 0:
             raise serializers.ValidationError('El id de la tarjeta no puede ser negativo')
         if len(str(data['id_tarjeta'])) != 16:
             raise serializers.ValidationError('La longitud del id no es valida')
-        if data['saldo'] < 0:
-            raise serializers.ValidationError('El saldo no puede ser negativo')
         return data
     
 class TicketSerializer(serializers.ModelSerializer):
