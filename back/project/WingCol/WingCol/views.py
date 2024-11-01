@@ -313,6 +313,8 @@ def delete_flight(request):
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def create_card(request):
     try:
         user = NormalUser.objects.get(user_id=request.data['user_id'], activo=True)
@@ -327,6 +329,8 @@ def create_card(request):
         return Response({"error": error}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 @api_view(['GET'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def get_card(request):
     try:
         user_id = request.query_params.get('user_id')
@@ -338,6 +342,8 @@ def get_card(request):
         return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['GET'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def get_card_by_id(request):
     try:
         card_id = request.query_params.get('id_tarjeta')
@@ -348,6 +354,8 @@ def get_card_by_id(request):
         return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def delete_card(request):
     id = request.data['id_tarjeta']
     card = Tarjetas.objects.get(id_tarjeta=id, activo=True)
