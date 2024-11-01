@@ -270,7 +270,7 @@ def get_flights(request):
         city_arrive = request.query_params.get("ciudad_destino")
         city_departure = request.query_params.get("ciudad_origen")
         date = request.query_params.get("fecha_salida")
-        search_query = Q(activo =True)
+        search_query = Q(activo = True, estado = 'P')
         if city_arrive:
             search_query &= Q(ciudad_destino=city_arrive)
         if city_departure:
@@ -333,6 +333,16 @@ def get_card(request):
         card = Tarjetas.objects.filter(user_id=user_id, activo=True)
         card_serializer = CardSerializer(card, many=True)
     
+        return Response(card_serializer.data, status=status.HTTP_200_OK)
+    except Tarjetas.DoesNotExist:
+        return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def get_card_by_id(request):
+    try:
+        card_id = request.query_params.get('id_tarjeta')
+        card = Tarjetas.objects.get(id_tarjeta=card_id, activo=True)
+        card_serializer = CardSerializer(card)
         return Response(card_serializer.data, status=status.HTTP_200_OK)
     except Tarjetas.DoesNotExist:
         return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
