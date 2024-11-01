@@ -71,7 +71,7 @@ export function EditarPerfilAdmin() {
           selectedCountry: userData.pais
             ? { value: getCode(userData.pais), label: userData.pais }
             : null,
-          profilePicture: null, // Este campo lo manejará el usuario si sube una nueva imagen
+            profilePicture: userData.admin_pic ? userData.admin_pic : null, 
         });
       } catch (error) {
         console.error("Error al cargar el perfil", error);
@@ -124,6 +124,10 @@ export function EditarPerfilAdmin() {
     }));
   };
 
+  const handleCancel = () => {
+    navigate("/");
+  };
+
   const handleFileChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -170,7 +174,7 @@ export function EditarPerfilAdmin() {
 
     // Incluir la foto de perfil solo si se ha subido una nueva
     if (formData.profilePicture) {
-      dataToSend.append("user_pic", formData.profilePicture);
+      dataToSend.append("admin_pic", formData.profilePicture);
     }
 
     try {
@@ -251,7 +255,10 @@ export function EditarPerfilAdmin() {
   return (
     <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <h1>Editar perfil administrador</h1>
+      <div className="w-100 d-flex flex-column">  
+        <h1 className="p-1">Editar perfil administrador</h1>
+        <img className="logo-completo img-cover m-auto rounded-circle mb-5" alt="Imagen Admin" src={formData.profilePicture}/>
+      </div>
 
       <div className="input-box">
         <input
@@ -433,8 +440,9 @@ export function EditarPerfilAdmin() {
       <div className="boton-registro">
         <button type="submit">Guardar cambios</button>
       </div>
-      <div className="boton-eliminar">
-        <button type="button" onClick={handleDelete}>
+      <div className="w-100 d-flex justify-content-around ">
+        <button className="rounded-pill btn btn-secondary" type="button" onClick={handleCancel}>Cancelar</button>
+        <button className="rounded-pill btn btn-danger" type="button" onClick={handleDelete}>
           Eliminar cuenta
         </button>
       </div>

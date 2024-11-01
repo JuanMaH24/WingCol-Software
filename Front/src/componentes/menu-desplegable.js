@@ -64,12 +64,12 @@ export default function BasicMenu() {
   };
 
   const handleCrearTarjeta = () => {
-    navigate("/lista-tarjetas");
+    navigate("/añadir-tarjetas");
     handleClose();
   };
 
-  const handleEditarTarjeta = () => {
-    navigate("/editar-tarjetas");
+  const handleVerTarjetas = () => {
+    navigate("/lista-tarjetas");
     handleClose();
   };
 
@@ -111,7 +111,7 @@ export default function BasicMenu() {
           <>
             <MenuItem onClick={handleEditar}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearTarjeta}>Añadir tarjeta</MenuItem>
-            <MenuItem onClick={handleEditarTarjeta}>Editar tarjeta</MenuItem>
+            <MenuItem onClick={handleVerTarjetas}>Ver tarjetas</MenuItem>
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}
@@ -120,7 +120,7 @@ export default function BasicMenu() {
           <>
             <MenuItem onClick={handleEditarPerfilAdmin}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearVuelo}>Crear vuelo</MenuItem>
-            <MenuItem onClick={handleEditarVuelo}>Editar vuelo</MenuItem>
+            {/* <MenuItem onClick={handleEditarVuelo}>Editar vuelo</MenuItem> */}
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}

@@ -128,9 +128,7 @@ export function EditarVuelo() {
     dataToSend.append("precio", formData.precio);
 
     if (formData.flightPic) {
-      dataToSend.append("flight_pic", formData.flightPic); // Añadimos la imagen al FormData
-    } else {
-      dataToSend.append("flight_pic", "imagen.jpg"); // Valor por defecto si no hay imagen
+      dataToSend.append("vuelos_pic", formData.flightPic); // Añadimos la imagen al FormData
     }
 
     try {
@@ -215,6 +213,7 @@ export function EditarVuelo() {
             // Asegúrate de incluir el token de autenticación si es necesario
             // "Authorization": "Bearer " + yourAuthToken
           },
+          body: JSON.stringify({id_vuelo: id})
         });
 
         if (response.ok) {

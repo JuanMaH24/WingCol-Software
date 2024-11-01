@@ -6,38 +6,40 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+// import EditIcon from '@mui/icons-material/Edit';
+import { getUser } from "../services/jwt-decode";
+import { useNavigate } from "react-router-dom";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
 
 export function BasicTableTarjetas() {
   const apiHost = process.env.REACT_APP_API_HOST;
-  const [userData, setUserData] = useState([]);
+  const [cardData, setCardData] = useState([]);
   const jwtToken = localStorage.getItem("access");
-
+  const currentUser = getUser();
+  const navigate = useNavigate();
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
-    async function fetchUsers() {
+    async function fetchCards() {
       try {
-        // const params = new URLSearchParams({user_id: currentUser.user_id});
-        const response = await fetch(`${apiHost}/allusers/`); //Ver si hay que modificar ruta
-        const allUsers = await response.json();
-        setUserData(allUsers);
+        const param = new URLSearchParams({user_id: currentUser.user_id});
+        const response = await fetch(`${apiHost}/card/?${param.toString()}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${jwtToken}`,
+            },
+          }
+        ); //Ver si hay que modificar ruta
+        const allCards = await response.json();
+        console.log(allCards);
+        if (Array.isArray(allCards)){
+          setCardData(allCards);
+        }
       } catch (error) {
         console.error("Error al cargar el perfil", error);
       }
     }
 
-    fetchUsers();
+    fetchCards();
   }, []);
 
   const handleDelete = async (e) => {
@@ -47,17 +49,16 @@ export function BasicTableTarjetas() {
     );
     if (isConfirmed) {
       try {
-        const response = await fetch(`${apiHost}/users/admin/delete/`, {
-          //Modificar ruta
-          method: "PUT", //
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            "Content-Type": "application/json",
-            // Asegúrate de incluir el token de autenticación si es necesario
-            // "Authorization": "Bearer " + yourAuthToken
-          },
-          body: JSON.stringify({ user_id: name }), // Incluye el cuerpo si el backend espera algún dato
-        });
+        const response = await fetch(`${apiHost}/card/delete/`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${jwtToken}`,
+            },
+            body: JSON.stringify({id_tarjeta: name})
+          }
+        );
 
         if (response.ok) {
           window.location.reload();
@@ -76,6 +77,11 @@ export function BasicTableTarjetas() {
       }
     }
   };
+  
+  const handleEditarTarjeta = (e) => {
+    const { name } = e.target;
+    navigate(`/editar-tarjetas/${name}`);
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -88,18 +94,28 @@ export function BasicTableTarjetas() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {userData.map((user) =>
-            user.roles == 2 ? (
+          {cardData.map((card) => (
               <TableRow
-                key={user.user_id}
+                key={card.id_tarjeta}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell align="right">{user.user_id}</TableCell>
-                <TableCell align="right">{user.email}</TableCell>
+                <TableCell align="right">{card.tipo_tarjeta}</TableCell>
+                <TableCell align="right">{card.id_tarjeta}</TableCell>
+                <TableCell align="right">{card.saldo}</TableCell>
                 <TableCell align="right">
                   <button
                     type="submit"
-                    name={user.user_id}
+                    name={card.id_tarjeta}
+                    onClick={handleEditarTarjeta}
+                    className="btn btn-primary"
+                  >
+                    Editar
+                  </button>
+                </TableCell>
+                <TableCell align="right">
+                  <button
+                    type="submit"
+                    name={card.id_tarjeta}
                     onClick={handleDelete}
                     className="btn btn-danger"
                   >
@@ -107,8 +123,6 @@ export function BasicTableTarjetas() {
                   </button>
                 </TableCell>
               </TableRow>
-            ) : (
-              <div></div>
             )
           )}
         </TableBody>

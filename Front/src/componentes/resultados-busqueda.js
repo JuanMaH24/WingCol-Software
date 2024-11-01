@@ -39,8 +39,7 @@ export default function ResultadosVuelos({ vuelos }) {
           {vuelos.map((vuelo, index) => (
             <div key={index} className="vuelo-item">
               <div className="vuelo-detalles">
-                <input type="image" className="imagen" src={vuelo.vuelos_pic} />
-                <input type="" />
+                <img className="imagen" alt="Vuelo Imagen" src={vuelo.vuelos_pic ? vuelo.vuelos_pic : Fondo_sesion}/>
                 <p>
                   <strong>Origen:</strong> {vuelo.ciudad_origen}
                 </p>
@@ -65,7 +64,7 @@ export default function ResultadosVuelos({ vuelos }) {
                   )}
                   {role === 2 && (
                     <>
-                      <button name={1} onClick={handleEditarVuelo}>
+                      <button name={vuelo.id_vuelo} onClick={handleEditarVuelo}>
                         Editar vuelo
                       </button>
                     </>

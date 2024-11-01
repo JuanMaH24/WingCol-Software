@@ -3,6 +3,7 @@ import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/lib/styles.scss";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../services/jwt-decode";
+import Navbar from "./navbar";
 
 export function PaymentForm() {
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -35,7 +36,7 @@ export function PaymentForm() {
   };
 
   const handleListatarjeta = () => {
-    navigate("/lista-tarjetas");
+    navigate("/");
   };
 
   const handleInputChange = (evt) => {
@@ -100,6 +101,8 @@ export function PaymentForm() {
   };
 
   return (
+    <div className="contenedor-principal-home">
+    {/* <Navbar/> */}
     <div
       style={{
         fontFamily: "Poppins, sans-serif",
@@ -236,6 +239,7 @@ export function PaymentForm() {
           <button onClick={handleListatarjeta}>Cancelar</button>
         </div>
       </form>
+    </div>
     </div>
   );
 }

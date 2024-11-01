@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/lib/styles.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getUser } from "../services/jwt-decode";
 
 export function PaymentFormEditarTarjeta() {
   const [state, setState] = useState({
@@ -14,9 +15,11 @@ export function PaymentFormEditarTarjeta() {
     currencycard: "",
   });
   const apiHost = process.env.REACT_APP_API_HOST;
-
+  const jwtToken = localStorage.getItem("access");
+  const currentUser = getUser();
   const [minDate, setMinDate] = useState("");
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
     const today = new Date();
@@ -36,16 +39,32 @@ export function PaymentFormEditarTarjeta() {
   useEffect(() => {
     const fetchCardData = async () => {
       try {
-        const response = await fetch(`${apiHost}/card/`);
+        const param = new URLSearchParams({id_tarjeta: id});
+        const response = await fetch(`${apiHost}/card/get/?${param.toString()}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${jwtToken}`,
+            },
+          }
+        );
         const data = await response.json();
         setState({
-          number: data.number,
-          expiry: data.expiry,
-          cvc: data.cvc,
-          name: data.name,
+          number: data.id_tarjeta,
+          expiry: data.fecha_expiracion,
+          cvc: data.vvc,
+          name: data.nombre,
           focus: "",
-          cardtype: data.cardtype,
-          currencycard: data.currencycard,
+          cardtype: data.tipo_tarjeta,
+          currencycard: data.saldo,
+        });
+        setOriginalState({
+          number: data.id_tarjeta,
+          expiry: data.fecha_expiracion,
+          cvc: data.vvc,
+          name: data.nombre,
+          focus: "",
+          cardtype: data.tipo_tarjeta,
+          currencycard: data.saldo,
         });
       } catch (error) {
         console.error("Error al cargar la tarjeta:", error);
@@ -71,13 +90,16 @@ export function PaymentFormEditarTarjeta() {
     );
     if (confirmDelete) {
       try {
-        const response = await fetch(`${apiHost}/card/delete/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ number: state.number }), // Enviar la información necesaria para identificar la tarjeta
-        });
+        const response = await fetch(`${apiHost}/card/delete/`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${jwtToken}`,
+            },
+            body: JSON.stringify({id_tarjeta: id})
+          }
+        );
 
         if (response.ok) {
           alert("Tarjeta eliminada exitosamente.");
@@ -119,14 +141,24 @@ export function PaymentFormEditarTarjeta() {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+    const { number, expiry, cvc, name, cardtype, currencycard } = state;
     if (hasChanges()) {
       try {
         const response = await fetch(`${apiHost}/card/update/`, {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${jwtToken}`,
           },
-          body: JSON.stringify(state),
+          body: JSON.stringify({
+            "id_tarjeta": number,
+            "fecha_expiracion": expiry,
+            "vvc": cvc,
+            "nombre": name,
+            "tipo_tarjeta": cardtype,
+            "saldo": currencycard,
+            "user_id": currentUser.user_id,
+          }),
         });
 
         if (response.ok) {
@@ -174,6 +206,8 @@ export function PaymentFormEditarTarjeta() {
         <select
           className="tipo-tarjeta"
           value={state.cardtype}
+          name="cardtype"
+          onChange={handleInputChange}
           style={{ marginTop: "10px" }}
           required
         >
@@ -262,6 +296,8 @@ export function PaymentFormEditarTarjeta() {
         <input
           type="number"
           min={0}
+          name="currencycard"
+          onChange={handleInputChange}
           placeholder="Saldo de la tarjeta"
           value={state.currencycard}
           required

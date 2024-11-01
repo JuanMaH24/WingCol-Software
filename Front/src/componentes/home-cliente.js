@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import logo_wingcol from "../imagenes/WingcolName.png";
-import "../hojas-de-estilo/home-cliente.css";
+// import "../hojas-de-estilo/home-cliente.css";
 import ImgMediaCard from "./cards-home";
-import BasicMenu from "./menu-desplegable";
+import Navbar from "./navbar";
 import { Buscador } from "./buscador";
 
 export function HomeCliente() {
@@ -19,15 +19,7 @@ export function HomeCliente() {
 
   return (
     <div className="contenedor-principal-home">
-      <div className="barra-navegacion">
-        <div className="contenedor-logo">
-          <img src={logo_wingcol} alt="logo" />
-        </div>
-
-        <div className="menu-desplegable">
-          <BasicMenu />
-        </div>
-      </div>
+      <Navbar/>
       <Buscador />
       <div className="cards-home">
         <ImgMediaCard />
