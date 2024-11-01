@@ -363,6 +363,8 @@ def delete_card(request):
     return Response({"message": "Tarjeta borrada correctamente."}, status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def update_card(request):
     id = request.data['id_tarjeta']
     card = Tarjetas.objects.get(id_tarjeta=id, activo=True)
