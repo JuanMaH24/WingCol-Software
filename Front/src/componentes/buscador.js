@@ -101,6 +101,10 @@ export function Buscador() {
   const handleDestinoChange = (event) => {
     setDestino(event.target.value);
   };
+
+  const handleFechaSalida = (event) => {
+    setFechaSalida(event.target.value);
+  };
   
   const handleBuscarClick = async () => {
     try {
@@ -150,7 +154,7 @@ export function Buscador() {
         </select>
         <div className="fechas">
           <label>Fecha de ida:</label>
-          <input type="date" id="fecha-ida" name="fecha-ida" />
+          <input type="date" id="fechaSalida" name="fechaSalida" onChange={handleFechaSalida} value={fechaSalida}/>
         </div>
       </div>
       <div className="Boton-buscar">

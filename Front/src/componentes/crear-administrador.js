@@ -270,7 +270,7 @@ export function CrearAdministrador() {
         />
       </div>
 
-      <div className="input-box">
+      {/* <div className="input-box">
         <input
           type="text"
           name="address"
@@ -288,9 +288,9 @@ export function CrearAdministrador() {
           maxLength={50}
           onChange={handleChange}
         />
-      </div>
+      </div> */}
 
-      <div className="input-box">
+      {/* <div className="input-box">
         <input
           className="fecha-nacimiento"
           type="date"
@@ -300,7 +300,7 @@ export function CrearAdministrador() {
           required
           onChange={handleChange}
         />
-      </div>
+      </div> */}
 
       <div className="input-box">
         <input

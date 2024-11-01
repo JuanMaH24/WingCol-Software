@@ -21,9 +21,6 @@ from .auth import ClientAuthentication, AdminAuthentication, RootAuthentication
 from .models import *
 from .serializers import *
 
-
-
-
 @api_view(['GET'])
 def get_all_users(request):
     users = NormalUser.objects.filter(activo=True)

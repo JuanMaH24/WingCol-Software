@@ -41,16 +41,19 @@ export default function ResultadosVuelos({ vuelos }) {
               <div className="vuelo-detalles">
                 <img className="imagen" alt="Vuelo Imagen" src={vuelo.vuelos_pic ? vuelo.vuelos_pic : Fondo_sesion}/>
                 <p>
+                  <strong>Nombre de Vuelo:</strong> {vuelo.referencia}
+                </p>
+                <p>
                   <strong>Origen:</strong> {vuelo.ciudad_origen}
                 </p>
                 <p>
                   <strong>Destino:</strong> {vuelo.ciudad_destino}
                 </p>
                 <p>
-                  <strong>Fecha de Salida:</strong> {vuelo.fecha_salida}
+                  <strong>Fecha de Salida:</strong> {vuelo.fecha_salida.split("T")[0]}
                 </p>
                 <p>
-                  <strong>Fecha de Llegada:</strong> {vuelo.fecha_llegada}
+                  <strong>Hora de Salida:</strong> {vuelo.fecha_salida.split("T")[1].replace("Z", "")}
                 </p>
                 <p>
                   <strong>Precio:</strong> ${vuelo.precio}

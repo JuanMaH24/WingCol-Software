@@ -40,6 +40,7 @@ class Administrador(models.Model):
 	class Genero(models.TextChoices):
 		MASCULINO = 'M', 'Masculino'
 		FEMENINO = 'F', 'Femenino'
+		NO_DICE = 'N', 'Prefiero No Decirlo'
 		OTRO = 'O', 'Otro'
 
 	user_id = models.OneToOneField(NormalUser, on_delete=models.CASCADE)
@@ -60,6 +61,7 @@ class Cliente(models.Model):
 	class Genero(models.TextChoices):
 		MASCULINO = 'M', 'Masculino'
 		FEMENINO = 'F', 'Femenino'
+		NO_DICE = 'N', 'Prefiero No Decirlo'
 		OTRO = 'O', 'Otro'
 
 	class TipoDocumento(models.TextChoices):
@@ -142,9 +144,10 @@ class Vuelos(models.Model):
 	def create_reference(self):
 		self.referencia = f"{self.ciudad_origen[:3].upper()}-{self.ciudad_destino[:3].upper()}{self.fecha_salida.strftime('%d%m%y')}{self.id_vuelo}"
 
-	# def calculate_duration(self):
-	# 	duracion = round((self.fecha_llegada - self.fecha_salida).seconds / 3600, 2)
-	# 	self.duracion = duracion
+	class Meta:
+		constraints = [
+			models.UniqueConstraint(fields=['ciudad_origen', 'ciudad_destino', 'fecha_salida'], name='unique_flight')
+		]
 
 class Sillas(models.Model):
 	class ClaseAsiento(models.TextChoices):
@@ -196,6 +199,10 @@ class Tiquete(models.Model):
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)
 	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()	
 
 class Busquedas(models.Model):
 	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)

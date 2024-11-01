@@ -189,7 +189,6 @@ export function CrearVuelos() {
       "fecha_salida",
       `${formData.fechaSalida}T${formData.horaSalida}:00Z`
     );
-    dataToSend.append("fecha_llegada", "2024-12-14T15:00:00Z"); // Ajusta la fecha si es necesario
     dataToSend.append("precio", formData.precio); // Convertimos a número decimal
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("estado", "P"); // Estado predeterminado
