@@ -102,7 +102,7 @@ export function Buscador() {
   const handleDestinoChange = (event) => {
     setDestino(event.target.value);
   };
-  /*
+  
   const handleBuscarClick = async () => {
     try {
       const params = new URLSearchParams({
@@ -125,26 +125,7 @@ export function Buscador() {
       console.error("Error:", error);
     }
   };
-  */
 
-  const handleBuscarClick = () => {
-    try {
-      // Filtra los vuelos desde el JSON importado
-      const vuelosFiltrados = Vuelos.filter(
-        (vuelo) =>
-          vuelo.ciudad_origen === origen &&
-          vuelo.ciudad_destino === destino &&
-          vuelo.fecha_salida === fechaSalida
-      );
-
-      console.log(vuelosFiltrados);
-
-      // Redirigir a la página de resultados con los vuelos obtenidos
-      navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
 
   return (
     <div className="Contenedor-buscador">

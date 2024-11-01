@@ -324,7 +324,7 @@ def create_card(request):
     except NormalUser.DoesNotExist:
         return Response({"error": "Usuario no existente"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as error:
-        return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": error}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 @api_view(['GET'])
 def get_card(request):

@@ -66,7 +66,7 @@ class FlightSerializer(serializers.ModelSerializer):
 class SearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vuelos
-        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'fecha_llegada', 'precio', 'tipo', 'estado', 'vuelos_pic']
+        fields = ['ciudad_origen', 'ciudad_destino', 'fecha_salida', 'fecha_llegada', 'nombre', 'precio', 'tipo', 'estado', 'vuelos_pic']
         extra_kwargs = {'vuelos_pic': {'required': False}}
 
     def validate(self, data):

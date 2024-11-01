@@ -104,6 +104,7 @@ class Tarjetas(models.Model):
 	vvc = models.PositiveIntegerField(
 		validators=[MinValueValidator(100), MaxValueValidator(9999)]
 	)
+	nombre = models.CharField(max_length=50)
 	fecha_expiracion = models.DateField()
 	saldo = models.IntegerField(blank=True, null=True)
 	activo = models.BooleanField(default=True)

@@ -36,7 +36,7 @@ export function PaymentFormEditarTarjeta() {
   useEffect(() => {
     const fetchCardData = async () => {
       try {
-        const response = await fetch(`${apiHost}/cards/`);
+        const response = await fetch(`${apiHost}/card/`);
         const data = await response.json();
         setState({
           number: data.number,
@@ -71,7 +71,7 @@ export function PaymentFormEditarTarjeta() {
     );
     if (confirmDelete) {
       try {
-        const response = await fetch(`${apiHost}/cards/delete/`, {
+        const response = await fetch(`${apiHost}/card/delete/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export function PaymentFormEditarTarjeta() {
     evt.preventDefault();
     if (hasChanges()) {
       try {
-        const response = await fetch(`${apiHost}/cards/update/`, {
+        const response = await fetch(`${apiHost}/card/update/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

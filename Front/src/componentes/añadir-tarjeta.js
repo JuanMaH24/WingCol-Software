@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/lib/styles.scss";
 import { useNavigate } from "react-router-dom";
+import { getUser } from "../services/jwt-decode";
 
 export function PaymentForm() {
   const apiHost = process.env.REACT_APP_API_HOST;
+  const currentUser = getUser();
+  const jwtToken = localStorage.getItem("access");
   const [state, setState] = useState({
     number: "",
     expiry: "",
@@ -49,20 +52,40 @@ export function PaymentForm() {
     const { number, expiry, cvc, name, cardtype, currencycard } = state;
 
     try {
-      const response = await fetch(`${apiHost}/cards/create/`, {
+      console.log(
+          {
+          "id_tarjeta": number,
+          "fecha_expiracion": expiry,
+          "vvc": cvc,
+          "nombre": name,
+          "tipo_tarjeta": cardtype,
+          "saldo": currencycard,
+          "user_id": currentUser.user_id,
+        }
+        );
+      const response = await fetch(`${apiHost}/card/create/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
         },
         body: JSON.stringify({
-          number,
-          expiry,
-          cvc,
-          name,
-          cardtype,
-          currencycard,
+          "id_tarjeta": number,
+          "fecha_expiracion": expiry,
+          "vvc": cvc,
+          "nombre": name,
+          "tipo_tarjeta": cardtype,
+          "saldo": currencycard,
+          "user_id": currentUser.user_id,
         }),
       });
+      // {
+      //   "id_tarjeta": 2222222222222222,
+      //   "user_id": 1004778421,
+      //   "tipo_tarjeta": "D",
+      //   "vvc": 2921,
+      //   "fecha_expiracion": "2025-10-24"
+      // }
 
       if (response.ok) {
         alert("Tarjeta añadida exitosamente");
@@ -102,7 +125,9 @@ export function PaymentForm() {
       <form onSubmit={handleSubmit}>
         <select
           className="tipo-tarjeta"
+          name="cardtype"
           value={state.cardtype}
+          onChange={handleInputChange}
           style={{ marginTop: "10px" }}
           required
         >
@@ -194,7 +219,9 @@ export function PaymentForm() {
         />
         <input
           type="number"
+          name="currencycard"
           min={0}
+          onChange={handleInputChange}
           placeholder="Saldo/Cupo de la tarjeta"
           value={state.currencycard}
           required
