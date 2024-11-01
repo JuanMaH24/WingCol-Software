@@ -198,9 +198,7 @@ export function CrearVuelos() {
     // Si tienes una imagen, la puedes agregar usando el campo correspondiente
     // Supongamos que estás obteniendo la imagen de un campo en el formulario
     if (formData.flightPic) {
-      dataToSend.append("flight_pic", formData.flightPic); // Añadimos la imagen al FormData
-    } else {
-      dataToSend.append("flight_pic", "imagen.jpg"); // Valor por defecto si no hay imagen
+      dataToSend.append("vuelos_pic", formData.flightPic); // Añadimos la imagen al FormData
     }
 
     console.log(dataToSend);

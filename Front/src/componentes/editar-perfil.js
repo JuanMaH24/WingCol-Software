@@ -70,7 +70,7 @@ export function EditarPerfil() {
           selectedCountry: userData.pais
             ? { value: getCode(userData.pais), label: userData.pais }
             : null,
-          profilePicture: null, // Este campo lo manejará el usuario si sube una nueva imagen
+          profilePicture: userData.user_pic ? userData.user_pic : null, // Este campo lo manejará el usuario si sube una nueva imagen
         });
       } catch (error) {
         console.error("Error al cargar el perfil", error);
@@ -91,6 +91,10 @@ export function EditarPerfil() {
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const handleCancel = () => {
+    navigate("/");
   };
 
   const handleDocumentTypeChange = (e) => {
@@ -229,7 +233,7 @@ export function EditarPerfil() {
           alert("Tu cuenta ha sido eliminada exitosamente.");
           localStorage.removeItem("access");
           localStorage.removeItem("refresh");
-          navigate("/inicio-de-sesion");
+          navigate("/");
         } else {
           const errorData = await response.json();
           alert(
@@ -249,7 +253,10 @@ export function EditarPerfil() {
   return (
     <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <h1>Editar perfil</h1>
+      <div className="w-100 d-flex flex-column">  
+        <h1 className="p-1">Editar perfil</h1>
+        <img className="logo-completo img-cover m-auto rounded-circle mb-5" alt="Imagen Usuario" src={formData.profilePicture}/>
+      </div>
 
       <div className="input-box">
         <input
@@ -468,8 +475,9 @@ export function EditarPerfil() {
       <div className="boton-registro">
         <button type="submit">Guardar cambios</button>
       </div>
-      <div className="boton-eliminar">
-        <button type="button" onClick={handleDelete}>
+      <div className="w-100 d-flex justify-content-around ">
+        <button className="rounded-pill btn btn-secondary" type="button" onClick={handleCancel}>Cancelar</button>
+        <button className="rounded-pill btn btn-danger" type="button" onClick={handleDelete}>
           Eliminar cuenta
         </button>
       </div>

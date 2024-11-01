@@ -113,7 +113,7 @@ def update_client(request):
 @permission_classes([IsAuthenticated])
 def delete_client(request):
     try:
-        id = request.query_params.get("user_id")
+        id = request.data["user_id"]
         user = NormalUser.objects.get(user_id=id, activo = True)
         client = Cliente.objects.get(user_id=id, activo = True)
         
@@ -190,7 +190,7 @@ def update_admin(request):
     except NormalUser.DoesNotExist:
         return Response({"error": "Usuario no existente"}, status=status.HTTP_404_NOT_FOUND)
     except Administrador.DoesNotExist:
-        return Response({"error": "Cliente no existente"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Administrador no existente"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
 @authentication_classes([RootAuthentication])

@@ -339,6 +339,11 @@ export function CrearAdministrador() {
       <div className="boton-registro">
         <button type="submit">Crear administrador</button>
       </div>
+      <div className="boton-vuelo">
+          <button type="button" onClick={() => navigate("/home-root")}>
+            Cancelar
+          </button>
+        </div>
     </form>
   );
 }

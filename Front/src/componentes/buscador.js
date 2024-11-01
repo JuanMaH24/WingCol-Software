@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { RowRadioButtonsGroup } from "./Botones-buscador";
 import "../hojas-de-estilo/buscador.css";
 import { useNavigate } from "react-router-dom";
-import Vuelos from "./vuelos-ejemplos.json";
 
 const Origen = [
   { value: "Leticia", label: "Leticia (Amazonas)" },

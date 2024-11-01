@@ -103,6 +103,14 @@ export default function App() {
             }
           />
           <Route
+            path="/home"
+            element={
+              <PublicRoute>
+                <Home />
+              </PublicRoute>
+            }
+          />
+          <Route
             path="/inicio-de-sesion"
             element={
               <PublicRoute>
@@ -193,7 +201,7 @@ export default function App() {
             }
           />
           <Route
-            path="/editar-tarjetas"
+            path="/editar-tarjetas/:id"
             element={
               <ProtectedRoute allowedRoles={[1]}>
                 <PaymentFormEditarTarjeta />

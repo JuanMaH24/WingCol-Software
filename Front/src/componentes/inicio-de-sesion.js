@@ -51,11 +51,11 @@ export function Formulario({ setUser }) {
         
         // Redirigir según el rol del usuario
         if (user.roles === 1) {
-          navigate("/home-cliente");
+          navigate("/home");
         } else if (user.roles === 2) {
-          navigate("/home-cliente");
+          navigate("/home");
         } else if (user.roles === 3) {
-          navigate("/home-root");
+          navigate("/home");
         }
       } else {
         // Muestra el error devuelto por el backend
