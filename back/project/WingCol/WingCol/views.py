@@ -270,7 +270,7 @@ def get_flights(request):
         city_arrive = request.query_params.get("ciudad_destino")
         city_departure = request.query_params.get("ciudad_origen")
         date = request.query_params.get("fecha_salida")
-        search_query = Q(activo =True)
+        search_query = Q(activo = True, estado = 'P')
         if city_arrive:
             search_query &= Q(ciudad_destino=city_arrive)
         if city_departure:
@@ -315,25 +315,34 @@ def delete_flight(request):
 @api_view(['POST'])
 def create_card(request):
     try:
-        print("creando")
+        user = NormalUser.objects.get(user_id=request.data['user_id'], activo=True)
         card_serializer = CardSerializer(data=request.data)
-        print("si creó")
         if card_serializer.is_valid():
-            print("checado")
             card_serializer.save()
             return Response(card_serializer.data, status=status.HTTP_201_CREATED)
         return Response(card_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError:
-
-        return Response({"error": "Datos incorrectos"}, status=status.HTTP_400_BAD_REQUEST)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no existente"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def get_card(request):
     try:
-        user_id = request.query_params.get('id_cliente')
-        card = Tarjetas.objects.get(id_cliente=user_id, activo=True)
+        user_id = request.query_params.get('user_id')
+        card = Tarjetas.objects.filter(user_id=user_id, activo=True)
         card_serializer = CardSerializer(card, many=True)
     
+        return Response(card_serializer.data, status=status.HTTP_200_OK)
+    except Tarjetas.DoesNotExist:
+        return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def get_card_by_id(request):
+    try:
+        card_id = request.query_params.get('id_tarjeta')
+        card = Tarjetas.objects.get(id_tarjeta=card_id, activo=True)
+        card_serializer = CardSerializer(card)
         return Response(card_serializer.data, status=status.HTTP_200_OK)
     except Tarjetas.DoesNotExist:
         return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
