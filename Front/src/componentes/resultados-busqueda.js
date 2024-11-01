@@ -2,6 +2,7 @@ import React from "react";
 import "../hojas-de-estilo/resultados-busqueda.css"; // Asegúrate de tener un archivo CSS para los estilos
 import { getUser } from "../services/jwt-decode";
 import { Link, useNavigate, Navigate } from "react-router-dom";
+import Fondo_sesion from "../imagenes/fondo-inicio-sesion.jpg";
 
 export default function ResultadosVuelos({ vuelos }) {
   const [role, setRole] = React.useState(null);
@@ -38,6 +39,8 @@ export default function ResultadosVuelos({ vuelos }) {
           {vuelos.map((vuelo, index) => (
             <div key={index} className="vuelo-item">
               <div className="vuelo-detalles">
+                <input type="image" className="imagen" src={vuelo.vuelos_pic} />
+                <input type="" />
                 <p>
                   <strong>Origen:</strong> {vuelo.ciudad_origen}
                 </p>
@@ -54,17 +57,17 @@ export default function ResultadosVuelos({ vuelos }) {
                   <strong>Precio:</strong> ${vuelo.precio}
                 </p>
                 <div className="botones-container">
-                  {
-                    (role != 2 || !role) && (
-                      <>
-                        <button>Reservar</button>
-                        <button>Comprar</button>
-                      </>
-                    )
-                  }
-                  {(role === 2) && (
+                  {(role != 2 || !role) && (
                     <>
-                      <button name={vuelo.id_vuelo} onClick={handleEditarVuelo}>Editar vuelo</button>
+                      <button>Reservar</button>
+                      <button>Comprar</button>
+                    </>
+                  )}
+                  {role === 2 && (
+                    <>
+                      <button name={1} onClick={handleEditarVuelo}>
+                        Editar vuelo
+                      </button>
                     </>
                   )}
                 </div>

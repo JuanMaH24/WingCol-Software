@@ -1,6 +1,6 @@
 .resultados-vuelos {
   font-family: "Poppins", sans-serif;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 20px;
   color: white;
@@ -121,4 +121,10 @@
 
 .botones-container button:hover {
   background-color: #77008f;
+}
+
+.imagen {
+  border: none;
+  background-color: #a039d4;
+  width: 200px;
 }

@@ -11,6 +11,7 @@ export function EditarVuelo() {
     tipoVuelo: "", // Nacional o Internacional
     selectedOrigen: "",
     selectedDestino: "",
+    flightPic: null,
   });
   const navigate = useNavigate();
   const { id } = useParams();
@@ -73,13 +74,13 @@ export function EditarVuelo() {
     // Simulación de una llamada a la API para obtener los datos del vuelo
     const obtenerDatosVuelo = async () => {
       try {
-        const params = new URLSearchParams({id_vuelo: id});
+        const params = new URLSearchParams({ id_vuelo: id });
         const response = await fetch(
           `${apiHost}/flight/get/?${params.toString()}`,
           {
             headers: {
-              "Authorization": `Bearer ${jwtToken}`
-            }
+              Authorization: `Bearer ${jwtToken}`,
+            },
           }
         ); // Reemplaza con la URL real de la API
         const data = await response.json();
@@ -93,7 +94,7 @@ export function EditarVuelo() {
           horaSalida: data.fecha_salida.split("T")[1].slice(0, 5),
           duracion: data.duracion,
           precio: data.precio,
-          idVuelo: data.id_vuelo
+          idVuelo: data.id_vuelo,
         });
       } catch (error) {
         console.error("Error al obtener los datos del vuelo:", error);
@@ -126,12 +127,17 @@ export function EditarVuelo() {
     dataToSend.append("id", formData.idVuelo);
     dataToSend.append("precio", formData.precio);
 
+    if (formData.flightPic) {
+      dataToSend.append("flight_pic", formData.flightPic); // Añadimos la imagen al FormData
+    } else {
+      dataToSend.append("flight_pic", "imagen.jpg"); // Valor por defecto si no hay imagen
+    }
+
     try {
-      const params = new URLSearchParams({id_vuelo: id});
-      const respuesta = await fetch(`${apiHost}/flight/update/?${params.toString()}`, {
+      const respuesta = await fetch(`${apiHost}/flight/update/`, {
         method: "PUT", // Método de actualización
         headers: {
-          "Authorization": `Bearer ${jwtToken}`,
+          Authorization: `Bearer ${jwtToken}`,
         },
         body: dataToSend,
       });
@@ -188,6 +194,12 @@ export function EditarVuelo() {
     }
     return [];
   };
+  const handleFileChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      flightPic: e.target.files[0],
+    }));
+  };
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm(
@@ -195,19 +207,15 @@ export function EditarVuelo() {
     );
     if (isConfirmed) {
       try {
-        const response = await fetch(
-          `${apiHost}/flight/delete/`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${jwtToken}`,
-              // Asegúrate de incluir el token de autenticación si es necesario
-              // "Authorization": "Bearer " + yourAuthToken
-            },
-            body: JSON.stringify({id_vuelo: id}),
-          }
-        );
+        const response = await fetch(`${apiHost}/flight/delete/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+            // Asegúrate de incluir el token de autenticación si es necesario
+            // "Authorization": "Bearer " + yourAuthToken
+          },
+        });
 
         if (response.ok) {
           alert("El vuelo ha sido cancelado exitosamente.");
@@ -319,7 +327,6 @@ export function EditarVuelo() {
         />
       </div>
 
-
       <div className="input-vuelo">
         <h3>Fecha de salida</h3>
         <input
@@ -352,6 +359,10 @@ export function EditarVuelo() {
           onChange={handleInputChange}
           required
         />
+      </div>
+      <div className="foto-de-perfil">
+        <label htmlFor="file">Elija una imagen de vuelo </label>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
       <div className="boton-vuelo-container">

@@ -25,26 +25,27 @@ import { RecuperarContraseña } from "./componentes/recuperar-contraseña";
 import { PaymentForm } from "./componentes/añadir-tarjeta";
 import { PaymentFormEditarTarjeta } from "./componentes/editar-tarjetas";
 import { ResultadosPage } from "./componentes/pagina-resultados";
-
+import { BasicTableTarjetas } from "./componentes/tabla-tarjetas";
+import { ListaTarjetas } from "./componentes/lista-tarjetas";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const location = useLocation();
-  
+
     if (!user) {
       return <Navigate to="/" state={{ from: location }} replace />;
     }
-  
+
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.roles)) {
       return <Navigate to="/unauthorized" replace />;
     }
-  
+
     return children;
   };
-  
+
   const PublicRoute = ({ children }) => {
     if (user) {
       if (user && user.roles === 3) {
@@ -52,7 +53,7 @@ export default function App() {
       }
       return <Navigate to="/home-cliente" replace />;
     }
-  
+
     return children;
   };
 
@@ -200,11 +201,22 @@ export default function App() {
             }
           />
           <Route
-            path="/resultados"
+            path="/tabla-tarjetas"
             element={
-                <ResultadosPage />
+              <ProtectedRoute allowedRoles={[1]}>
+                <BasicTableTarjetas />
+              </ProtectedRoute>
             }
           />
+          <Route
+            path="/lista-tarjetas"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <ListaTarjetas />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/resultados" element={<ResultadosPage />} />
           <Route
             path="/unauthorized"
             element={<div>No tienes permiso para acceder a esta página.</div>}
