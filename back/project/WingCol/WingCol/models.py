@@ -48,7 +48,7 @@ class Administrador(models.Model):
 	apellido = models.CharField(max_length=50)
 	segundo_apellido = models.CharField(max_length=50)
 	genero = models.CharField(max_length=1, choices=Genero.choices)
-	telefono = models.PositiveIntegerField()
+	telefono = models.CharField(max_length=20)
 	admin_pic = models.ImageField(upload_to='img/user/', blank=True)
 	activo = models.BooleanField(default=True)
 
