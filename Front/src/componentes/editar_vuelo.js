@@ -127,7 +127,8 @@ export function EditarVuelo() {
     dataToSend.append("precio", formData.precio);
 
     try {
-      const respuesta = await fetch(`${apiHost}/flight/update/`, {
+      const params = new URLSearchParams({id_vuelo: id});
+      const respuesta = await fetch(`${apiHost}/flight/update/?${params.toString()}`, {
         method: "PUT", // Método de actualización
         headers: {
           "Authorization": `Bearer ${jwtToken}`,
@@ -204,6 +205,7 @@ export function EditarVuelo() {
               // Asegúrate de incluir el token de autenticación si es necesario
               // "Authorization": "Bearer " + yourAuthToken
             },
+            body: JSON.stringify({id_vuelo: id}),
           }
         );
 

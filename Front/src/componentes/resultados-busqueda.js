@@ -64,7 +64,7 @@ export default function ResultadosVuelos({ vuelos }) {
                   }
                   {(role === 2) && (
                     <>
-                      <button name={1} onClick={handleEditarVuelo}>Editar vuelo</button>
+                      <button name={vuelo.id_vuelo} onClick={handleEditarVuelo}>Editar vuelo</button>
                     </>
                   )}
                 </div>
