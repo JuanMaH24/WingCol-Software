@@ -33,11 +33,13 @@ export function Registro() {
 
   const [errors, setErrors] = useState({
     firstName: "",
+    secondName: "",
     lastName: "",
     email: "",
     documentNumber: "",
     password: "",
     confirmPassword: "",
+    secondLastName: "",
   });
 
   const navigate = useNavigate();
@@ -57,10 +59,26 @@ export function Registro() {
       formData.firstName &&
       !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.firstName) // Eliminamos '\s' para no aceptar espacios
     ) {
-      newErrors.firstName =
-        "El nombre no puede contener espacios, números o caracteres especiales";
+      newErrors.firstName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
     } else {
       newErrors.firstName = "";
+    }
+
+    if (
+      formData.secondName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.secondName)
+    ) {
+      newErrors.secondName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
+    } else {
+      newErrors.secondName = "";
     }
 
     // Validate lastName
@@ -68,15 +86,37 @@ export function Registro() {
       formData.lastName &&
       !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.lastName) // Eliminamos '\s' para no aceptar espacios
     ) {
-      newErrors.lastName =
-        "El apellido no puede contener espacios, números o caracteres especiales";
+      newErrors.lastName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El apellido no puede contener espacios, números o caracteres
+          especiales
+        </span>
+      );
     } else {
       newErrors.lastName = "";
     }
 
+    if (
+      formData.secondLastName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.secondLastName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.secondLastName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El apellido no puede contener espacios, números o caracteres
+          especiales
+        </span>
+      );
+    } else {
+      newErrors.secondLastName = "";
+    }
+
     // Validate email
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Por favor, introduce un correo electrónico válido";
+      newErrors.email = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          Por favor, introduce un correo electrónico válido
+        </span>
+      );
     } else {
       newErrors.email = "";
     }
@@ -87,14 +127,20 @@ export function Registro() {
         formData.documentType === "CC" &&
         !/^[0-9]+$/.test(formData.documentNumber)
       ) {
-        newErrors.documentNumber =
-          "El número de cédula debe contener solo números";
+        newErrors.documentNumber = (
+          <span style={{ fontSize: "12px", color: "white" }}>
+            El número de cédula debe contener solo números
+          </span>
+        );
       } else if (
         formData.documentType === "PA" &&
         !/^[A-Za-z]{3}[0-9]{6}$/.test(formData.documentNumber)
       ) {
-        newErrors.documentNumber =
-          "El número de pasaporte debe tener 3 letras seguidas de 6 números";
+        newErrors.documentNumber = (
+          <span style={{ fontSize: "12px", color: "white" }}>
+            El número de pasaporte debe tener 3 letras seguidas de 6 números
+          </span>
+        );
       } else {
         newErrors.documentNumber = "";
       }
@@ -102,9 +148,17 @@ export function Registro() {
 
     // Validate password
     if (formData.password && formData.password.length < 8) {
-      newErrors.password = "La contraseņa debe tener al menos 8 caracteres";
+      newErrors.password = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          La contraseņa debe tener al menos 8 caracteres
+        </span>
+      );
     } else if (formData.password && /\s/.test(formData.password)) {
-      newErrors.password = "La contraseņa no puede contener espacios en blanco";
+      newErrors.password = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          La contraseņa no puede contener espacios en blanco
+        </span>
+      );
     } else {
       newErrors.password = "";
     }
@@ -114,7 +168,11 @@ export function Registro() {
       formData.confirmPassword &&
       formData.confirmPassword !== formData.password
     ) {
-      newErrors.confirmPassword = "Las contraseņas no coinciden";
+      newErrors.confirmPassword = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          Las contraseņas no coinciden
+        </span>
+      );
     } else {
       newErrors.confirmPassword = "";
     }
@@ -203,13 +261,10 @@ export function Registro() {
     dataToSend.append("ciudad", formData.city);
 
     try {
-      const response = await fetch(
-        `${apiHost}/users/client/create/`,
-        {
-          method: "POST",
-          body: dataToSend,
-        }
-      );
+      const response = await fetch(`${apiHost}/users/client/create/`, {
+        method: "POST",
+        body: dataToSend,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -266,6 +321,9 @@ export function Registro() {
           onChange={handleChange}
           value={formData.secondName}
         />
+        {errors.secondName && (
+          <p className="error-message">{errors.secondName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -295,6 +353,9 @@ export function Registro() {
           onChange={handleChange}
           value={formData.secondLastName}
         />
+        {errors.secondLastName && (
+          <p className="error-message">{errors.secondLastName}</p>
+        )}
       </div>
 
       <div className="input-box">

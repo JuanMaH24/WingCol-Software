@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../hojas-de-estilo/registro.css";
 import logocompleto from "../imagenes/WingcolName.png";
 import Select from "react-select";
@@ -28,7 +28,7 @@ export function CrearAdministrador() {
     selectedCountry: null,
     profilePicture: null,
   });
-  const jwtToken = localStorage.getItem('access');
+  const jwtToken = localStorage.getItem("access");
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -37,6 +37,150 @@ export function CrearAdministrador() {
     label: country, // Muestra el nombre del país y su código
   }));
   const [documentPattern, setDocumentPattern] = useState("");
+  const [errors, setErrors] = useState({
+    firstName: "",
+    secondName: "",
+    lastName: "",
+    email: "",
+    documentNumber: "",
+    password: "",
+    confirmPassword: "",
+    secondLastName: "",
+  });
+
+  useEffect(() => {
+    validateForm();
+  }, [formData]);
+
+  const validateForm = () => {
+    let newErrors = { ...errors };
+
+    // Validate firstName
+    // Validate firstName
+    if (
+      formData.firstName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.firstName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.firstName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
+    } else {
+      newErrors.firstName = "";
+    }
+
+    if (
+      formData.secondName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.secondName)
+    ) {
+      newErrors.secondName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
+    } else {
+      newErrors.secondName = "";
+    }
+
+    // Validate lastName
+    if (
+      formData.lastName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.lastName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.lastName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El apellido no puede contener espacios, números o caracteres
+          especiales
+        </span>
+      );
+    } else {
+      newErrors.lastName = "";
+    }
+
+    if (
+      formData.secondLastName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.secondLastName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.secondLastName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El apellido no puede contener espacios, números o caracteres
+          especiales
+        </span>
+      );
+    } else {
+      newErrors.secondLastName = "";
+    }
+
+    // Validate email
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          Por favor, introduce un correo electrónico válido
+        </span>
+      );
+    } else {
+      newErrors.email = "";
+    }
+
+    // Validate documentNumber
+    if (formData.documentNumber) {
+      if (
+        formData.documentType === "CC" &&
+        !/^[0-9]+$/.test(formData.documentNumber)
+      ) {
+        newErrors.documentNumber = (
+          <span style={{ fontSize: "12px", color: "white" }}>
+            El número de cédula debe contener solo números
+          </span>
+        );
+      } else if (
+        formData.documentType === "PA" &&
+        !/^[A-Za-z]{3}[0-9]{6}$/.test(formData.documentNumber)
+      ) {
+        newErrors.documentNumber = (
+          <span style={{ fontSize: "12px", color: "white" }}>
+            El número de pasaporte debe tener 3 letras seguidas de 6 números
+          </span>
+        );
+      } else {
+        newErrors.documentNumber = "";
+      }
+    }
+
+    // Validate password
+    if (formData.password && formData.password.length < 8) {
+      newErrors.password = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          La contraseņa debe tener al menos 8 caracteres
+        </span>
+      );
+    } else if (formData.password && /\s/.test(formData.password)) {
+      newErrors.password = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          La contraseņa no puede contener espacios en blanco
+        </span>
+      );
+    } else {
+      newErrors.password = "";
+    }
+
+    // Validate confirmPassword
+    if (
+      formData.confirmPassword &&
+      formData.confirmPassword !== formData.password
+    ) {
+      newErrors.confirmPassword = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          Las contraseņas no coinciden
+        </span>
+      );
+    } else {
+      newErrors.confirmPassword = "";
+    }
+
+    setErrors(newErrors);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,17 +257,13 @@ export function CrearAdministrador() {
     dataToSend.append("ciudad", formData.city);
 
     try {
-      const response = await fetch(
-        `${apiHost}/users/admin/create/`,
-        {
-
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${jwtToken}`
-          },
-          body: dataToSend, 
-        }
-      );
+      const response = await fetch(`${apiHost}/users/admin/create/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: dataToSend,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -165,6 +305,9 @@ export function CrearAdministrador() {
           maxLength={50}
           onChange={handleChange}
         />
+        {errors.firstName && (
+          <p className="error-message">{errors.firstName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -177,6 +320,9 @@ export function CrearAdministrador() {
           maxLength={50}
           onChange={handleChange}
         />
+        {errors.secondName && (
+          <p className="error-message">{errors.secondName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -190,6 +336,7 @@ export function CrearAdministrador() {
           title="El campo no puede tener espacios o números"
           onChange={handleChange}
         />
+        {errors.lastName && <p className="error-message">{errors.lastName}</p>}
       </div>
 
       <div className="input-box">
@@ -203,6 +350,9 @@ export function CrearAdministrador() {
           title="El campo no puede tener espacios o números"
           onChange={handleChange}
         />
+        {errors.secondLastName && (
+          <p className="error-message">{errors.secondLastName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -239,6 +389,7 @@ export function CrearAdministrador() {
           maxLength={50}
           onChange={handleChange}
         />
+        {errors.email && <p className="error-message">{errors.email}</p>}
       </div>
 
       <select
@@ -268,6 +419,9 @@ export function CrearAdministrador() {
               : "3 letras y 6 números"
           }
         />
+        {errors.documentNumber && (
+          <p className="error-message">{errors.documentNumber}</p>
+        )}
       </div>
 
       {/* <div className="input-box">
@@ -314,6 +468,7 @@ export function CrearAdministrador() {
           required
           onChange={handleChange}
         />
+        {errors.password && <p className="error-message">{errors.password}</p>}
       </div>
 
       <div className="input-box">
@@ -328,6 +483,9 @@ export function CrearAdministrador() {
           required
           onChange={handleChange}
         />
+        {errors.confirmPassword && (
+          <p className="error-message">{errors.confirmPassword}</p>
+        )}
       </div>
 
       <LocationSelector onLocationChange={handleLocationChange} />
@@ -340,10 +498,10 @@ export function CrearAdministrador() {
         <button type="submit">Crear administrador</button>
       </div>
       <div className="boton-vuelo">
-          <button type="button" onClick={() => navigate("/home-root")}>
-            Cancelar
-          </button>
-        </div>
+        <button type="button" onClick={() => navigate("/home-root")}>
+          Cancelar
+        </button>
+      </div>
     </form>
   );
 }

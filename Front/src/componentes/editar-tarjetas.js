@@ -14,6 +14,54 @@ export function PaymentFormEditarTarjeta() {
     cardtype: "",
     currencycard: "",
   });
+  const [errors, setErrors] = useState({
+    number: "",
+    expiry: "",
+    cvc: "",
+    name: "",
+    cardtype: "",
+    currencycard: "",
+  });
+
+  useEffect(() => {
+    validateForm();
+  }, [state]);
+
+  const validateForm = () => {
+    let newErrors = { ...errors };
+
+    if (state.number && !/^\d{16}$/.test(state.number)) {
+      newErrors.number = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El número de tarjeta debe tener 16 dígitos.
+        </span>
+      );
+    } else {
+      newErrors.number = "";
+    }
+
+    if (state.cvc && !/^\d{3}$/.test(state.cvc)) {
+      newErrors.cvc = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El CVC debe tener 3 dígitos.
+        </span>
+      );
+    }
+
+    if (
+      state.name &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.name = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
+    } else {
+      newErrors.name = "";
+    }
+  };
+
   const apiHost = process.env.REACT_APP_API_HOST;
   const jwtToken = localStorage.getItem("access");
   const currentUser = getUser();
@@ -39,11 +87,12 @@ export function PaymentFormEditarTarjeta() {
   useEffect(() => {
     const fetchCardData = async () => {
       try {
-        const param = new URLSearchParams({id_tarjeta: id});
-        const response = await fetch(`${apiHost}/card/get/?${param.toString()}`,
+        const param = new URLSearchParams({ id_tarjeta: id });
+        const response = await fetch(
+          `${apiHost}/card/get/?${param.toString()}`,
           {
             headers: {
-              "Authorization": `Bearer ${jwtToken}`,
+              Authorization: `Bearer ${jwtToken}`,
             },
           }
         );
@@ -90,16 +139,14 @@ export function PaymentFormEditarTarjeta() {
     );
     if (confirmDelete) {
       try {
-        const response = await fetch(`${apiHost}/card/delete/`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${jwtToken}`,
-            },
-            body: JSON.stringify({id_tarjeta: id})
-          }
-        );
+        const response = await fetch(`${apiHost}/card/delete/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ id_tarjeta: id }),
+        });
 
         if (response.ok) {
           alert("Tarjeta eliminada exitosamente.");
@@ -148,16 +195,16 @@ export function PaymentFormEditarTarjeta() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${jwtToken}`,
+            Authorization: `Bearer ${jwtToken}`,
           },
           body: JSON.stringify({
-            "id_tarjeta": number,
-            "fecha_expiracion": expiry,
-            "vvc": cvc,
-            "nombre": name,
-            "tipo_tarjeta": cardtype,
-            "saldo": currencycard,
-            "user_id": currentUser.user_id,
+            id_tarjeta: number,
+            fecha_expiracion: expiry,
+            vvc: cvc,
+            nombre: name,
+            tipo_tarjeta: cardtype,
+            saldo: currencycard,
+            user_id: currentUser.user_id,
           }),
         });
 
@@ -231,13 +278,14 @@ export function PaymentFormEditarTarjeta() {
           maxLength={16}
           style={{
             width: "100%",
-            marginTop: "10px",
+            marginTop: "20px",
             marginBottom: "10px",
             alignItems: "center",
             display: "block",
             margin: "auto",
           }}
         />
+        {errors.number && <p className="error-message">{errors.number}</p>}
         <input
           type="text"
           name="name"
@@ -246,15 +294,18 @@ export function PaymentFormEditarTarjeta() {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           maxLength={40}
+          pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
           style={{
             width: "100%",
-            marginTop: "10px",
+            marginTop: "20px",
             marginBottom: "10px",
             alignItems: "center",
             display: "block",
             margin: "auto",
           }}
         />
+        {errors.name && <p className="error-message">{errors.name}</p>}
+
         <input
           type="date"
           name="expiry"
@@ -267,7 +318,7 @@ export function PaymentFormEditarTarjeta() {
           required
           style={{
             width: "100%",
-            marginTop: "10px",
+            marginTop: "20px",
             marginBottom: "10px",
             alignItems: "center",
             display: "block",
@@ -286,13 +337,15 @@ export function PaymentFormEditarTarjeta() {
           pattern="\d*"
           style={{
             width: "100%",
-            marginTop: "10px",
+            marginTop: "20px",
             marginBottom: "10px",
             alignItems: "center",
             display: "block",
             margin: "auto",
           }}
         />
+        {errors.cvc && <p className="error-message">{errors.cvc}</p>}
+
         <input
           type="number"
           min={0}

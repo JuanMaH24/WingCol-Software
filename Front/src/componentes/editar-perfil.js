@@ -29,26 +29,40 @@ export function EditarPerfil() {
     selectedCountry: null,
     profilePicture: null,
   });
+  const [errors, setErrors] = useState({
+    firstName: "",
+    secondLastName: "",
+    secondName: "",
+    lastName: "",
+    email: "",
+    documentNumber: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [documentPattern, setDocumentPattern] = useState("");
   const currentUser = getUser();
-  const jwtToken = localStorage.getItem('access');
+  const jwtToken = localStorage.getItem("access");
   const [showPasswordFields, setShowPasswordFields] = useState(false);
+
+  useEffect(() => {
+    validateForm();
+  }, [formData]);
 
   // Cargar datos del perfil del usuario al cargar el componente
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
     async function fetchProfileData() {
       try {
-        const params = new URLSearchParams({user_id: currentUser.user_id});
+        const params = new URLSearchParams({ user_id: currentUser.user_id });
         const response = await fetch(
           `${apiHost}/users/client/?${params.toString()}`,
           {
             headers: {
-              "Authorization": `Bearer ${jwtToken}`
-            }
+              Authorization: `Bearer ${jwtToken}`,
+            },
           }
         );
         const userData = await response.json();
@@ -79,6 +93,136 @@ export function EditarPerfil() {
 
     fetchProfileData();
   }, []);
+
+  const validateForm = () => {
+    let newErrors = { ...errors };
+
+    // Validate firstName
+    // Validate firstName
+    if (
+      formData.firstName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.firstName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.firstName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
+    } else {
+      newErrors.firstName = "";
+    }
+
+    if (
+      formData.secondName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.secondName)
+    ) {
+      newErrors.secondName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El nombre no puede contener espacios, números o caracteres especiales
+        </span>
+      );
+    } else {
+      newErrors.secondName = "";
+    }
+
+    // Validate lastName
+    if (
+      formData.lastName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.lastName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.lastName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El apellido no puede contener espacios, números o caracteres
+          especiales
+        </span>
+      );
+    } else {
+      newErrors.lastName = "";
+    }
+
+    if (
+      formData.secondLastName &&
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.secondLastName) // Eliminamos '\s' para no aceptar espacios
+    ) {
+      newErrors.secondLastName = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          El apellido no puede contener espacios, números o caracteres
+          especiales
+        </span>
+      );
+    } else {
+      newErrors.secondLastName = "";
+    }
+
+    // Validate email
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          Por favor, introduce un correo electrónico válido
+        </span>
+      );
+    } else {
+      newErrors.email = "";
+    }
+
+    // Validate documentNumber
+    if (formData.documentNumber) {
+      if (
+        formData.documentType === "CC" &&
+        !/^[0-9]+$/.test(formData.documentNumber)
+      ) {
+        newErrors.documentNumber = (
+          <span style={{ fontSize: "12px", color: "white" }}>
+            El número de cédula debe contener solo números
+          </span>
+        );
+      } else if (
+        formData.documentType === "PA" &&
+        !/^[A-Za-z]{3}[0-9]{6}$/.test(formData.documentNumber)
+      ) {
+        newErrors.documentNumber = (
+          <span style={{ fontSize: "12px", color: "white" }}>
+            El número de pasaporte debe tener 3 letras seguidas de 6 números
+          </span>
+        );
+      } else {
+        newErrors.documentNumber = "";
+      }
+    }
+
+    // Validate password
+    if (formData.password && formData.password.length < 8) {
+      newErrors.password = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          La contraseņa debe tener al menos 8 caracteres
+        </span>
+      );
+    } else if (formData.password && /\s/.test(formData.password)) {
+      newErrors.password = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          La contraseņa no puede contener espacios en blanco
+        </span>
+      );
+    } else {
+      newErrors.password = "";
+    }
+
+    // Validate confirmPassword
+    if (
+      formData.confirmPassword &&
+      formData.confirmPassword !== formData.password
+    ) {
+      newErrors.confirmPassword = (
+        <span style={{ fontSize: "12px", color: "white" }}>
+          Las contraseņas no coinciden
+        </span>
+      );
+    } else {
+      newErrors.confirmPassword = "";
+    }
+
+    setErrors(newErrors);
+  };
 
   const countryOptions = getNames().map((country) => ({
     value: getCode(country),
@@ -119,7 +263,7 @@ export function EditarPerfil() {
       phoneNumber: value,
     }));
   };
-  
+
   const handleCheckboxChange = (e) => {
     setShowPasswordFields(e.target.checked);
   };
@@ -177,15 +321,13 @@ export function EditarPerfil() {
     }
 
     try {
-      const response = await fetch(
-        `${apiHost}/users/client/update/`,
-        {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${jwtToken}`},
-          body: dataToSend,
-        }
-      );
+      const response = await fetch(`${apiHost}/users/client/update/`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: dataToSend,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -215,19 +357,16 @@ export function EditarPerfil() {
     );
     if (isConfirmed) {
       try {
-        const response = await fetch(
-          `${apiHost}/users/client/delete/`,
-          {
-            method: "PUT", // Cambiado a POST
-            headers: {
-              "Authorization": `Bearer ${jwtToken}`,
-              "Content-Type": "application/json",
-              // Asegúrate de incluir el token de autenticación si es necesario
-              // "Authorization": "Bearer " + yourAuthToken
-            },
-            body: JSON.stringify({user_id: currentUser.user_id}), // Incluye el cuerpo si el backend espera algún dato
-          }
-        );
+        const response = await fetch(`${apiHost}/users/client/delete/`, {
+          method: "PUT", // Cambiado a POST
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "application/json",
+            // Asegúrate de incluir el token de autenticación si es necesario
+            // "Authorization": "Bearer " + yourAuthToken
+          },
+          body: JSON.stringify({ user_id: currentUser.user_id }), // Incluye el cuerpo si el backend espera algún dato
+        });
 
         if (response.ok) {
           alert("Tu cuenta ha sido eliminada exitosamente.");
@@ -253,9 +392,13 @@ export function EditarPerfil() {
   return (
     <form className="registro-principal" onSubmit={handleSubmit}>
       <img className="logo-completo" src={logocompleto} alt="Logo" />
-      <div className="w-100 d-flex flex-column">  
+      <div className="w-100 d-flex flex-column">
         <h1 className="p-1">Editar perfil</h1>
-        <img className="logo-completo img-cover m-auto rounded-circle mb-5" alt="Imagen Usuario" src={formData.profilePicture}/>
+        <img
+          className="logo-completo img-cover m-auto rounded-circle mb-5"
+          alt="Imagen Usuario"
+          src={formData.profilePicture}
+        />
       </div>
 
       <div className="input-box">
@@ -270,6 +413,9 @@ export function EditarPerfil() {
           maxLength={50}
           onChange={handleChange}
         />
+        {errors.firstName && (
+          <p className="error-message">{errors.firstName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -283,6 +429,9 @@ export function EditarPerfil() {
           maxLength={50}
           onChange={handleChange}
         />
+        {errors.secondName && (
+          <p className="error-message">{errors.secondName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -297,6 +446,7 @@ export function EditarPerfil() {
           title="El campo no puede tener espacios o números"
           onChange={handleChange}
         />
+        {errors.lastName && <p className="error-message">{errors.lastName}</p>}
       </div>
 
       <div className="input-box">
@@ -311,6 +461,9 @@ export function EditarPerfil() {
           title="El campo no puede tener espacios o números"
           onChange={handleChange}
         />
+        {errors.secondLastName && (
+          <p className="error-message">{errors.secondLastName}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -349,6 +502,7 @@ export function EditarPerfil() {
           maxLength={50}
           onChange={handleChange}
         />
+        {errors.email && <p className="error-message">{errors.email}</p>}
       </div>
 
       <select
@@ -380,6 +534,9 @@ export function EditarPerfil() {
               : "3 letras y 6 números"
           }
         />
+        {errors.documentNumber && (
+          <p className="error-message">{errors.documentNumber}</p>
+        )}
       </div>
 
       <div className="input-box">
@@ -430,9 +587,12 @@ export function EditarPerfil() {
             required
             onChange={handleChange}
           />
+          {errors.password && (
+            <p className="error-message">{errors.password}</p>
+          )}
         </div>
       )}
-      
+
       {showPasswordFields && (
         <div className="input-box">
           <input
@@ -446,16 +606,21 @@ export function EditarPerfil() {
             required
             onChange={handleChange}
           />
+          {errors.confirmPassword && (
+            <p className="error-message">{errors.confirmPassword}</p>
+          )}
         </div>
       )}
 
       <div class="form-check">
-        <input class="form-check-input" 
-        checked={showPasswordFields}
-        onChange={handleCheckboxChange} 
-        type="radio" 
-        name="flexRadioDefault" 
-        id="flexRadioDefault1"/>
+        <input
+          class="form-check-input"
+          checked={showPasswordFields}
+          onChange={handleCheckboxChange}
+          type="radio"
+          name="flexRadioDefault"
+          id="flexRadioDefault1"
+        />
         <label class="form-check-label" for="flexRadioDefault1">
           Cambiar contraseña
         </label>
@@ -476,8 +641,18 @@ export function EditarPerfil() {
         <button type="submit">Guardar cambios</button>
       </div>
       <div className="w-100 d-flex justify-content-around ">
-        <button className="rounded-pill btn btn-secondary" type="button" onClick={handleCancel}>Cancelar</button>
-        <button className="rounded-pill btn btn-danger" type="button" onClick={handleDelete}>
+        <button
+          className="rounded-pill btn btn-secondary"
+          type="button"
+          onClick={handleCancel}
+        >
+          Cancelar
+        </button>
+        <button
+          className="rounded-pill btn btn-danger"
+          type="button"
+          onClick={handleDelete}
+        >
           Eliminar cuenta
         </button>
       </div>
