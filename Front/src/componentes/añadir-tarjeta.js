@@ -65,6 +65,7 @@ export function PaymentForm() {
     } else {
       newErrors.name = "";
     }
+    setErrors(newErrors);
   };
 
   const [minDate, setMinDate] = useState("");
@@ -190,47 +191,52 @@ export function PaymentForm() {
               Tarjeta de credito
             </option>
           </select>
-          <input
-            type="tel"
-            name="number"
-            placeholder="Card Number"
-            value={state.number}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            required
-            maxLength={16}
-            style={{
-              width: "100%",
-              marginTop: "10px",
-              marginBottom: "10px",
-              alignItems: "center",
-              display: "block",
-              margin: "auto",
-            }}
-          />
-          {errors.number && <p className="error-message">{errors.number}</p>}
+          <div>
+            <input
+              type="tel"
+              name="number"
+              placeholder="Card Number"
+              value={state.number}
+              onChange={handleInputChange}
+              onFocus={handleInputFocus}
+              required
+              maxLength={16}
+              style={{
+                width: "100%",
+                marginTop: "10px",
+                marginBottom: "10px",
+                alignItems: "center",
+                display: "block",
+                margin: "auto",
+              }}
+            />
+            {errors.number && <p className="error-message">{errors.number}</p>}
+          </div>
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={state.name}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
-            title="El campo no puede tener números"
-            required
-            maxLength={40}
-            style={{
-              width: "100%",
-              marginTop: "20px",
-              marginBottom: "10px",
-              alignItems: "center",
-              display: "block",
-              margin: "auto",
-            }}
-          />
-          {errors.name && <p className="error-message">{errors.name}</p>}
+          <div>
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={state.name}
+              onChange={handleInputChange}
+              onFocus={handleInputFocus}
+              pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+              title="El campo no puede tener números"
+              required
+              maxLength={40}
+              style={{
+                width: "100%",
+                marginTop: "20px",
+                marginBottom: "20px",
+                alignItems: "center",
+                display: "block",
+                margin: "auto",
+              }}
+            />
+            {errors.name && <p className="error-message">{errors.name}</p>}
+          </div>
+
           <input
             type="date"
             name="expiry"

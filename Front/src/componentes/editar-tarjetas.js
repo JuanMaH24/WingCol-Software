@@ -60,6 +60,7 @@ export function PaymentFormEditarTarjeta() {
     } else {
       newErrors.name = "";
     }
+    setErrors(newErrors);
   };
 
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -268,43 +269,48 @@ export function PaymentFormEditarTarjeta() {
             Tarjeta de credito
           </option>
         </select>
-        <input
-          type="tel"
-          name="number"
-          placeholder="Card Number"
-          value={state.number}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          maxLength={16}
-          style={{
-            width: "100%",
-            marginTop: "20px",
-            marginBottom: "10px",
-            alignItems: "center",
-            display: "block",
-            margin: "auto",
-          }}
-        />
-        {errors.number && <p className="error-message">{errors.number}</p>}
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={state.name}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          maxLength={40}
-          pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
-          style={{
-            width: "100%",
-            marginTop: "20px",
-            marginBottom: "10px",
-            alignItems: "center",
-            display: "block",
-            margin: "auto",
-          }}
-        />
-        {errors.name && <p className="error-message">{errors.name}</p>}
+        <div>
+          <input
+            type="tel"
+            name="number"
+            placeholder="Card Number"
+            value={state.number}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            maxLength={16}
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              marginBottom: "10px",
+              alignItems: "center",
+              display: "block",
+              margin: "auto",
+            }}
+          />
+          {errors.number && <p className="error-message">{errors.number}</p>}
+        </div>
+
+        <div>
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={state.name}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            maxLength={40}
+            pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              marginBottom: "10px",
+              alignItems: "center",
+              display: "block",
+              margin: "auto",
+            }}
+          />
+          {errors.name && <p className="error-message">{errors.name}</p>}
+        </div>
 
         <input
           type="date"
@@ -326,25 +332,27 @@ export function PaymentFormEditarTarjeta() {
           }}
         />
 
-        <input
-          type="tel"
-          name="cvc"
-          placeholder="CVC"
-          value={state.cvc}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          maxLength={3}
-          pattern="\d*"
-          style={{
-            width: "100%",
-            marginTop: "20px",
-            marginBottom: "10px",
-            alignItems: "center",
-            display: "block",
-            margin: "auto",
-          }}
-        />
-        {errors.cvc && <p className="error-message">{errors.cvc}</p>}
+        <div>
+          <input
+            type="tel"
+            name="cvc"
+            placeholder="CVC"
+            value={state.cvc}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            maxLength={3}
+            pattern="\d*"
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              marginBottom: "10px",
+              alignItems: "center",
+              display: "block",
+              margin: "auto",
+            }}
+          />
+          {errors.cvc && <p className="error-message">{errors.cvc}</p>}
+        </div>
 
         <input
           type="number"

@@ -7,6 +7,8 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export function Registro() {
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -45,6 +47,7 @@ export function Registro() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [documentPattern, setDocumentPattern] = useState("");
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   useEffect(() => {
     validateForm();
@@ -268,12 +271,24 @@ export function Registro() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(
-          errorData.nombre ||
-            errorData.user_id ||
-            errorData.email ||
-            "Error al registrar el usuario."
-        );
+        if (
+          errorData.email &&
+          errorData.email[0] ===
+            "Ya existe un usuario con este correo electrónico."
+        ) {
+          setShowErrorAlert(true);
+          setErrorMessage(
+            "El correo electrónico ingresado ya se encuentra registrado."
+          );
+        } else {
+          setErrorMessage(
+            errorData.nombre ||
+              errorData.user_id ||
+              errorData.email ||
+              "Error al registrar el usuario."
+          );
+          setShowErrorAlert(true);
+        }
         return;
       } else {
         navigate("/inicio-de-sesion", {
@@ -285,6 +300,7 @@ export function Registro() {
     } catch (error) {
       console.error(error);
       setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");
+      setShowErrorAlert(true);
     }
   };
 
@@ -506,6 +522,17 @@ export function Registro() {
       <div className="error">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
+
+      {showErrorAlert && (
+        <Stack
+          sx={{ width: "100%", marginTop: 2, marginBottom: 2 }}
+          spacing={2}
+        >
+          <Alert severity="error" onClose={() => setShowErrorAlert(false)}>
+            {errorMessage}
+          </Alert>
+        </Stack>
+      )}
 
       <div className="boton-registro">
         <button type="submit">Registrarse</button>

@@ -7,6 +7,8 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export function CrearAdministrador() {
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -47,6 +49,8 @@ export function CrearAdministrador() {
     confirmPassword: "",
     secondLastName: "",
   });
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("error");
 
   useEffect(() => {
     validateForm();
@@ -274,18 +278,26 @@ export function CrearAdministrador() {
             errorData.email ||
             "Error al registrar el administrador."
         );
+        setAlertSeverity("error");
+        setShowAlert(true);
         return;
       } else {
-        // Redirigir al usuario a /home-root después de la creación exitosa
-        navigate("/home-root", {
-          state: { successMessage: "Administrador creado correctamente." },
-        });
+        setErrorMessage("Administrador creado correctamente.");
+        setAlertSeverity("success");
+        setShowAlert(true);
+        setTimeout(() => {
+          navigate("/home-root", {
+            state: { successMessage: "Administrador creado correctamente." },
+          });
+        }, 2000);
       }
 
       console.log("Administrador registrado exitosamente.");
     } catch (error) {
       console.error(error);
       setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");
+      setAlertSeverity("error");
+      setShowAlert(true);
     }
   };
 
@@ -493,6 +505,14 @@ export function CrearAdministrador() {
       <div className="error-admin">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
+
+      {showAlert && (
+        <Stack sx={{ width: "100%", marginBottom: 2 }} spacing={2}>
+          <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+            {errorMessage}
+          </Alert>
+        </Stack>
+      )}
 
       <div className="boton-registro">
         <button type="submit">Crear administrador</button>
