@@ -63,7 +63,7 @@ export function PaymentForm() {
 
     if (
       state.name &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ\s]*$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
+      !/[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ\s]+$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
     ) {
       newErrors.name = (
         <span style={{ fontSize: "12px", color: "white" }}>
@@ -243,7 +243,7 @@ export function PaymentForm() {
               value={state.name}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+              pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ\s]*$"
               title="El campo no puede tener números"
               required
               maxLength={40}

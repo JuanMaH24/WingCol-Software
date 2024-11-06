@@ -114,15 +114,15 @@ export function Registro() {
     }
 
     // Validate email
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       newErrors.email = (
-        <span style={{ fontSize: "12px", color: "white" }}>
-          Por favor, introduce un correo electrónico válido
-        </span>
+          <span style={{ fontSize: "12px", color: "white" }}>
+            Por favor, introduce un correo electrónico válido y sin espacios en blanco
+          </span>
       );
-    } else {
-      newErrors.email = "";
-    }
+  } else {
+      newErrors.email = "";
+  }
 
     // Validate documentNumber
     if (formData.documentNumber) {
@@ -406,12 +406,14 @@ export function Registro() {
           type="email"
           name="email"
           placeholder="Correo electrónico"
+          pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+          title="Por favor, introduce un correo electrónico"
           required
           maxLength={50}
           onChange={handleChange}
           value={formData.email}
         />
-        {errors.email && <p className="error-message">{errors.email}</p>}
+        {errors.email && (<p className="error-message">{errors.email}</p>)}
       </div>
 
       <select
