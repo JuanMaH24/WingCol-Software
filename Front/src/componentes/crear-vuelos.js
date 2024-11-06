@@ -3,6 +3,8 @@ import LogoCompleto from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/crear_vuelos.css";
 import CurrencyInput from "react-currency-input-field";
 import { Link, useNavigate, Navigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export function CrearVuelos() {
   const [formData, setFormData] = useState({
@@ -18,6 +20,11 @@ export function CrearVuelos() {
   });
   const [minDate, setMinDate] = useState("");
   const navigate = useNavigate();
+  const [alertInfo, setAlertInfo] = useState({
+    show: false,
+    message: "",
+    severity: "info",
+  });
 
   useEffect(() => {
     const today = new Date();
@@ -212,14 +219,31 @@ export function CrearVuelos() {
       });
 
       if (response.ok) {
-        console.log("Vuelo creado exitosamente");
-        navigate("/home-cliente");
+        setAlertInfo({
+          show: true,
+          message: "Vuelo creado exitosamente",
+          severity: "success",
+        });
+        setTimeout(() => {
+          navigate("/home-cliente");
+        }, 2000);
       } else {
-        console.log(response);
-        console.error("Error al crear el vuelo");
+        const errorData = await response.json();
+        setAlertInfo({
+          show: true,
+          message:
+            errorData.message ||
+            "Error al crear el vuelo. Por favor, intente de nuevo.",
+          severity: "error",
+        });
       }
     } catch (error) {
       console.error("Error al enviar la petición:", error);
+      setAlertInfo({
+        show: true,
+        message: "Error de conexión. Por favor, intente de nuevo más tarde.",
+        severity: "error",
+      });
     }
   };
 
@@ -320,6 +344,17 @@ export function CrearVuelos() {
           required
         />
       </div>
+      {alertInfo.show && (
+        <Stack sx={{ width: "100%", marginBottom: 2 }} spacing={2}>
+          <Alert
+            severity={alertInfo.severity}
+            onClose={() => setAlertInfo({ ...alertInfo, show: false })}
+          >
+            {alertInfo.message}
+          </Alert>
+        </Stack>
+      )}
+
       <div className="foto-de-perfil">
         <label htmlFor="file">Elija una imagen de vuelo </label>
         <input type="file" accept="image/*" onChange={handleFileChange} />

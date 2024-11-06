@@ -4,6 +4,8 @@ import "react-credit-cards-2/dist/lib/styles.scss";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../services/jwt-decode";
 import Navbar from "./navbar";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export function PaymentForm() {
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -26,6 +28,12 @@ export function PaymentForm() {
     name: "",
     cardtype: "",
     currencycard: "",
+  });
+
+  const [alertInfo, setAlertInfo] = useState({
+    show: false,
+    message: "",
+    severity: "info",
   });
 
   useEffect(() => {
@@ -136,14 +144,28 @@ export function PaymentForm() {
       // }
 
       if (response.ok) {
-        alert("Tarjeta añadida exitosamente");
-        navigate("/home-cliente");
+        setAlertInfo({
+          show: true,
+          message: "Tarjeta añadida exitosamente",
+          severity: "success",
+        });
+        setTimeout(() => {
+          navigate("/home-cliente");
+        }, 2000);
       } else {
-        alert("Hubo un error al añadir la tarjeta. Inténtalo nuevamente.");
+        setAlertInfo({
+          show: true,
+          message: "Hubo un error al añadir la tarjeta. Inténtalo nuevamente.",
+          severity: "error",
+        });
       }
     } catch (error) {
       console.error("Error al añadir la tarjeta:", error);
-      alert("Error en la conexión. Inténtalo nuevamente.");
+      setAlertInfo({
+        show: true,
+        message: "Error en la conexión. Inténtalo nuevamente.",
+        severity: "error",
+      });
     }
   };
 
@@ -286,6 +308,16 @@ export function PaymentForm() {
             value={state.currencycard}
             required
           />
+          {alertInfo.show && (
+            <Stack sx={{ width: "100%", marginBottom: 2 }} spacing={2}>
+              <Alert
+                severity={alertInfo.severity}
+                onClose={() => setAlertInfo({ ...alertInfo, show: false })}
+              >
+                {alertInfo.message}
+              </Alert>
+            </Stack>
+          )}
           <div className="botones-tarjetas">
             <button
               type="submit"

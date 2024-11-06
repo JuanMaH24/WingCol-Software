@@ -3,6 +3,8 @@ import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/lib/styles.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import { getUser } from "../services/jwt-decode";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export function PaymentFormEditarTarjeta() {
   const [state, setState] = useState({
@@ -69,6 +71,11 @@ export function PaymentFormEditarTarjeta() {
   const [minDate, setMinDate] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
+  const [alertInfo, setAlertInfo] = useState({
+    show: false,
+    message: "",
+    severity: "info",
+  });
 
   useEffect(() => {
     const today = new Date();
@@ -118,6 +125,11 @@ export function PaymentFormEditarTarjeta() {
         });
       } catch (error) {
         console.error("Error al cargar la tarjeta:", error);
+        setAlertInfo({
+          show: true,
+          message: "Error al cargar la información de la tarjeta.",
+          severity: "error",
+        });
       }
     };
 
@@ -150,14 +162,29 @@ export function PaymentFormEditarTarjeta() {
         });
 
         if (response.ok) {
-          alert("Tarjeta eliminada exitosamente.");
-          navigate("/home-cliente");
+          setAlertInfo({
+            show: true,
+            message: "Tarjeta eliminada exitosamente.",
+            severity: "success",
+          });
+          setTimeout(() => {
+            navigate("/home-cliente");
+          }, 2000);
         } else {
-          alert("Hubo un error al eliminar la tarjeta. Inténtalo nuevamente.");
+          setAlertInfo({
+            show: true,
+            message:
+              "Hubo un error al eliminar la tarjeta. Inténtalo nuevamente.",
+            severity: "error",
+          });
         }
       } catch (error) {
         console.error("Error al eliminar la tarjeta:", error);
-        alert("Error en la conexión. Inténtalo nuevamente.");
+        setAlertInfo({
+          show: true,
+          message: "Error en la conexión. Inténtalo nuevamente.",
+          severity: "error",
+        });
       }
     }
   };
@@ -210,20 +237,39 @@ export function PaymentFormEditarTarjeta() {
         });
 
         if (response.ok) {
-          alert("Tarjeta actualizada exitosamente.");
-          navigate("/home-cliente");
+          setAlertInfo({
+            show: true,
+            message: "Tarjeta actualizada exitosamente.",
+            severity: "success",
+          });
+          setTimeout(() => {
+            navigate("/home-cliente");
+          }, 2000);
         } else {
-          alert(
-            "Hubo un error al actualizar la tarjeta. Inténtalo nuevamente."
-          );
+          setAlertInfo({
+            show: true,
+            message:
+              "Hubo un error al actualizar la tarjeta. Inténtalo nuevamente.",
+            severity: "error",
+          });
         }
       } catch (error) {
         console.error("Error al actualizar la tarjeta:", error);
-        alert("Error en la conexión. Inténtalo nuevamente.");
+        setAlertInfo({
+          show: true,
+          message: "Error en la conexión. Inténtalo nuevamente.",
+          severity: "error",
+        });
       }
     } else {
-      alert("No se han realizado cambios.");
-      navigate("/home-cliente");
+      setAlertInfo({
+        show: true,
+        message: "No se han realizado cambios.",
+        severity: "info",
+      });
+      setTimeout(() => {
+        navigate("/home-cliente");
+      }, 2000);
     }
   };
 
@@ -363,6 +409,16 @@ export function PaymentFormEditarTarjeta() {
           value={state.currencycard}
           required
         />
+        {alertInfo.show && (
+          <Stack sx={{ width: "100%", marginBottom: 2 }} spacing={2}>
+            <Alert
+              severity={alertInfo.severity}
+              onClose={() => setAlertInfo({ ...alertInfo, show: false })}
+            >
+              {alertInfo.message}
+            </Alert>
+          </Stack>
+        )}
         <div className="botones-tarjetas">
           <button
             type="submit"

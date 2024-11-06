@@ -8,6 +8,8 @@ import PhoneInput from "react-phone-number-input";
 import { getUser } from "../services/jwt-decode";
 import "react-phone-number-input/style.css";
 import LocationSelector from "./ciudades";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export function EditarPerfil() {
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -46,6 +48,11 @@ export function EditarPerfil() {
   const currentUser = getUser();
   const jwtToken = localStorage.getItem("access");
   const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    show: false,
+    message: "",
+    severity: "info",
+  });
 
   useEffect(() => {
     validateForm();
@@ -331,23 +338,32 @@ export function EditarPerfil() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(
-          errorData.nombre ||
+        setAlertInfo({
+          show: true,
+          message:
+            errorData.nombre ||
             errorData.user_id ||
             errorData.email ||
-            "Error al actualizar el perfil."
-        );
-        return;
-      } else {
-        navigate("/", {
-          state: { successMessage: "Perfil actualizado correctamente." },
+            "Error al actualizar el perfil.",
+          severity: "error",
         });
+      } else {
+        setAlertInfo({
+          show: true,
+          message: "Perfil actualizado correctamente.",
+          severity: "success",
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage(
-        "Hubo un problema con la actualización. Intenta más tarde."
-      );
+      setAlertInfo({
+        show: true,
+        message: "Hubo un problema con la actualización. Intenta más tarde.",
+        severity: "error",
+      });
     }
   };
 
@@ -369,22 +385,34 @@ export function EditarPerfil() {
         });
 
         if (response.ok) {
-          alert("Tu cuenta ha sido eliminada exitosamente.");
-          localStorage.removeItem("access");
-          localStorage.removeItem("refresh");
-          navigate("/");
+          setAlertInfo({
+            show: true,
+            message: "Tu cuenta ha sido eliminada exitosamente.",
+            severity: "success",
+          });
+          setTimeout(() => {
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            navigate("/");
+          }, 2000);
         } else {
           const errorData = await response.json();
-          alert(
-            "Error al eliminar la cuenta: " +
-              (errorData.message || "Por favor, intenta de nuevo más tarde.")
-          );
+          setAlertInfo({
+            show: true,
+            message:
+              "Error al eliminar la cuenta: " +
+              (errorData.message || "Por favor, intenta de nuevo más tarde."),
+            severity: "error",
+          });
         }
       } catch (error) {
         console.error("Error al eliminar la cuenta:", error);
-        alert(
-          "Hubo un problema al intentar eliminar tu cuenta. Por favor, intenta de nuevo más tarde."
-        );
+        setAlertInfo({
+          show: true,
+          message:
+            "Hubo un problema al intentar eliminar tu cuenta. Por favor, intenta de nuevo más tarde.",
+          severity: "error",
+        });
       }
     }
   };
@@ -640,6 +668,16 @@ export function EditarPerfil() {
       <div className="boton-registro">
         <button type="submit">Guardar cambios</button>
       </div>
+      {alertInfo.show && (
+        <Stack sx={{ width: "100%", marginBottom: 2 }} spacing={2}>
+          <Alert
+            severity={alertInfo.severity}
+            onClose={() => setAlertInfo({ ...alertInfo, show: false })}
+          >
+            {alertInfo.message}
+          </Alert>
+        </Stack>
+      )}
       <div className="w-100 d-flex justify-content-around ">
         <button
           className="rounded-pill btn btn-secondary"
