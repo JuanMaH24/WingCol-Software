@@ -63,11 +63,11 @@ export function PaymentForm() {
 
     if (
       state.name &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ\s]*$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
     ) {
       newErrors.name = (
         <span style={{ fontSize: "12px", color: "white" }}>
-          El nombre no puede contener espacios, números o caracteres especiales
+          El nombre no puede contener números o caracteres especiales
         </span>
       );
     } else {
