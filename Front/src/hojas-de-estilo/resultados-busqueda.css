@@ -19,15 +19,18 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  /* filter: blur(8px); */
 }
 
 .vuelo-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #a039d4;
+  background-color: transparent;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: 5px solid black;
+  border-width: 10px;
+  box-shadow: 6px 6px 6px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
 
