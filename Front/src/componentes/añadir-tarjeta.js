@@ -217,7 +217,7 @@ export function PaymentForm() {
             <input
               type="tel"
               name="number"
-              placeholder="Card Number"
+              placeholder="Número de tarjeta"
               value={state.number}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
@@ -239,7 +239,7 @@ export function PaymentForm() {
             <input
               type="text"
               name="name"
-              placeholder="Name"
+              placeholder="Nombre del titular"
               value={state.name}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
@@ -262,7 +262,7 @@ export function PaymentForm() {
           <input
             type="date"
             name="expiry"
-            placeholder="Expiry"
+            placeholder="Fecha de expiración"
             value={state.expiry}
             onChange={handleInputChange}
             onFocus={handleInputFocus}

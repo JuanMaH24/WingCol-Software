@@ -114,10 +114,17 @@ export function Registro() {
     }
 
     // Validate email
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (
+      formData.email && // Verifica que haya al menos un carácter ingresado
+      (formData.email.trim() === "" || // Verifica si solo hay espacios en blanco
+        formData.email.trim() !== formData.email || // Verifica que no tenga espacios al inicio o al final
+        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          formData.email
+        ))
+    ) {
       newErrors.email = (
         <span style={{ fontSize: "12px", color: "white" }}>
-          Por favor, introduce un correo electrónico válido
+          Por favor, introduce un correo electrónico válido sin espacios
         </span>
       );
     } else {
@@ -302,6 +309,10 @@ export function Registro() {
       setErrorMessage("Hubo un problema con el registro. Intenta más tarde.");
       setShowErrorAlert(true);
     }
+  };
+
+  const handleback = () => {
+    navigate("/inicio-de-sesion");
   };
 
   return (
@@ -536,6 +547,17 @@ export function Registro() {
 
       <div className="boton-registro">
         <button type="submit">Registrarse</button>
+        <button
+          style={{
+            backgroundColor: "red",
+            color: "white",
+            fontSize: "20px",
+            paddingBottom: "20px",
+          }}
+          onClick={handleback}
+        >
+          Cancelar
+        </button>
       </div>
     </form>
   );

@@ -1,66 +1,62 @@
 .Contenedor-buscador {
   display: flex;
-  flex-direction: colum;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   background-color: #f0f8ff;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
-}
-
-.fila-tipo-vuelo {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.botones-buscador {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  margin-top: 90px;
   gap: 20px;
 }
 
-.fila-filtros {
+.fila-superior,
+.fila-inferior {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  gap: 15px;
 }
 
 .Contenedor-filtros {
-  margin-right: 10px;
   display: flex;
-  flex-direction: row;
   gap: 15px;
-  height: 50px;
-}
-
-select {
-  width: 220px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 16px;
+  flex-grow: 1;
 }
 
 .fechas {
   display: flex;
-  flex-direction: row;
-  gap: 15px;
+  flex-direction: column;
 }
 
-.fechas input[type="date"] {
+.precio,
+.duracion,
+.input-vuelo {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+select,
+input[type="date"],
+input[type="time"] {
+  width: 100%;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ddd;
   font-size: 16px;
+  background-color: #fff;
+  color: #333;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .Boton-buscar {
   display: flex;
-  align-items: center;
-  margin-left: 5px;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 .Boton-buscar button {
@@ -77,31 +73,25 @@ select {
   background-color: #444;
 }
 
-input,
-select {
-  font-family: "Poppins", sans-serif;
+/* Estilos para los componentes BarraDePrecios y BarraDeDuracion */
+.precio > div,
+.duracion > div {
+  width: 100%;
 }
 
-.Contenedor-buscador input,
-.Contenedor-buscador select {
-  background-color: #fff;
-  color: #333;
-}
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .fila-superior,
+  .fila-inferior {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-.Contenedor-buscador select:focus,
-.Contenedor-buscador input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
+  .Contenedor-filtros {
+    flex-direction: column;
+  }
 
-.fechas {
-  display: flex;
-  flex-direction: column; /* Apila el label sobre el input */
-}
-
-label {
-  width: 100%; /* Extiende el label a lo largo del contenedor */
-  margin-bottom: -15px;
-  margin-top: -10px;
+  .Boton-buscar {
+    justify-content: center;
+  }
 }

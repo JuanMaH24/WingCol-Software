@@ -8,17 +8,16 @@ import Stack from "@mui/material/Stack";
 
 export function CrearVuelos() {
   const [formData, setFormData] = useState({
-    vueloNumero: "",
-    tipoVuelo: "", // Nacional o Internacional
+    tipoVuelo: "",
     selectedOrigen: "",
     selectedDestino: "",
     precio: "",
     fechaSalida: "",
     horaSalida: "",
-    duracion: "",
-    flightPic: null, // Imagen del vuelo
+    flightPic: null,
   });
   const [minDate, setMinDate] = useState("");
+  const [minTime, setMinTime] = useState("");
   const navigate = useNavigate();
   const [alertInfo, setAlertInfo] = useState({
     show: false,
@@ -27,16 +26,27 @@ export function CrearVuelos() {
   });
 
   useEffect(() => {
-    const today = new Date();
-    const formattedDate = formatDate(today);
-    setMinDate(formattedDate);
+    const now = new Date();
+    setMinDate(formatDate(now));
+    updateMinTime(now);
   }, []);
 
+  useEffect(() => {
+    if (formData.fechaSalida === minDate) {
+      updateMinTime(new Date());
+    } else {
+      setMinTime("00:00");
+    }
+  }, [formData.fechaSalida, formData.tipoVuelo, minDate]);
+
   const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate() + 1).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    return date.toISOString().split("T")[0];
+  };
+
+  const updateMinTime = (now) => {
+    const hoursToAdd = formData.tipoVuelo === "N" ? 1 : 3;
+    now.setHours(now.getHours() + hoursToAdd);
+    setMinTime(now.toTimeString().slice(0, 5));
   };
 
   const distancias = {
@@ -120,6 +130,10 @@ export function CrearVuelos() {
       ...prevState,
       [name]: value,
     }));
+
+    if (name === "tipoVuelo" && formData.fechaSalida === minDate) {
+      updateMinTime(new Date());
+    }
   };
 
   const handleOrigenChange = (event) => {
@@ -328,22 +342,12 @@ export function CrearVuelos() {
           type="time"
           name="horaSalida"
           value={formData.horaSalida}
+          min={formData.fechaSalida === minDate ? minTime : undefined}
           onChange={handleChange}
           required
         />
       </div>
 
-      <div className="input-vuelo">
-        <h3>Tiempo de vuelo (min)</h3>
-        <input
-          type="number"
-          name="duracion"
-          value={formData.duracion}
-          min={0}
-          onChange={handleChange}
-          required
-        />
-      </div>
       {alertInfo.show && (
         <Stack sx={{ width: "100%", marginBottom: 2 }} spacing={2}>
           <Alert
@@ -356,7 +360,9 @@ export function CrearVuelos() {
       )}
 
       <div className="foto-de-perfil">
-        <label htmlFor="file">Elija una imagen de vuelo </label>
+        <label htmlFor="file" style={{ color: "white" }}>
+          Elija una imagen de vuelo{" "}
+        </label>
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
 
