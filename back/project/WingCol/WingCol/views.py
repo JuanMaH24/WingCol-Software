@@ -267,11 +267,14 @@ def get_flights(request):
         city_arrive = request.query_params.get("ciudad_destino")
         city_departure = request.query_params.get("ciudad_origen")
         date = request.query_params.get("fecha_salida")
+        price = request.query_params.get("precio")
         search_query = Q(activo = True, estado = 'P')
         if city_arrive:
             search_query &= Q(ciudad_destino=city_arrive)
         if city_departure:
             search_query &= Q(ciudad_origen=city_departure)
+        if price:
+            search_query &= Q(precio=price)
         if date:
             arrive_date = datetime.strptime(date, "%Y-%m-%d").date()
             search_query &= Q(fecha_salida__date=arrive_date)
@@ -394,6 +397,29 @@ def delete_seats(sender, instance, **kwargs):
             Sillas.objects.filter(id_vuelo=instance, activo=True).update(activo=False)
         except Exception as exception:
             raise exception
+
+@receiver(post_save, sender=Administrador)
+def notify_admin_creation(sender, instance, created, **kwargs):
+    if created:
+        print("deberia enviar correo")
+        context = {
+            'current_user': instance.user_id,
+            'email': instance.user_id.email,
+        }
+
+        html_message = render_to_string("pruebaplantilla.html", context)
+        email_plaintext_message = "El Administrador en WingCol Airlines a sido creado con éxito. Tu contraseña es 'admin1234', por favor cambialo lo más pronto posible en la opción 'Editar Perfil'."
+
+        msg = EmailMultiAlternatives(
+            "Creación de cuenta - {title}".format(title="WingCol"),
+            email_plaintext_message,
+            "wingcolairlines@gmail.com",
+            [instance.user_id.email]
+        )
+
+        msg.attach_alternative(html_message, "text/html")
+        msg.send()
+
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
