@@ -197,7 +197,10 @@ export function Buscador() {
         </div>
       </div>
       <div className="fila-inferior">
-        <div className="precio" style={{ width: "5%", paddingRight: "30px" }}>
+        <div
+          className="precio"
+          style={{ width: "5%", paddingRight: "30px", marginBottom: "-20px" }}
+        >
           <label>Precio:</label>
           <BarraDePrecios />
         </div>

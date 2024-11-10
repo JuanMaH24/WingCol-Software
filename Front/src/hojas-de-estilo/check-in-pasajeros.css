@@ -1,0 +1,79 @@
+.contenedor-principal-pasajeros {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Grid para organizar los elementos en dos columnas */
+.Telefono-check-in {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Elementos que ocupan toda una columna */
+.Nombres-check-in,
+.Apellidos-check-in,
+.correo-check-in,
+.numero-de-documento-check-in,
+.PhoneInput,
+select {
+  width: 100%;
+}
+
+/* Estilos básicos para inputs y selects */
+input,
+select {
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.genero-check-in option,
+.tipo-de-documento-check-in option {
+  color: black;
+}
+.PhoneInputCountrySelect option {
+  color: black;
+  background-color: white;
+}
+
+/* Contenedor de botones al final */
+.botones-check-in {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Estilos básicos para los botones */
+.botones-check-in button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+}
+
+.botones-check-in button:last-child {
+  background-color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .Telefono-check-in {
+    grid-template-columns: 1fr;
+  }
+}

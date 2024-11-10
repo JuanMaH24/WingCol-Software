@@ -4,6 +4,7 @@ import logo_wingcol from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/home-visitante.css";
 import ImgMediaCard from "./cards-home";
 import { Buscador } from "./buscador";
+import { CheckInBanner } from "./tarjeta-check-in";
 
 export function HomeVisitante() {
   const navigate = useNavigate();
@@ -36,6 +37,9 @@ export function HomeVisitante() {
         <ImgMediaCard />
         <ImgMediaCard />
         <ImgMediaCard />
+      </div>
+      <div className="tarjeta-check-in">
+        <CheckInBanner />
       </div>
     </div>
   );

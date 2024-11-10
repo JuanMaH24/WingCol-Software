@@ -1,58 +1,33 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
-import Typography from "@mui/material/Typography";
 
-const MAX = 20000000;
-const MIN = 100000;
-const marks = [
-  {
-    value: MIN,
-    label: "",
-    style: { color: "black" },
-  },
-  {
-    value: MAX,
-    label: "",
-    style: { color: "black" },
-  },
-];
+function valuetext(value) {
+  return `$${value.toLocaleString()}`;
+}
 
 export function BarraDePrecios() {
-  const [val, setVal] = React.useState(MIN);
-  const handleChange = (_, newValue) => {
-    setVal(newValue);
+  const [value, setValue] = React.useState([100000, 1000000]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
   return (
-    <Box sx={{ width: 250 }}>
+    <Box sx={{ width: 300 }}>
       <Slider
-        style={{ color: "black" }}
-        marks={marks}
-        step={100000}
-        value={val}
-        valueLabelDisplay="auto"
-        min={MIN}
-        max={MAX}
+        getAriaLabel={() => "Rango de precios"}
+        value={value}
         onChange={handleChange}
+        valueLabelDisplay="auto"
+        getAriaValueText={valuetext}
+        min={100000}
+        max={20000000}
+        step={10000}
       />
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography
-          style={{ color: "black" }}
-          variant="body2"
-          onClick={() => setVal(MIN)}
-          sx={{ cursor: "pointer" }}
-        >
-          {MIN} min
-        </Typography>
-        <Typography
-          style={{ color: "black" }}
-          variant="body2"
-          onClick={() => setVal(MAX)}
-          sx={{ cursor: "pointer" }}
-        >
-          {MAX} max
-        </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+        <span>Mínimo: ${value[0].toLocaleString()}</span>
+        <span>Máximo: ${value[1].toLocaleString()}</span>
       </Box>
     </Box>
   );

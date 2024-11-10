@@ -27,6 +27,8 @@ import { PaymentFormEditarTarjeta } from "./componentes/editar-tarjetas";
 import { ResultadosPage } from "./componentes/pagina-resultados";
 import { BasicTableTarjetas } from "./componentes/tabla-tarjetas";
 import { ListaTarjetas } from "./componentes/lista-tarjetas";
+import { CheckInIngreso } from "./componentes/check-in-ingreso";
+import { CheckInPasajeros } from "./componentes/check-in-pasajeros";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -134,6 +136,8 @@ export default function App() {
             path="/restablecer-contraseña"
             element={<RestablecerContraseña />}
           />
+          <Route path="/check-in" element={<CheckInIngreso />} />
+          <Route path="/check-in-pasajeros" element={<CheckInPasajeros />} />
 
           {/* Rutas protegidas */}
           <Route

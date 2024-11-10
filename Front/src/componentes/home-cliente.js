@@ -5,6 +5,7 @@ import logo_wingcol from "../imagenes/WingcolName.png";
 import ImgMediaCard from "./cards-home";
 import Navbar from "./navbar";
 import { Buscador } from "./buscador";
+import { CheckInBanner } from "./tarjeta-check-in";
 
 export function HomeCliente() {
   const navigate = useNavigate();
@@ -19,12 +20,15 @@ export function HomeCliente() {
 
   return (
     <div className="contenedor-principal-home">
-      <Navbar/>
+      <Navbar />
       <Buscador />
       <div className="cards-home">
         <ImgMediaCard />
         <ImgMediaCard />
         <ImgMediaCard />
+      </div>
+      <div className="tarjeta-check-in">
+        <CheckInBanner />
       </div>
     </div>
   );
