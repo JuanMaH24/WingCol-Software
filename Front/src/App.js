@@ -67,8 +67,8 @@ export default function App() {
         setUser(null);
         setIsLoading(false);
       }
-    }
-    getCurrentUser()
+    };
+    getCurrentUser();
   }, []);
 
   if (isLoading) {

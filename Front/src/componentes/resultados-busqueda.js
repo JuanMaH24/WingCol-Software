@@ -39,7 +39,11 @@ export default function ResultadosVuelos({ vuelos }) {
           {vuelos.map((vuelo, index) => (
             <div key={index} className="vuelo-item">
               <div className="vuelo-detalles">
-                <img className="imagen" alt="Vuelo Imagen" src={vuelo.vuelos_pic ? vuelo.vuelos_pic : Fondo_sesion}/>
+                <img
+                  className="imagen"
+                  alt="Vuelo Imagen"
+                  src={vuelo.vuelos_pic ? vuelo.vuelos_pic : Fondo_sesion}
+                />
                 <p>
                   <strong>Nombre de Vuelo:</strong> {vuelo.referencia}
                 </p>
@@ -50,10 +54,15 @@ export default function ResultadosVuelos({ vuelos }) {
                   <strong>Destino:</strong> {vuelo.ciudad_destino}
                 </p>
                 <p>
-                  <strong>Fecha de Salida:</strong> {vuelo.fecha_salida.split("T")[0]}
+                  <strong>Fecha de Salida:</strong>{" "}
+                  {vuelo.fecha_salida.split("T")[0]}
                 </p>
                 <p>
-                  <strong>Hora de Salida:</strong> {vuelo.fecha_salida.split("T")[1].replace("Z", "")}
+                  <strong>Hora de Salida:</strong>{" "}
+                  {vuelo.fecha_salida.split("T")[1].replace("Z", "")}
+                </p>
+                <p>
+                  <strong>Duración:</strong> ${vuelo.duracion}
                 </p>
                 <p>
                   <strong>Precio:</strong> ${vuelo.precio}

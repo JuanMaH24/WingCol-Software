@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { RowRadioButtonsGroup } from "./Botones-buscador";
 import "../hojas-de-estilo/buscador.css";
 import { useNavigate } from "react-router-dom";
+import { BarraDePrecios } from "./barra-de-precios";
+import { BarraDeDuracion } from "./barra-duracion";
 
 const Origen = [
   { value: "Leticia", label: "Leticia (Amazonas)" },
@@ -89,6 +91,9 @@ export function Buscador() {
   const [destino, setDestino] = useState("");
   const [resultados, setResultados] = useState([]);
   const [fechaSalida, setFechaSalida] = useState("");
+  const [horaSalida, setHoraSalida] = useState("");
+  const [precio, setPrecio] = useState(0);
+  const [duracion, setDuracion] = useState(0);
   const navigate = useNavigate();
   const apiHost = process.env.REACT_APP_API_HOST;
 
@@ -105,13 +110,28 @@ export function Buscador() {
   const handleFechaSalida = (event) => {
     setFechaSalida(event.target.value);
   };
-  
+
+  const handleHoraSalida = (event) => {
+    setHoraSalida(event.target.value);
+  };
+
+  const handlePrecioChange = (event) => {
+    setPrecio(event.target.value);
+  };
+
+  const handleDuracionChange = (event) => {
+    setDuracion(event.target.value);
+  };
+
   const handleBuscarClick = async () => {
     try {
       const params = new URLSearchParams({
         ciudad_origen: origen,
         ciudad_destino: destino,
         fecha_salida: fechaSalida,
+        hora_salida: horaSalida,
+        precio: precio,
+        duracion: duracion,
       });
       const response = await fetch(
         `${apiHost}/flight/search/?${params.toString()}`
@@ -129,32 +149,68 @@ export function Buscador() {
     }
   };
 
-
   return (
     <div className="Contenedor-buscador">
-      <div className="Contenedor-filtros">
-        {/* Selector de Origen */}
-        <select value={origen} onChange={handleOrigenChange}>
-          <option value="">Selecciona un origen</option>
-          {Origen.map((ciudad) => (
-            <option key={ciudad.value} value={ciudad.value}>
-              {ciudad.label}
-            </option>
-          ))}
-        </select>
+      <div className="fila-superior">
+        <div className="Contenedor-filtros">
+          {/* Selector de Origen */}
+          <select
+            value={origen}
+            onChange={handleOrigenChange}
+            style={{
+              color: "black",
+              borderColor: "black",
+              width: "60%",
+            }}
+          >
+            <option value="">Selecciona un origen</option>
+            {Origen.map((ciudad) => (
+              <option key={ciudad.value} value={ciudad.value}>
+                {ciudad.label}
+              </option>
+            ))}
+          </select>
 
-        {/* Selector de Destino */}
-        <select value={destino} onChange={handleDestinoChange}>
-          <option value="">Selecciona un destino</option>
-          {Destinos.map((ciudad) => (
-            <option key={ciudad.value} value={ciudad.value}>
-              {ciudad.label}
-            </option>
-          ))}
-        </select>
-        <div className="fechas">
-          <label>Fecha de ida:</label>
-          <input type="date" id="fechaSalida" name="fechaSalida" onChange={handleFechaSalida} value={fechaSalida}/>
+          {/* Selector de Destino */}
+          <select
+            value={destino}
+            onChange={handleDestinoChange}
+            style={{ color: "black", borderColor: "black", width: "60%" }}
+          >
+            <option value="">Selecciona un destino</option>
+            {Destinos.map((ciudad) => (
+              <option key={ciudad.value} value={ciudad.value}>
+                {ciudad.label}
+              </option>
+            ))}
+          </select>
+          <div className="fechas" style={{ width: "58%" }}>
+            <label>Fecha de ida:</label>
+            <input
+              type="date"
+              id="fechaSalida"
+              name="fechaSalida"
+              onChange={handleFechaSalida}
+              value={fechaSalida}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="fila-inferior">
+        <div className="precio" style={{ width: "5%", paddingRight: "30px" }}>
+          <label>Precio:</label>
+          <BarraDePrecios />
+        </div>
+        <div className="duracion" style={{ width: "5%", paddingRight: "30px" }}>
+          <label>Duración:</label>
+          <BarraDeDuracion />
+        </div>
+        <div
+          className="input-vuelo"
+          style={{ paddingBottom: "10px", width: "30px" }}
+        >
+          <h3 style={{ color: "black" }}>Hora de salida</h3>
+          <input type="time" name="horaSalida" />
         </div>
       </div>
       <div className="Boton-buscar">
