@@ -234,6 +234,9 @@ export function EditarVuelo() {
       }
     }
   };
+  const handleRegreso = () => {
+    navigate("/home-visitante");
+  };
 
   return (
     <form className="contenedor-principal-vuelos" onSubmit={handleSubmit}>
@@ -373,6 +376,7 @@ export function EditarVuelo() {
         <button type="button" onClick={handleDelete}>
           Cancelar vuelo
         </button>
+        <button onClick={handleRegreso}>Regresar a la lista de vuelos</button>
       </div>
     </form>
   );
