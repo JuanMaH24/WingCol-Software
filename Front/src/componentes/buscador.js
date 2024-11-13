@@ -92,7 +92,8 @@ export function Buscador() {
   const [resultados, setResultados] = useState([]);
   const [fechaSalida, setFechaSalida] = useState("");
   const [horaSalida, setHoraSalida] = useState("");
-  const [precio, setPrecio] = useState(0);
+  const [precioMin, setPrecioMin] = useState(100000);
+  const [precioMax, setPrecioMax] = useState(1000000);
   const [duracion, setDuracion] = useState(0);
   const navigate = useNavigate();
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -111,18 +112,6 @@ export function Buscador() {
     setFechaSalida(event.target.value);
   };
 
-  const handleHoraSalida = (event) => {
-    setHoraSalida(event.target.value);
-  };
-
-  const handlePrecioChange = (event) => {
-    setPrecio(event.target.value);
-  };
-
-  const handleDuracionChange = (event) => {
-    setDuracion(event.target.value);
-  };
-
   const handleBuscarClick = async () => {
     try {
       const params = new URLSearchParams({
@@ -130,7 +119,8 @@ export function Buscador() {
         ciudad_destino: destino,
         fecha_salida: fechaSalida,
         hora_salida: horaSalida,
-        precio: precio,
+        precio_min: precioMin,
+        precio_max: precioMax,
         duracion: duracion,
       });
       const response = await fetch(
@@ -202,11 +192,12 @@ export function Buscador() {
           style={{ width: "5%", paddingRight: "30px", marginBottom: "-20px" }}
         >
           <label>Precio:</label>
-          <BarraDePrecios />
+          <BarraDePrecios onPrecioMinChange={setPrecioMin}
+            onPrecioMaxChange={setPrecioMax} />
         </div>
         <div className="duracion" style={{ width: "5%", paddingRight: "30px" }}>
           <label>Duración:</label>
-          <BarraDeDuracion />
+          <BarraDeDuracion onDuracionChange={setDuracion}/>
         </div>
         <div
           className="input-vuelo"
