@@ -25,14 +25,16 @@ h1 {
 }
 
 .codigo-de-reserva,
-.apellidos-ingreso-check-in {
+.apellidos-ingreso-check-in,
+.documento-check-in {
   width: 100%;
   max-width: 500px;
-  margin: 15px auto;
+  margin: 5px auto;
 }
 
 .codigo-de-reserva input,
-.apellidos-ingreso-check-in input {
+.apellidos-ingreso-check-in input,
+.documento-check-in input {
   width: 100%;
   padding: 12px;
   font-size: 16px;

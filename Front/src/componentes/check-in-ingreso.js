@@ -17,11 +17,28 @@ export function CheckInIngreso() {
             type="text"
             placeholder="Código de reserva"
             required
+            pattern="^[A-Z]{3}\d{3}$"
+            title="El código de reserva debe tener 3 letras mayúsculas seguidas de 3 dígitos"
             maxLength={6}
           />
         </div>
+        <p>O ingresa con:</p>
+        <div className="documento-check-in">
+          <input
+            type="text"
+            placeholder="Número de documento"
+            required
+            maxLength={13}
+          />
+        </div>
         <div className="apellidos-ingreso-check-in">
-          <input type="text" placeholder="Apellidos" required />
+          <input
+            type="text"
+            placeholder="Apellidos"
+            pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+            title="Los apellidos debe contener solo letras"
+            required
+          />
         </div>
         <div className="botones-ingreso-check-in">
           <button

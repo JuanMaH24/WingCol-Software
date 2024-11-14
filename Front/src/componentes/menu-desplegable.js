@@ -86,6 +86,10 @@ export default function BasicMenu() {
     return <div>{error}</div>;
   }
 
+  const handleCheckIn = () => {
+    navigate("/check-in");
+  };
+
   return (
     <div className="menu-desplegable">
       <Button
@@ -112,6 +116,7 @@ export default function BasicMenu() {
             <MenuItem onClick={handleEditar}>Editar perfil</MenuItem>
             <MenuItem onClick={handleCrearTarjeta}>Añadir tarjeta</MenuItem>
             <MenuItem onClick={handleVerTarjetas}>Ver tarjetas</MenuItem>
+            <MenuItem onClick={handleCheckIn}>Realizar check-in</MenuItem>
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}

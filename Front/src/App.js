@@ -29,6 +29,8 @@ import { BasicTableTarjetas } from "./componentes/tabla-tarjetas";
 import { ListaTarjetas } from "./componentes/lista-tarjetas";
 import { CheckInIngreso } from "./componentes/check-in-ingreso";
 import { CheckInPasajeros } from "./componentes/check-in-pasajeros";
+import { SelectorAsientos } from "./componentes/seleccionar-asientos";
+import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -138,6 +140,8 @@ export default function App() {
           />
           <Route path="/check-in" element={<CheckInIngreso />} />
           <Route path="/check-in-pasajeros" element={<CheckInPasajeros />} />
+          <Route path="/seleccionar-asientos" element={<SelectorAsientos />} />
+          <Route path="/seleccionar-equipaje" element={<SeleccionEquipaje />} />
 
           {/* Rutas protegidas */}
           <Route
