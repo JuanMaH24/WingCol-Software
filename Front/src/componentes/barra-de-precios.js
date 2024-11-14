@@ -6,11 +6,13 @@ function valuetext(value) {
   return `$${value.toLocaleString()}`;
 }
 
-export function BarraDePrecios() {
+export function BarraDePrecios({ onPrecioMinChange, onPrecioMaxChange }) {
   const [value, setValue] = React.useState([100000, 1000000]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    onPrecioMinChange(newValue[0]);
+    onPrecioMaxChange(newValue[1]);
   };
 
   return (
