@@ -20,6 +20,8 @@ from datetime import datetime
 from .auth import ClientAuthentication, AdminAuthentication, RootAuthentication
 from .models import *
 from .serializers import *
+from .utils import *
+from .services import *
 
 @api_view(['GET'])
 def get_all_users(request):
@@ -149,6 +151,7 @@ def get_admin(request):
 def create_admin(request):
     data = request.data.copy()
     data['roles'] = 2
+    data['password'] = generate_password()
     user_serializer = UserSerializer(data=data)
     if user_serializer.is_valid():
         new_user = user_serializer.save()
@@ -157,6 +160,7 @@ def create_admin(request):
         admin_serializer = AdministradorSerializer(data=admin_data)
         if admin_serializer.is_valid():
             admin_serializer.save()
+            notify_admin_creation(new_user, data['password'])
             return Response(admin_serializer.data, status=status.HTTP_201_CREATED)
         NormalUser.objects.get(user_id=new_user.user_id).delete()
         return Response(admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -267,14 +271,17 @@ def get_flights(request):
         city_arrive = request.query_params.get("ciudad_destino")
         city_departure = request.query_params.get("ciudad_origen")
         date = request.query_params.get("fecha_salida")
-        price = request.query_params.get("precio")
+        price_min = request.query_params.get("precio_min")
+        price_max = request.query_params.get("precio_max")
         search_query = Q(activo = True, estado = 'P')
         if city_arrive:
             search_query &= Q(ciudad_destino=city_arrive)
         if city_departure:
             search_query &= Q(ciudad_origen=city_departure)
-        if price:
-            search_query &= Q(precio=price)
+        if price_min:
+            search_query &= Q(precio__lte=price_min)
+        if price_max:
+            search_query &= Q(precio__gte=price_max)
         if date:
             arrive_date = datetime.strptime(date, "%Y-%m-%d").date()
             search_query &= Q(fecha_salida__date=arrive_date)
@@ -398,32 +405,8 @@ def delete_seats(sender, instance, **kwargs):
         except Exception as exception:
             raise exception
 
-@receiver(post_save, sender=Administrador)
-def notify_admin_creation(sender, instance, created, **kwargs):
-    if created:
-        print("deberia enviar correo")
-        context = {
-            'current_user': instance.user_id,
-            'email': instance.user_id.email,
-        }
-
-        html_message = render_to_string("pruebaplantilla.html", context)
-        email_plaintext_message = "El Administrador en WingCol Airlines a sido creado con éxito. Tu contraseña es 'admin1234', por favor cambialo lo más pronto posible en la opción 'Editar Perfil'."
-
-        msg = EmailMultiAlternatives(
-            "Creación de cuenta - {title}".format(title="WingCol"),
-            email_plaintext_message,
-            "wingcolairlines@gmail.com",
-            [instance.user_id.email]
-        )
-
-        msg.attach_alternative(html_message, "text/html")
-        msg.send()
-
-
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
-    print("deberia enviar correo")
     context = {
         'current_user': reset_password_token.user,
         'email': reset_password_token.user.email,

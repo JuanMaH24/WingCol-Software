@@ -48,7 +48,13 @@ class AdministradorSerializer(serializers.ModelSerializer):
         fields = [
             'user_id', 'nombre', 'segundo_nombre', 'apellido', 
             'segundo_apellido', 'genero', 'telefono', 'admin_pic']
-        extra_kwargs = {'admin_pic': {'required': False}}
+        extra_kwargs = {'nombre': {'required': False},
+                        'segundo_nombre': {'required': False},
+                        'apellido': {'required': False}, 
+                        'segundo_apellido': {'required': False},
+                        'genero': {'required': False},
+                        'telefono': {'required': False},
+                        'admin_pic': {'required': False}}
 
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:
