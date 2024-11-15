@@ -4,6 +4,7 @@ import logo_wingcol from "../imagenes/WingcolName.png";
 import "../hojas-de-estilo/home-visitante.css";
 import ImgMediaCard from "./cards-home";
 import { Buscador } from "./buscador";
+import { CheckInBanner } from "./tarjeta-check-in";
 
 export function HomeVisitante() {
   const navigate = useNavigate();
@@ -16,6 +17,10 @@ export function HomeVisitante() {
     navigate("/registro");
   };
 
+  const handleCheckIn = () => {
+    navigate("/check-in");
+  };
+
   return (
     <div className="contenedor-principal-home">
       <div className="barra-navegacion">
@@ -23,6 +28,9 @@ export function HomeVisitante() {
           <img src={logo_wingcol} alt="logo" />
         </div>
         <div className="contenedor-opciones-usuario">
+          <button className="boton-check-in" onClick={handleCheckIn}>
+            Realizar check-in
+          </button>
           <button className="boton-iniciar-sesion" onClick={handleLogin}>
             Iniciar sesión
           </button>
@@ -36,6 +44,9 @@ export function HomeVisitante() {
         <ImgMediaCard />
         <ImgMediaCard />
         <ImgMediaCard />
+      </div>
+      <div className="tarjeta-check-in">
+        <CheckInBanner />
       </div>
     </div>
   );

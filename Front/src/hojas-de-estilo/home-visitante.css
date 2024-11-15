@@ -26,7 +26,8 @@
 }
 
 .contenedor-principal-home .contenedor-opciones-usuario .boton-iniciar-sesion,
-.boton-registrarse {
+.boton-registrarse,
+.boton-check-in {
   width: auto; /* Ajusta el ancho automáticamente */
 }
 

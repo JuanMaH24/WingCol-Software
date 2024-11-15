@@ -27,11 +27,12 @@ const marks = [
   { value: MAX_MINUTES, label: formatDuration(MAX_MINUTES) },
 ];
 
-export function BarraDeDuracion() {
+export function BarraDeDuracion({ onDuracionChange }) {
   const [duration, setDuration] = React.useState(MIN_MINUTES);
 
   const handleChange = (event, newValue) => {
     setDuration(newValue);
+    if (onDuracionChange) onDuracionChange(newValue);
   };
 
   return (

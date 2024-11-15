@@ -1,0 +1,62 @@
+.contenedor-principal-check-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px; /* Ajusta el ancho máximo para centrarse más */
+  margin: 0 auto;
+  padding: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.ingreso-check-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.codigo-de-reserva,
+.apellidos-ingreso-check-in,
+.documento-check-in {
+  width: 100%;
+  max-width: 500px;
+  margin: 5px auto;
+}
+
+.codigo-de-reserva input,
+.apellidos-ingreso-check-in input,
+.documento-check-in input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.botones-ingreso-check-in {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.botones-ingreso-check-in button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 20px;
+  border: none;
+}

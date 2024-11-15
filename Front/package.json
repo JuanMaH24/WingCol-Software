@@ -23,6 +23,7 @@
     "react-phone-number-input": "^3.4.8",
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
+    "react-seatmap": "^0.1.2",
     "react-select": "^5.8.1",
     "sass": "^1.80.4",
     "web-vitals": "^2.1.4"
