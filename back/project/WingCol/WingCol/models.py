@@ -187,14 +187,37 @@ class Tiquete(models.Model):
 	class ClaseVuelo(models.TextChoices):
 		ECONOMICA = 'E', 'Clase económica'
 		PRIMERA_CLASE = 'P', 'Primera clase'
+	
 	class TipoEquipaje(models.TextChoices):
 		PERSONAL = 'EP', 'Equipaje personal'
 		MANO = 'EM', 'Equipaje de mano'
 		MALETA = 'MB', 'Maleta de bodega'
+	
+	class Genero(models.TextChoices):
+		MASCULINO = 'M', 'Masculino'
+		FEMENINO = 'F', 'Femenino'
+		NO_DICE = 'N', 'Prefiero No Decirlo'
+		OTRO = 'O', 'Otro'
+
+	class TipoDocumento(models.TextChoices):
+		CC = 'CC', 'Cédula de Ciudadanía'
+		TI = 'TI', 'Tarjeta de Identidad'
+		CE = 'CE', 'Cédula de Extranjería'
+		PA = 'PA', 'Pasaporte'
 
 	id_tiquete = models.AutoField(primary_key=True)
 	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
+	nombre_viajero = models.CharField(max_length=50)
+	segundo_nombre_viajero = models.CharField(max_length=50, blank=True)
+	apellido_viajero = models.CharField(max_length=50)
+	segundo_apellido_viajero = models.CharField(max_length=50)
+	tipo_documento_viajero = models.CharField(max_length=2, choices=TipoDocumento.choices)
+	fecha_nacimiento_viajero = models.DateField()
+	genero_viajero = models.CharField(max_length=1, choices=Genero.choices)	
+	telefono_viajero = models.CharField(max_length=20)	
+	nombre_contacto =  models.CharField(max_length=50)
+	telefono_contacto = models.CharField(max_length=20)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)

@@ -105,12 +105,13 @@ class CardSerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tiquete
-        fields = ['id_silla', 'id_cliente', 'clase', 'tipo_equipaje', 'id_silla', 'verificacion', 'activo']
+        fields =    [
+                        'id_silla', 'nombre', 'segundo_nombre', 'apellido', 'segundo_apellido', 
+                        'tipo_documento', 'fecha_nacimiento', 'genero', 'nombre_contacto', 'telefono_contacto', 
+                        'clase', 'tipo_equipaje', 'id_silla', 'verificacion', 'activo'
+                    ]
 
-    def validate(self, data):
-        if data['fecha_compra'] > data['fecha_vuelo']:
-            raise serializers.ValidationError('La fecha de compra debe ser menor a la fecha de vuelo')
-        return data
+    
 
 class CarSerializer(serializers.ModelSerializer):
     class Meta:

@@ -44,5 +44,11 @@ urlpatterns = [
 	path('card/delete/', delete_card),
 	path('card/', get_card),
 	path('card/get/', get_card_by_id),
+	path('ticket/create/', create_ticket),
+	path('ticket/update/', update_ticket),
+	path('ticket/delete/', cancel_ticket),
+	path('ticket/', get_ticket),
+	path('ticket/verify/fast', fast_verification),
+	path('ticket/verify/identify', identify_verification),
     path('password_reset/', include('django_rest_passwordreset.urls')),
 ]
