@@ -417,6 +417,8 @@ export function Registro() {
           type="email"
           name="email"
           placeholder="Correo electrónico"
+          pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+          title="Por favor, introduce un correo electrónico"
           required
           maxLength={50}
           onChange={handleChange}

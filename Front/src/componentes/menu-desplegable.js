@@ -90,6 +90,10 @@ export default function BasicMenu() {
     navigate("/check-in");
   };
 
+  const handleCarritoCompras = () => {
+    navigate("/carrito");
+  };
+
   return (
     <div className="menu-desplegable">
       <Button
@@ -117,6 +121,9 @@ export default function BasicMenu() {
             <MenuItem onClick={handleCrearTarjeta}>Añadir tarjeta</MenuItem>
             <MenuItem onClick={handleVerTarjetas}>Ver tarjetas</MenuItem>
             <MenuItem onClick={handleCheckIn}>Realizar check-in</MenuItem>
+            <MenuItem onClick={handleCarritoCompras}>
+              Carrito de compras
+            </MenuItem>
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </>
         )}

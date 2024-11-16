@@ -1,0 +1,18 @@
+[
+  {
+    "ciudad_origen": "Bogotá",
+    "ciudad_destino": "Medellín",
+    "fecha_salida": "2024-12-01",
+    "hora_salida": "10:00",
+    "precio": 150000,
+    "duracion": 1
+  },
+  {
+    "ciudad_origen": "Bogotá",
+    "ciudad_destino": "Cartagena",
+    "fecha_salida": "2024-12-02",
+    "hora_salida": "15:00",
+    "precio": 300000,
+    "duracion": 2
+  }
+]

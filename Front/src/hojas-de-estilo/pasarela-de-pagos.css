@@ -1,0 +1,30 @@
+.pasarela-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tarjetas-container {
+  margin-top: 20px;
+}
+
+.tarjeta-item {
+  margin-bottom: 10px;
+}
+
+.pagar-button,
+.volver-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.volver-button {
+  background-color: #6c757d;
+}

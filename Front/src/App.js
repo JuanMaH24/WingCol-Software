@@ -31,10 +31,26 @@ import { CheckInIngreso } from "./componentes/check-in-ingreso";
 import { CheckInPasajeros } from "./componentes/check-in-pasajeros";
 import { SelectorAsientos } from "./componentes/seleccionar-asientos";
 import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
+import CarritoCompras from "./componentes/carrito_compras";
+import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [cartItems, setCartItems] = useState([]);
+
+  const handleAddToCart = (item) => {
+    console.log("Agregando item al carrito:", item);
+    setCartItems((prevItems) => {
+      const newItems = [...prevItems, item];
+      console.log("Nuevo estado del carrito:", newItems);
+      return newItems;
+    });
+  };
+
+  const handleRemoveFromCart = (index) => {
+    setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+  };
 
   const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const location = useLocation();
@@ -232,11 +248,32 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/resultados" element={<ResultadosPage />} />
+          <Route
+            path="/resultados"
+            element={<ResultadosPage onAddToCart={handleAddToCart} />}
+          />
           <Route
             path="/unauthorized"
             element={<div>No tienes permiso para acceder a esta página.</div>}
           />
+          <Route
+            path="/carrito"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <CarritoCompras
+                  items={cartItems}
+                  onRemoveFromCart={(index) => {
+                    setCartItems((prev) => prev.filter((_, i) => i !== index));
+                  }}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resultados"
+            element={<ResultadosPage onAddToCart={handleAddToCart} />}
+          />
+          <Route path="/pasarela-de-pagos" element={<PasarelaDePagos />} />
         </Routes>
       </div>
     </Router>

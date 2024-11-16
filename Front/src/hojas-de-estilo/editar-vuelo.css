@@ -66,7 +66,8 @@ select {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.boton-vuelo-container {
+.boton-vuelo-container,
+.Boton-cancelar-vuelo {
   grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;

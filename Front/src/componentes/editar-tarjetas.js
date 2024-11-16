@@ -52,7 +52,7 @@ export function PaymentFormEditarTarjeta() {
 
     if (
       state.name &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
+      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ\s]*$/.test(state.name) // Eliminamos '\s' para no aceptar espacios
     ) {
       newErrors.name = (
         <span style={{ fontSize: "12px", color: "white" }}>
@@ -345,7 +345,7 @@ export function PaymentFormEditarTarjeta() {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             maxLength={40}
-            pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+            pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ\s]*$"
             style={{
               width: "100%",
               marginTop: "20px",

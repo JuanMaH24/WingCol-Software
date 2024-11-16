@@ -213,7 +213,7 @@ export function EditarVuelo() {
             // Asegúrate de incluir el token de autenticación si es necesario
             // "Authorization": "Bearer " + yourAuthToken
           },
-          body: JSON.stringify({id_vuelo: id})
+          body: JSON.stringify({ id_vuelo: id }),
         });
 
         if (response.ok) {
@@ -376,7 +376,7 @@ export function EditarVuelo() {
         <button type="button" onClick={handleDelete}>
           Cancelar vuelo
         </button>
-        <button onClick={handleRegreso}>Regresar a la lista de vuelos</button>
+        <button onClick={handleRegreso}>Volver a la pagina principal</button>
       </div>
     </form>
   );
