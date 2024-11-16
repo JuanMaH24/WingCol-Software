@@ -114,13 +114,6 @@ export function Registro() {
     }
 
     // Validate email
-<<<<<<< HEAD
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      newErrors.email = (
-          <span style={{ fontSize: "12px", color: "white" }}>
-            Por favor, introduce un correo electrónico válido y sin espacios en blanco
-          </span>
-=======
     if (
       formData.email && // Verifica que haya al menos un carácter ingresado
       (formData.email.trim() === "" || // Verifica si solo hay espacios en blanco
@@ -133,7 +126,6 @@ export function Registro() {
         <span style={{ fontSize: "12px", color: "white" }}>
           Por favor, introduce un correo electrónico válido sin espacios
         </span>
->>>>>>> a2342642c946acf93f8d0eb645f83180a78cf77c
       );
   } else {
       newErrors.email = "";

@@ -279,9 +279,9 @@ def get_flights(request):
         if city_departure:
             search_query &= Q(ciudad_origen=city_departure)
         if price_min:
-            search_query &= Q(precio__lte=price_min)
+            search_query &= Q(precio__gte=price_min)
         if price_max:
-            search_query &= Q(precio__gte=price_max)
+            search_query &= Q(precio__lte=price_max)
         if date:
             arrive_date = datetime.strptime(date, "%Y-%m-%d").date()
             search_query &= Q(fecha_salida__date=arrive_date)
