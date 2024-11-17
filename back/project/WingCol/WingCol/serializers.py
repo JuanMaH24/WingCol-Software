@@ -106,10 +106,13 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tiquete
         fields =    [
-                        'id_silla', 'nombre', 'segundo_nombre', 'apellido', 'segundo_apellido', 
-                        'tipo_documento', 'fecha_nacimiento', 'genero', 'nombre_contacto', 'telefono_contacto', 
-                        'clase', 'tipo_equipaje', 'id_silla', 'verificacion', 'activo'
+                        'id_silla', 'user_id', 'nombre_viajero', 'segundo_nombre_viajero', 
+                        'id_viajero', 'apellido_viajero', 'segundo_apellido_viajero', 
+                        'tipo_documento_viajero', 'fecha_nacimiento_viajero', 'genero_viajero', 
+                        'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 
+                        'clase', 'tipo_equipaje', 'verificacion', 'activo'
                     ]
+        extra_kwargs = {'verificacion': {'read_only': True}, 'activo': {'required': False}}
 
     
 

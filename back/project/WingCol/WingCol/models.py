@@ -3,6 +3,7 @@ from .manager import UsersManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import MinValueValidator, MaxValueValidator
+from .utils import *
 
 
 class NormalUser(AbstractBaseUser, PermissionsMixin):
@@ -208,6 +209,7 @@ class Tiquete(models.Model):
 	id_tiquete = models.AutoField(primary_key=True)
 	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
+	id_viajero = models.PositiveBigIntegerField()
 	nombre_viajero = models.CharField(max_length=50)
 	segundo_nombre_viajero = models.CharField(max_length=50, blank=True)
 	apellido_viajero = models.CharField(max_length=50)
@@ -226,6 +228,9 @@ class Tiquete(models.Model):
 	def soft_delete(self):
 		self.activo = False
 		self.save()	
+
+	def create_code(self):
+		self.verificacion = create_verification_code()
 
 class Busquedas(models.Model):
 	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
