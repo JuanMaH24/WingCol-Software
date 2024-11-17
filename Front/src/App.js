@@ -29,7 +29,7 @@ import { BasicTableTarjetas } from "./componentes/tabla-tarjetas";
 import { ListaTarjetas } from "./componentes/lista-tarjetas";
 import { CheckInIngreso } from "./componentes/check-in-ingreso";
 import { CheckInPasajeros } from "./componentes/check-in-pasajeros";
-import { SelectorAsientos } from "./componentes/seleccionar-asientos";
+import { SeleccionarAsientos } from "./componentes/seleccionar-asientos";
 import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
 import CarritoCompras from "./componentes/carrito_compras";
 import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
@@ -156,7 +156,10 @@ export default function App() {
           />
           <Route path="/check-in" element={<CheckInIngreso />} />
           <Route path="/check-in-pasajeros" element={<CheckInPasajeros />} />
-          <Route path="/seleccionar-asientos" element={<SelectorAsientos />} />
+          <Route
+            path="/seleccionar-asientos"
+            element={<SeleccionarAsientos />}
+          />
           <Route path="/seleccionar-equipaje" element={<SeleccionEquipaje />} />
 
           {/* Rutas protegidas */}

@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 export default function CarritoCompras({ items, onRemoveFromCart }) {
   const navigate = useNavigate();
+
   const calculateTotal = () => {
-    return items.reduce(
-      (total, item) => total + item.precio * item.quantity,
-      0
-    );
+    return items
+      .reduce((total, item) => total + parseFloat(item.precioTotal), 0)
+      .toFixed(2);
   };
 
   if (items.length === 0) {
@@ -53,16 +53,22 @@ export default function CarritoCompras({ items, onRemoveFromCart }) {
                   <strong>Hora:</strong>{" "}
                   {item.fecha_salida.split("T")[1]?.replace("Z", "")}
                 </p>
+                <p>
+                  <strong>Equipaje:</strong>{" "}
+                  {item.equipajeBodega
+                    ? "Equipaje de bodega"
+                    : "Solo equipaje de cabina"}
+                </p>
               </div>
               <div className="item-pricing">
                 <p>
                   <strong>Cantidad:</strong> {item.quantity}
                 </p>
                 <p>
-                  <strong>Precio por boleto:</strong> ${item.precio}
+                  <strong>Precio por boleto:</strong> ${item.precioUnitario}
                 </p>
                 <p>
-                  <strong>Subtotal:</strong> ${item.precio * item.quantity}
+                  <strong>Subtotal:</strong> ${item.precioTotal}
                 </p>
                 <button
                   onClick={() => onRemoveFromCart(index)}

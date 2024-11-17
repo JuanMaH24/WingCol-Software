@@ -1,0 +1,46 @@
+/* Asientos */
+.selector-asientos .asiento {
+  width: 40px; /* Tamaño del asiento */
+  height: 40px; /* Igual al ancho para que sea un cuadrado */
+  display: flex; /* Activar flexbox */
+  align-items: center; /* Centrar verticalmente */
+  justify-content: center; /* Centrar horizontalmente */
+  border: 1px solid #000; /* Borde negro */
+  cursor: pointer;
+  background-color: #f9f9f9; /* Color del fondo */
+  color: #000; /* Color del texto */
+  font-size: 14px; /* Tamaño del texto */
+  font-weight: bold; /* Texto en negrita */
+  /* Espacio entre los asientos */
+}
+
+.selector-asientos .asiento.primera-clase {
+  background-color: yellow; /* Asientos de primera clase */
+  color: #000;
+}
+
+/* Asiento seleccionado */
+.selector-asientos .asiento.seleccionado {
+  background-color: #4caf50; /* Color cuando está seleccionado */
+  color: white;
+}
+
+.numero-fila {
+  color: white;
+  margin-left: 10px;
+}
+
+/* Contenedor para filas en sentido inverso */
+.selector-asientos .contenedor-asientos-horizontal {
+  display: flex;
+  flex-wrap: nowrap; /* Sin salto de línea */
+  justify-content: flex-start; /* Alinear al lado izquierdo */
+  gap: 2px; /* Espacio entre las filas */
+  flex-direction: row-reverse; /* Invertir el orden de las filas */
+}
+
+.selector-asientos .fila-horizontal {
+  display: flex;
+  flex-direction: column-reverse; /* Invertir el orden de los asientos */
+  gap: 10px; /* Espacio entre asientos dentro de cada fila */
+}

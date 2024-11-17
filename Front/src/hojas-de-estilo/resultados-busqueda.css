@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 20px;
   color: white;
+  font-family: "Poppins", sans-serif;
 }
 
 .resultados-vuelos h3 {
@@ -130,6 +131,17 @@
   border: none;
   background-color: #a039d4;
   width: 200px;
+}
+
+.seleccion-de-equipaje,
+.opciones-equipaje option {
+  color: black;
+}
+
+.seleccion-de-equipaje,
+.opciones-equipaje {
+  width: 300px;
+  margin-top: 10px;
 }
 
 .modal {

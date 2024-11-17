@@ -10,6 +10,7 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedVuelo, setSelectedVuelo] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [equipaje, setEquipaje] = useState("0");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,16 +31,17 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
   };
 
   const handleComprar = (vuelo) => {
-    console.log("Vuelo seleccionado:", vuelo); // Debug
     setSelectedVuelo(vuelo);
     setModalVisible(true);
     setQuantity(1);
+    setEquipaje("0");
   };
 
   const closeModal = () => {
     setModalVisible(false);
     setSelectedVuelo(null);
     setQuantity(1);
+    setEquipaje("0");
   };
 
   const incrementQuantity = () => {
@@ -56,28 +58,32 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
 
   const calculateTotalPrice = () => {
     if (!selectedVuelo) return 0;
-    return selectedVuelo.precio * quantity;
+    let basePrice = selectedVuelo.precio * quantity;
+    if (equipaje === "B") {
+      basePrice *= 1.1; // Increase price by 10% for checked baggage
+    }
+    return basePrice.toFixed(2);
   };
 
   const handleAddToCart = () => {
-    console.log("Intentando agregar al carrito:"); // Debug
-    console.log("selectedVuelo:", selectedVuelo); // Debug
-    console.log("onAddToCart function:", onAddToCart); // Debug
-
-    if (!selectedVuelo) {
-      console.error("Error: No hay vuelo seleccionado");
-      return;
-    }
-
-    if (!onAddToCart) {
-      console.error("Error: onAddToCart no está definida");
+    if (!selectedVuelo || !onAddToCart) {
+      console.error(
+        "Error: No hay vuelo seleccionado o onAddToCart no está definida"
+      );
       return;
     }
 
     try {
+      const precioTotal = parseFloat(calculateTotalPrice());
+      const precioUnitario = precioTotal / quantity;
+
       const itemToAdd = {
         ...selectedVuelo,
         quantity: quantity,
+        equipaje: equipaje,
+        precioUnitario: precioUnitario.toFixed(2),
+        precioTotal: precioTotal.toFixed(2),
+        equipajeBodega: equipaje === "B",
       };
 
       onAddToCart(itemToAdd);
@@ -204,13 +210,31 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
               </div>
             </div>
 
+            <div className="selección de equipaje">
+              <select
+                className="opciones-equipaje"
+                value={equipaje}
+                onChange={(e) => setEquipaje(e.target.value)}
+              >
+                <option value="0">Seleccione equipaje</option>
+                <option value="C">Solo equipaje de cabina</option>
+                <option value="B">Añadir equipaje de bodega</option>
+              </select>
+            </div>
+
             <p>
               <strong>Precio Total:</strong> ${calculateTotalPrice()}
+              {equipaje === "B" && (
+                <span className="precio-info">
+                  {" "}
+                  (Incluye 10% adicional por equipaje de bodega)
+                </span>
+              )}
             </p>
 
             <button
               onClick={handleAddToCart}
-              disabled={!selectedVuelo || !onAddToCart}
+              disabled={!selectedVuelo || !onAddToCart || equipaje === "0"}
             >
               Agregar al Carrito
             </button>
