@@ -42,6 +42,20 @@ export default function App() {
   const handleAddToCart = (item) => {
     console.log("Agregando item al carrito:", item);
     setCartItems((prevItems) => {
+      // Check total tickets for this flight
+      const existingFlightItems = prevItems.filter(
+        (existing) => existing.id_vuelo === item.id_vuelo
+      );
+      const totalTickets = existingFlightItems.reduce(
+        (total, existing) => total + existing.quantity,
+        0
+      );
+
+      if (totalTickets + item.quantity > 5) {
+        alert("No puede comprar más de 5 tiquetes para este vuelo.");
+        return prevItems;
+      }
+
       const newItems = [...prevItems, item];
       console.log("Nuevo estado del carrito:", newItems);
       return newItems;
@@ -253,7 +267,12 @@ export default function App() {
           />
           <Route
             path="/resultados"
-            element={<ResultadosPage onAddToCart={handleAddToCart} />}
+            element={
+              <ResultadosPage
+                onAddToCart={handleAddToCart}
+                cartItems={cartItems}
+              />
+            }
           />
           <Route
             path="/unauthorized"

@@ -5,12 +5,17 @@ import Fondo_sesion from "../imagenes/fondo-inicio-sesion.jpg";
 
 import "../hojas-de-estilo/resultados-busqueda.css";
 
-export default function ResultadosVuelos({ vuelos, onAddToCart }) {
+export default function ResultadosVuelos({
+  vuelos,
+  onAddToCart,
+  cartItems = [],
+}) {
   const [role, setRole] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedVuelo, setSelectedVuelo] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [equipaje, setEquipaje] = useState("0");
+  const [seatClass, setSeatClass] = useState("0");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,10 +36,18 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
   };
 
   const handleComprar = (vuelo) => {
+    const currentTickets = calculateCurrentTicketsForFlight(vuelo.id_vuelo);
+
+    if (currentTickets >= 5) {
+      alert("No puede comprar más de 5 tiquetes para este vuelo.");
+      return;
+    }
+
     setSelectedVuelo(vuelo);
     setModalVisible(true);
     setQuantity(1);
     setEquipaje("0");
+    setSeatClass("0");
   };
 
   const closeModal = () => {
@@ -42,11 +55,19 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
     setSelectedVuelo(null);
     setQuantity(1);
     setEquipaje("0");
+    setSeatClass("0");
   };
 
   const incrementQuantity = () => {
-    if (quantity < 5) {
+    const currentTickets = calculateCurrentTicketsForFlight(
+      selectedVuelo.id_vuelo
+    );
+    const availableSlots = 5 - currentTickets;
+
+    if (quantity < availableSlots) {
       setQuantity(quantity + 1);
+    } else {
+      alert("No puede comprar más de 5 tiquetes para este vuelo.");
     }
   };
 
@@ -62,7 +83,18 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
     if (equipaje === "B") {
       basePrice *= 1.1; // Increase price by 10% for checked baggage
     }
+    if (seatClass === "P") {
+      basePrice *= 1.3; // Increase price by 30% for first class
+    }
     return basePrice.toFixed(2);
+  };
+
+  const calculateCurrentTicketsForFlight = (flightId) => {
+    // Ensure cartItems is an array before calling filter
+    const items = Array.isArray(cartItems) ? cartItems : [];
+    return items
+      .filter((item) => item.id_vuelo === flightId)
+      .reduce((total, item) => total + item.quantity, 0);
   };
 
   const handleAddToCart = () => {
@@ -70,6 +102,15 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
       console.error(
         "Error: No hay vuelo seleccionado o onAddToCart no está definida"
       );
+      return;
+    }
+
+    const currentTickets = calculateCurrentTicketsForFlight(
+      selectedVuelo.id_vuelo
+    );
+
+    if (currentTickets + quantity > 5) {
+      alert("No puede comprar más de 5 tiquetes para este vuelo.");
       return;
     }
 
@@ -84,6 +125,7 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
         precioUnitario: precioUnitario.toFixed(2),
         precioTotal: precioTotal.toFixed(2),
         equipajeBodega: equipaje === "B",
+        primeraClase: seatClass === "P",
       };
 
       onAddToCart(itemToAdd);
@@ -216,9 +258,21 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
                 value={equipaje}
                 onChange={(e) => setEquipaje(e.target.value)}
               >
-                <option value="0">Seleccione equipaje</option>
+                <option value="0">Elegir equipaje</option>
                 <option value="C">Solo equipaje de cabina</option>
                 <option value="B">Añadir equipaje de bodega</option>
+              </select>
+            </div>
+
+            <div className="clase-silla">
+              <select
+                className="opciones-clase"
+                value={seatClass}
+                onChange={(e) => setSeatClass(e.target.value)}
+              >
+                <option value="0">Seleccione clase de silla</option>
+                <option value="E">Clase Económica</option>
+                <option value="P">Primera clase</option>
               </select>
             </div>
 
@@ -230,11 +284,22 @@ export default function ResultadosVuelos({ vuelos, onAddToCart }) {
                   (Incluye 10% adicional por equipaje de bodega)
                 </span>
               )}
+              {seatClass === "P" && (
+                <span className="precio-info">
+                  {" "}
+                  (Incluye 30% adicional por primera clase)
+                </span>
+              )}
             </p>
 
             <button
               onClick={handleAddToCart}
-              disabled={!selectedVuelo || !onAddToCart || equipaje === "0"}
+              disabled={
+                !selectedVuelo ||
+                !onAddToCart ||
+                equipaje === "0" ||
+                seatClass === "0"
+              }
             >
               Agregar al Carrito
             </button>

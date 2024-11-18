@@ -144,6 +144,16 @@
   margin-top: 10px;
 }
 
+.clase-silla,
+.opciones-clase option {
+  color: black;
+}
+
+.clase-silla,
+.opciones-clase {
+  width: 300px;
+}
+
 .modal {
   display: block;
   position: fixed;

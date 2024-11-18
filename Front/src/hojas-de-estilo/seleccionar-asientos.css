@@ -35,7 +35,7 @@
   display: flex;
   flex-wrap: nowrap; /* Sin salto de línea */
   justify-content: flex-start; /* Alinear al lado izquierdo */
-  gap: 2px; /* Espacio entre las filas */
+  gap: 5px; /* Espacio entre las filas */
   flex-direction: row-reverse; /* Invertir el orden de las filas */
 }
 

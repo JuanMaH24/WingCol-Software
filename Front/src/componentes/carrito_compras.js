@@ -59,6 +59,10 @@ export default function CarritoCompras({ items, onRemoveFromCart }) {
                     ? "Equipaje de bodega"
                     : "Solo equipaje de cabina"}
                 </p>
+                <p>
+                  <strong>Clase de asiento:</strong>{" "}
+                  {item.seatClass === "P" ? "Primera clase" : "Clase Económica"}
+                </p>
               </div>
               <div className="item-pricing">
                 <p>
