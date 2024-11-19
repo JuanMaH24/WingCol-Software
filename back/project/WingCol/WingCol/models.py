@@ -190,9 +190,13 @@ class Tiquete(models.Model):
 		PRIMERA_CLASE = 'P', 'Primera clase'
 	
 	class TipoEquipaje(models.TextChoices):
-		PERSONAL = 'EP', 'Equipaje personal'
-		MANO = 'EM', 'Equipaje de mano'
-		MALETA = 'MB', 'Maleta de bodega'
+		PERSONAL = 'P', 'Equipaje personal'
+		MANO = 'M', 'Equipaje de mano'
+		MALETA = 'B', 'Maleta de bodega'
+		PERSONAL_Y_MANO = 'PM', 'Personal y Mano'
+		PERSONAL_Y_BODEGA = 'PB', 'Personal y Bodega'
+		MANO_Y_BODEGA = 'MB', 'Mano y Bodega'
+		TODOS = 'T', 'Todos'
 	
 	class Genero(models.TextChoices):
 		MASCULINO = 'M', 'Masculino'
@@ -223,7 +227,9 @@ class Tiquete(models.Model):
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)
+	verificado = models.BooleanField(default=False)
 	activo = models.BooleanField(default=True)
+	precio = models.PositiveIntegerField()
 
 	def soft_delete(self):
 		self.activo = False
@@ -231,6 +237,19 @@ class Tiquete(models.Model):
 
 	def create_code(self):
 		self.verificacion = create_verification_code()
+
+
+class CarritoCompras(models.Model):
+	id_carrito = models.AutoField(primary_key=True)
+	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	fecha_creada = models.DateTimeField(auto_now_add=True)
+	fecha_actualizada = models.DateTimeField(auto_now=True)
+	activo = models.BooleanField(default=True)
+
+class ItemCarrito(models.Model):
+	id_carrito = models.ForeignKey(CarritoCompras, on_delete=models.CASCADE)
+	id_tiquete = models.ForeignKey(Tiquete, on_delete=models.CASCADE)
+	activo = models.BooleanField(default=True)
 
 class Busquedas(models.Model):
 	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)

@@ -13,13 +13,16 @@ from django.db.models.signals import post_save
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.conf import settings
 from rest_framework.response import Response
 from django.urls import reverse
 from rest_framework import status
 from datetime import datetime
+import stripe
 from .auth import ClientAuthentication, AdminAuthentication, RootAuthentication
 from .models import *
 from .serializers import *
+from .services import *
 
 @api_view(['GET'])
 def get_all_users(request):
@@ -376,10 +379,15 @@ def update_card(request):
     return Response({'errors': card_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def create_ticket(request):
     try:
         seat = Sillas.objects.get(id_silla=request.data['id_silla'], clase=request.data['clase'], activo=True)
         ticket_serializer = TicketSerializer(data=request.data)
+        tickets = Tiquete.objects.filter(user_id=request.data['user_id'], id_silla__id_vuelo__id_vuelo=seat.id_silla.id_vuelo.id_vuelo, activo=True)
+        print(tickets)
+        validate_tickets_per_flight(len(tickets))
         if ticket_serializer.is_valid():
             ticket = ticket_serializer.save()
             ticket.create_code()
@@ -390,8 +398,12 @@ def create_ticket(request):
         return Response(ticket_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Sillas.DoesNotExist:
         return Response({"error": "Silla no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({"error": error}, status=status.HTTP_406_NOT_ACCEPTABLE)
     
 @api_view(['GET'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def get_ticket(request):
     try:
         ticket_id = request.query_params.get('id_tiquete')
@@ -401,7 +413,22 @@ def get_ticket(request):
     except Tiquete.DoesNotExist:
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     
+@api_view(['GET'])
+def get_ticket_by_user(request):
+    try:
+        user_id = request.query_params.get('user_id')
+        ticket = Tiquete.objects.get(user_id=user_id, activo=True)
+        ticket_serializar = TicketSerializer(ticket, many=True)
+        return Response(ticket_serializar.data, status=status.HTTP_200_OK)
+    except Tiquete.DoesNotExist:
+        return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+    
 @api_view(['PUT'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def cancel_ticket(request):
     try:
         id = request.data['id_tiquete']
@@ -415,6 +442,8 @@ def cancel_ticket(request):
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def update_ticket(request):
     try:
         id = request.data['id_tiquete']
@@ -429,16 +458,21 @@ def update_ticket(request):
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def fast_verification(request):
     try:
         verification_code = request.data['verificacion']
         ticket = Tiquete.objects.get(verificacion=verification_code, activo=True)
+        ticket.verificado = True
         ticket_serializer = TicketSerializer(ticket)
         return Response(ticket_serializer.data, status=status.HTTP_200_OK)
     except Tiquete.DoesNotExist:
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def identify_verification(request):
     try:
         user = request.data['user_id']
@@ -451,7 +485,125 @@ def identify_verification(request):
     except NormalUser.DoesNotExist:
         return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+def get_cart(request):
+    try:
+        user = request.query_params.get('user_id')
+        cart = CarritoCompras.objects.get(user_id=user, activo=True)
+        cart_serializer = CartSerializer(cart)
+        return Response(cart_serializer.data, status=status.HTTP_200_OK)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def create_cart(request):
+    try:
+        user = request.data['user_id']
+        cart = CartSerializer(data=request.data)
+        cart.save()
+        return Response({"message": "Carrito creado correctamente."}, status=status.HTTP_201_CREATED)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def add_to_cart(request):
+    try:
+        user = request.data['user_id']
+        ticket = request.data['id_tiquete']
+        cart = CarritoCompras.objects.get(user_id=user, activo=True)
+        request.data['id_carrito'] = cart.id_carrito
+        item = ItemSerializer(data=request.data)
+        item.save()
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Tiquete.DoesNotExist:
+        return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['PUT'])
+def remove_from_cart(request):
+    try:
+        user = request.data['user_id']
+        ticket = request.data['id_tiquete']
+        cart = CarritoCompras.objects.get(user_id=user, activo=True)
+        item = ItemCarrito.objects.get(id_tiquete=ticket, id_carrito=cart.id_carrito)
+        item.soft_delete()
+        return Response({"message": "Tiquete eliminado del carrito correctamente."}, status=status.HTTP_200_OK)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Tiquete.DoesNotExist:
+        return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT'])
+def delete_cart(request):
+    try:
+        user = request.data['user_id']
+        cart = CarritoCompras.objects.get(user_id=user, activo=True)
+        ItemSerializer.objects.filter(id_carrito=cart.id_carrito).update(activo=False)
+        cart.soft_delete()
+        return Response({"message": "Carrito eliminado correctamente."}, status=status.HTTP_200_OK)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def make_payment(request):
+    try:
+        stripe_key = settings.STRIPE_SECRET_KEY
+        user_id = request.data['user_id']
+        card = Tarjetas.objects.get(id_tarjeta=request.data['id_tarjeta'], activo=True)  
+        cart = CarritoCompras.objects.get(user_id=user_id, activo=True)
+        items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
+        price = sum([item.id_tiquete.precio for item in items])
+        print("pagando")
+        validate_card(card.saldo, price, card.fecha_expiracion, request.data['vvc'], card.vvc)
+        payment_intent = stripe.PaymentIntent.create(
+            amount=price,
+            currency='cop',
+            payment_method=['card'],
+            description=f'Compra de tiquetes realizada por {user_id}',
+            # confirmation_method='manual',
+            # confirm=True,
+        ) 
+        card.saldo -= price
+        card.save()
+        return Response({'client_secret': payment_intent['client_secret']}, status=status.HTTP_200_OK)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except stripe.error.StripeError as stripe_error:
+        return Response({"error": stripe_error}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as error:
+        return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def confirm_payment(request):
+    try:
+        print("ya pagó")
+        user_id = request.data['user_id']
+        cart = CarritoCompras.objects.get(user_id=user_id, activo=True)
+        items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
+        for item in items:
+            ticket = Tiquete.objects.get(id_tiquete=item.id_tiquete.id_tiquete)
+            ticket.soft_delete()
+            item.soft_delete()
+        cart.soft_delete()
+        return Response({"message": "Pago realizado correctamente."}, status=status.HTTP_200_OK)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def update_seat(request):
     try:    
         seat_id = request.data['id_silla']
