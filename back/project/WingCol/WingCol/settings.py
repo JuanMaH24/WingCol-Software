@@ -57,6 +57,7 @@ SIMPLE_JWT = {
 
 # AUTH_TOKEN_VALIDITY = timedelta(minutes=1)
 
+OPENCAGE_APIKEY=env('OPENCAGE_APIKEY')
 
 # Application definition
 
