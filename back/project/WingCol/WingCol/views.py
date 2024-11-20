@@ -383,8 +383,10 @@ def update_card(request):
 # @permission_classes([IsAuthenticated])
 def create_ticket(request):
     try:
-        seat = Sillas.objects.get(id_silla=request.data['id_silla'], clase=request.data['clase'], activo=True)
-        # user = NormalUser.objects.get
+        seat_id = select_seat(request.data['id_vuelo'], request.data['clase'])
+        seat = Sillas.objects.get(id_silla=seat_id, clase=request.data['clase'], activo=True)
+        user = NormalUser.objects.get(user_id=request.data['user_id'], activo=True)
+        request.data['id_silla'] = seat_id
         ticket_serializer = TicketSerializer(data=request.data)
         tickets = Tiquete.objects.filter(user_id=request.data['user_id'], id_silla__id_vuelo__id_vuelo=seat.id_vuelo.id_vuelo, activo=True)
         validate_tickets_per_flight(tickets.count())
@@ -396,6 +398,8 @@ def create_ticket(request):
             seat.save()
             return Response(ticket_serializer.data, status=status.HTTP_201_CREATED)
         return Response(ticket_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     except Sillas.DoesNotExist:
         return Response({"error": "Silla no encontrada"}, status=status.HTTP_404_NOT_FOUND)
     except Tiquete.DoesNotExist:
