@@ -62,7 +62,7 @@ export default function ResultadosVuelos({ vuelos }) {
                   {vuelo.fecha_salida.split("T")[1].replace("Z", "")}
                 </p>
                 <p>
-                  <strong>Duración:</strong> ${vuelo.duracion}
+                  <strong>Duración:</strong> {vuelo.duracion}
                 </p>
                 <p>
                   <strong>Precio:</strong> ${vuelo.precio}

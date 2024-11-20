@@ -242,7 +242,7 @@ def create_flight(request):
     duration_aprox = duration_aprox_flight(distance_flight)
     data["duracion"] = duration_aprox
     print(distance_flight, duration_aprox)
-    flight_serializer = FlightSerializer(data=request.data)
+    flight_serializer = FlightSerializer(data=data)
     if flight_serializer.is_valid():
         flight = flight_serializer.save()
         flight.create_reference()
