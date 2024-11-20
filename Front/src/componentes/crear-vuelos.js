@@ -111,7 +111,7 @@ export function CrearVuelos() {
     { value: "Madrid", label: "Madrid (España)" },
     { value: "Londres", label: "Londres (Inglaterra)" },
     { value: "New York", label: "New York (Estados Unidos)" },
-    { value: "Buenos Aires", label: "Buenos Aires (Argentina)" },
+    { value: "Bueno s Aires", label: "Buenos Aires (Argentina)" },
     { value: "Miami", label: "Miami (Estados Unidos)" },
   ];
 
@@ -213,7 +213,7 @@ export function CrearVuelos() {
     dataToSend.append("precio", formData.precio); // Convertimos a número decimal
     dataToSend.append("tipo", formData.tipoVuelo);
     dataToSend.append("estado", "P"); // Estado predeterminado
-    dataToSend.append("duracion", formData.duracion);
+    // dataToSend.append("duracion", formData.duracion);
 
     // Si tienes una imagen, la puedes agregar usando el campo correspondiente
     // Supongamos que estás obteniendo la imagen de un campo en el formulario
