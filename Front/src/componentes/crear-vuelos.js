@@ -320,7 +320,7 @@ export function CrearVuelos() {
           name="precio"
           placeholder="Precio COP"
           value={formData.precio}
-          min={0}
+          min={50000} 
           onChange={handleChange}
           required
         />
