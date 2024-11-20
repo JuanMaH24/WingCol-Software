@@ -5,26 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { BarraDePrecios } from "./barra-de-precios";
 import { BarraDeDuracion } from "./barra-duracion";
 
-// Datos de vuelos simulados
-const flightData = [
-  {
-    ciudad_origen: "Bogotá",
-    ciudad_destino: "Medellín",
-    fecha_salida: "2024-12-01",
-    hora_salida: "10:00",
-    precio: 150000,
-    duracion: 1,
-  },
-  {
-    ciudad_origen: "Bogotá",
-    ciudad_destino: "Cartagena",
-    fecha_salida: "2024-12-02",
-    hora_salida: "15:00",
-    precio: 300000,
-    duracion: 2,
-  },
-];
-
 const Origen = [
   { value: "Leticia", label: "Leticia (Amazonas)" },
   { value: "Medellín", label: "Medellín (Antioquia)" },
@@ -61,22 +41,6 @@ const Origen = [
   { value: "Cali", label: "Cali (Valle del Cauca)" },
   { value: "Mitú", label: "Mitú (Vaupés)" },
   { value: "Puerto Carreño", label: "Puerto Carreño (Vichada)" },
-];
-
-const destinosInternacionales = [
-  { value: "Madrid", label: "Madrid (España)" },
-  { value: "Londres", label: "Londres (Inglaterra)" },
-  { value: "New York", label: "New York (Estados Unidos)" },
-  { value: "Buenos Aires", label: "Buenos Aires (Argentina)" },
-  { value: "Miami", label: "Miami (Estados Unidos)" },
-];
-
-const origenesInternacionales = [
-  { value: "Cali", label: "Cali (Valle del Cauca)" },
-  { value: "Pereira", label: "Pereira (Risaralda)" },
-  { value: "Bogotá", label: "Bogotá (Cundinamarca)" },
-  { value: "Medellín", label: "Medellín (Antioquia)" },
-  { value: "Cartagena", label: "Cartagena (Bolívar)" },
 ];
 
 const Destinos = [
@@ -117,29 +81,44 @@ const Destinos = [
   { value: "Puerto Carreño", label: "Puerto Carreño (Vichada)" },
 ];
 
+const origenesInternacionales = [
+  { value: "Cali", label: "Cali (Valle del Cauca)" },
+  { value: "Pereira", label: "Pereira (Risaralda)" },
+  { value: "Bogotá", label: "Bogotá (Cundinamarca)" },
+  { value: "Medellín", label: "Medellín (Antioquia)" },
+  { value: "Cartagena", label: "Cartagena (Bolívar)" },
+];
+
+const destinosInternacionales = [
+  { value: "Madrid", label: "Madrid (España)" },
+  { value: "Londres", label: "Londres (Inglaterra)" },
+  { value: "New York", label: "New York (Estados Unidos)" },
+  { value: "Bueno s Aires", label: "Buenos Aires (Argentina)" },
+  { value: "Miami", label: "Miami (Estados Unidos)" },
+];
+
 export function Buscador() {
   const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
+  const [resultados, setResultados] = useState([]);
   const [fechaSalida, setFechaSalida] = useState("");
   const [horaSalida, setHoraSalida] = useState("");
   const [precioMin, setPrecioMin] = useState(100000);
   const [precioMax, setPrecioMax] = useState(1000000);
   const [duracion, setDuracion] = useState(0);
   const navigate = useNavigate();
+  const apiHost = process.env.REACT_APP_API_HOST;
 
   const availableDestinos = useMemo(() => {
     if (!origen) return Destinos;
 
-    // If origin is an international departure city
     if (origenesInternacionales.some((city) => city.value === origen)) {
-      // Combine both international and national destinations, excluding the origin
       return [
         ...destinosInternacionales,
         ...Destinos.filter((ciudad) => ciudad.value !== origen),
       ];
     }
 
-    // Filter out the origin from possible destinations
     return Destinos.filter((ciudad) => ciudad.value !== origen);
   }, [origen]);
 
@@ -147,12 +126,12 @@ export function Buscador() {
     const selectedOrigen = event.target.value;
     setOrigen(selectedOrigen);
 
-    // Reset destination if it's no longer valid
     if (destino === selectedOrigen) {
       setDestino("");
     }
   };
 
+  // Maneja el cambio de selección de destino
   const handleDestinoChange = (event) => {
     const selectedDestino = event.target.value;
 
@@ -178,29 +157,38 @@ export function Buscador() {
     setFechaSalida(event.target.value);
   };
 
-  const handleHoraSalida = (event) => {
-    setHoraSalida(event.target.value);
-  };
+  const handleBuscarClick = async () => {
+    try {
+      const params = new URLSearchParams({
+        ciudad_origen: origen,
+        ciudad_destino: destino,
+        fecha_salida: fechaSalida,
+        hora_salida: horaSalida,
+        precio_min: precioMin,
+        precio_max: precioMax,
+        duracion: duracion,
+      });
+      const response = await fetch(
+        `${apiHost}/flight/search/?${params.toString()}`
+      );
 
-  const handleBuscarClick = () => {
-    const vuelosFiltrados = flightData.filter(
-      (vuelo) =>
-        (!origen || vuelo.ciudad_origen === origen) &&
-        (!destino || vuelo.ciudad_destino === destino) &&
-        (!fechaSalida || vuelo.fecha_salida === fechaSalida) &&
-        (!horaSalida || vuelo.hora_salida === horaSalida) &&
-        vuelo.precio >= precioMin &&
-        vuelo.precio <= precioMax &&
-        (!duracion || vuelo.duracion <= duracion)
-    );
-
-    navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
+      if (!response.ok) {
+        throw new Error("Error al obtener los vuelos");
+      }
+      const vuelosFiltrados = await response.json();
+      console.log(vuelosFiltrados);
+      // Redirigir a la página de resultados con los vuelos obtenidos
+      navigate("/resultados", { state: { vuelos: vuelosFiltrados } });
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
     <div className="Contenedor-buscador">
       <div className="fila-superior">
         <div className="Contenedor-filtros">
+          {/* Selector de Origen */}
           <select
             value={origen}
             onChange={handleOrigenChange}
@@ -230,7 +218,6 @@ export function Buscador() {
               </option>
             ))}
           </select>
-
           <div className="fechas" style={{ width: "58%" }}>
             <label>Fecha de ida:</label>
             <input
@@ -263,12 +250,7 @@ export function Buscador() {
           style={{ paddingBottom: "10px", width: "30px" }}
         >
           <h3 style={{ color: "black" }}>Hora de salida</h3>
-          <input
-            type="time"
-            name="horaSalida"
-            onChange={handleHoraSalida}
-            value={horaSalida}
-          />
+          <input type="time" name="horaSalida" />
         </div>
       </div>
       <div className="Boton-buscar">
