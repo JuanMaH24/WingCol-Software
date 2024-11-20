@@ -235,6 +235,13 @@ def login(request):
 @authentication_classes([AdminAuthentication])
 @permission_classes([IsAuthenticated])
 def create_flight(request):
+    data = request.data.copy()
+    origin_lat, origin_lon = geocode_city(data["ciudad_origen"])
+    destination_lat, destination_lon = geocode_city(data["ciudad_destino"])
+    distance_flight = calculate_distance_btw_cities(origin_lat, origin_lon, destination_lat, destination_lon)
+    duration_aprox = duration_aprox_flight(distance_flight)
+    data["duracion"] = duration_aprox
+    print(distance_flight, duration_aprox)
     flight_serializer = FlightSerializer(data=request.data)
     if flight_serializer.is_valid():
         flight = flight_serializer.save()

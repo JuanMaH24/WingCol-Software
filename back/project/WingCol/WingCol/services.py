@@ -1,6 +1,8 @@
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.conf import settings
+from opencage.geocoder import OpenCageGeocode
 
 def notify_admin_creation(instance, password):
     context = {
@@ -21,3 +23,15 @@ def notify_admin_creation(instance, password):
 
     msg.attach_alternative(html_message, "text/html")
     msg.send()
+
+def geocode_city(city):
+    api_key=settings.OPENCAGE_APIKEY
+    geocoder = OpenCageGeocode(api_key)
+    result = geocoder.geocode(city)
+    
+    if result and len(result) > 0:
+        lat = result[0]['geometry']['lat']
+        lon = result[0]['geometry']['lng']
+        return lat, lon
+    else:
+        return None, None
