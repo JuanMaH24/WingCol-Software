@@ -112,12 +112,12 @@ class TicketSerializer(serializers.ModelSerializer):
                         'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 
                         'clase', 'tipo_equipaje', 'precio', 'verificacion', 'verificado'
                     ]
-        extra_kwargs = {'verificacion': {'read_only': True}, 'activo': {'required': False}}
+        extra_kwargs = {'verificacion': {'read_only': True}, 'verificado': {'read_only': True}, 'activo': {'required': False}}
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComprasReservas
-        fields = ['id_vuelo', 'fecha_creada', 'fecha_actualizada']
+        model = CarritoCompras
+        fields = ['user_id', 'fecha_creada', 'fecha_actualizada']
         extra_kwargs = {'fecha_creada': {'read_only': True}, 'fecha_actualizada': {'read_only': True}}
 
 class ItemSerializer(serializers.ModelSerializer):

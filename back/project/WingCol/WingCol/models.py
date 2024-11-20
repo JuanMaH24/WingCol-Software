@@ -211,8 +211,8 @@ class Tiquete(models.Model):
 		PA = 'PA', 'Pasaporte'
 
 	id_tiquete = models.AutoField(primary_key=True)
-	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
+	id_silla = models.OneToOneField(Sillas, on_delete=models.CASCADE)
 	id_viajero = models.PositiveBigIntegerField()
 	nombre_viajero = models.CharField(max_length=50)
 	segundo_nombre_viajero = models.CharField(max_length=50, blank=True)
@@ -241,15 +241,23 @@ class Tiquete(models.Model):
 
 class CarritoCompras(models.Model):
 	id_carrito = models.AutoField(primary_key=True)
-	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
 	fecha_creada = models.DateTimeField(auto_now_add=True)
 	fecha_actualizada = models.DateTimeField(auto_now=True)
 	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()	
 
 class ItemCarrito(models.Model):
 	id_carrito = models.ForeignKey(CarritoCompras, on_delete=models.CASCADE)
 	id_tiquete = models.ForeignKey(Tiquete, on_delete=models.CASCADE)
 	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()	
 
 class Busquedas(models.Model):
 	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)

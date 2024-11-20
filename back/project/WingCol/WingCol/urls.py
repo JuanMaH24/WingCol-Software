@@ -52,10 +52,12 @@ urlpatterns = [
 	path('checkin/fast/', fast_verification),
 	path('checkin/identify/', identify_verification),
 	path('checkin/seat/', update_seat),
-	path('cart/', get_cart),
+	path('cart/create/', create_cart),
+    path('cart/delete/', delete_cart),
 	path('cart/add/', add_to_cart),
 	path('cart/remove/', remove_from_cart),
-	path('cart/pay/', make_payment),
-	path('cart/pay/confirm/', confirm_payment),
+	path('cart/pay/', make_payment),#
+	# path('cart/pay/confirm/', confirm_payment),#
+	path('cart/', get_cart),
     path('password_reset/', include('django_rest_passwordreset.urls')),
 ]
