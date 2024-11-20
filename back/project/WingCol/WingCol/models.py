@@ -252,7 +252,7 @@ class CarritoCompras(models.Model):
 
 class ItemCarrito(models.Model):
 	id_carrito = models.ForeignKey(CarritoCompras, on_delete=models.CASCADE)
-	id_tiquete = models.ForeignKey(Tiquete, on_delete=models.CASCADE)
+	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
 	activo = models.BooleanField(default=True)
 
 	def soft_delete(self):

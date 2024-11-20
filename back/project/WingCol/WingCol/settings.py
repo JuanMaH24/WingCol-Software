@@ -140,8 +140,8 @@ CLOUDINARY_STORAGE = {
 MEDIA_URL = env('MEDIA_URL')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
-STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+# STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
+# STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

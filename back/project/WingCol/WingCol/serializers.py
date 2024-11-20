@@ -123,5 +123,5 @@ class CartSerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemCarrito
-        fields = ['id_carrito', 'id_tiquete']
+        fields = ['id_carrito', 'id_vuelo']
         
