@@ -33,7 +33,7 @@ urlpatterns = [
     path('users/admin/delete/', delete_admin),
     path('login/', login),
     path('flight/create/', create_flight),
-    path('flight/all', get_all_flights),
+    path('flight/all/', get_all_flights),
 	path('flight/get/', get_flight),
     path('api/token/', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='token_obtain_pair'),
     path('flight/search/', get_flights),
@@ -45,7 +45,7 @@ urlpatterns = [
 	path('card/', get_card),
 	path('card/get/', get_card_by_id),
 	path('ticket/create/', create_ticket),
-	path('ticket/update/', update_ticket),#
+	path('ticket/update/', update_ticket),
 	path('ticket/cancel/', cancel_ticket),
 	path('ticket/', get_ticket),
 	path('ticket/user/', get_ticket_by_user),

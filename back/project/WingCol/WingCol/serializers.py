@@ -59,8 +59,8 @@ class FlightSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # if data['fecha_salida'] >= data['fecha_llegada']:
         #     raise serializers.ValidationError('La fecha de salida debe ser menor a la fecha de llegada')
-        if data['fecha_salida'] < timezone.now():
-            raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
+                # if data['fecha_salida'] < timezone.now():
+                #     raise serializers.ValidationError('La fecha de salida debe ser mayor a la fecha actual')
         if data['precio'] > 20000000 or data['precio'] < 100000:
             raise serializers.ValidationError('El precio debe de ser menor a 20000000 y mayor  a 100000')
         return data 
