@@ -33,11 +33,13 @@ import { SeleccionarAsientos } from "./componentes/seleccionar-asientos";
 import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
 import CarritoCompras from "./componentes/carrito_compras";
 import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
+import { Reservas } from "./componentes/reservas";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
+  const [reservedItems, setReservedItems] = useState([]);
 
   const handleAddToCart = (item) => {
     console.log("Agregando item al carrito:", item);
@@ -62,8 +64,34 @@ export default function App() {
     });
   };
 
+  const handleAddToReserve = (item) => {
+    console.log("Agregando item a reservas:", item);
+    setReservedItems((prevItems) => {
+      const existingFlightItems = prevItems.filter(
+        (existing) => existing.id_vuelo === item.id_vuelo
+      );
+      const totalTickets = existingFlightItems.reduce(
+        (total, existing) => total + existing.quantity,
+        0
+      );
+
+      if (totalTickets + item.quantity > 5) {
+        alert("No puede reservar más de 5 tiquetes para este vuelo.");
+        return prevItems;
+      }
+
+      const newItems = [...prevItems, item];
+      console.log("Nuevo estado de reservas:", newItems);
+      return newItems;
+    });
+  };
+
   const handleRemoveFromCart = (index) => {
     setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveFromReserves = (index) => {
+    setReservedItems((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
   const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -295,7 +323,17 @@ export default function App() {
             path="/resultados"
             element={<ResultadosPage onAddToCart={handleAddToCart} />}
           />
-          <Route path="/pasarela-de-pagos" element={<PasarelaDePagos />} />
+          <Route
+            path="/reservas"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <Reservas
+                  items={reservedItems}
+                  onRemoveFromReserves={handleRemoveFromReserves}
+                />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>

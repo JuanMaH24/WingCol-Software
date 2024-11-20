@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { RowRadioButtonsGroup } from "./Botones-buscador";
 import "../hojas-de-estilo/buscador.css";
 import { useNavigate } from "react-router-dom";
@@ -26,14 +26,95 @@ const flightData = [
 ];
 
 const Origen = [
+  { value: "Leticia", label: "Leticia (Amazonas)" },
+  { value: "Medellín", label: "Medellín (Antioquia)" },
+  { value: "Arauca", label: "Arauca (Arauca)" },
+  { value: "Barranquilla", label: "Barranquilla (Atlántico)" },
+  { value: "Cartagena", label: "Cartagena (Bolívar)" },
+  { value: "Tunja", label: "Tunja (Boyacá)" },
+  { value: "Manizales", label: "Manizales (Caldas)" },
+  { value: "Florencia", label: "Florencia (Caquetá)" },
+  { value: "Yopal", label: "Yopal (Casanare)" },
+  { value: "Popayán", label: "Popayán (Cauca)" },
+  { value: "Valledupar", label: "Valledupar (Cesar)" },
+  { value: "Quibdó", label: "Quibdó (Chocó)" },
+  { value: "Montería", label: "Montería (Córdoba)" },
+  { value: "Bogotá", label: "Bogotá (Cundinamarca)" },
+  { value: "Inírida", label: "Inírida (Guainía)" },
+  {
+    value: "San José del Guaviare",
+    label: "San José del Guaviare (Guaviare)",
+  },
+  { value: "Neiva", label: "Neiva (Huila)" },
+  { value: "Riohacha", label: "Riohacha (La Guajira)" },
+  { value: "Santa Marta", label: "Santa Marta (Magdalena)" },
+  { value: "Villavicencio", label: "Villavicencio (Meta)" },
+  { value: "Pasto", label: "Pasto (Nariño)" },
+  { value: "Cúcuta", label: "Cúcuta (Norte de Santander)" },
+  { value: "Mocoa", label: "Mocoa (Putumayo)" },
+  { value: "Armenia", label: "Armenia (Quindío)" },
+  { value: "Pereira", label: "Pereira (Risaralda)" },
+  { value: "San Andrés", label: "San Andrés (San Andrés y Providencia)" },
+  { value: "Bucaramanga", label: "Bucaramanga (Santander)" },
+  { value: "Sincelejo", label: "Sincelejo (Sucre)" },
+  { value: "Ibagué", label: "Ibagué (Tolima)" },
+  { value: "Cali", label: "Cali (Valle del Cauca)" },
+  { value: "Mitú", label: "Mitú (Vaupés)" },
+  { value: "Puerto Carreño", label: "Puerto Carreño (Vichada)" },
+];
+
+const destinosInternacionales = [
+  { value: "Madrid", label: "Madrid (España)" },
+  { value: "Londres", label: "Londres (Inglaterra)" },
+  { value: "New York", label: "New York (Estados Unidos)" },
+  { value: "Buenos Aires", label: "Buenos Aires (Argentina)" },
+  { value: "Miami", label: "Miami (Estados Unidos)" },
+];
+
+const origenesInternacionales = [
+  { value: "Cali", label: "Cali (Valle del Cauca)" },
+  { value: "Pereira", label: "Pereira (Risaralda)" },
   { value: "Bogotá", label: "Bogotá (Cundinamarca)" },
   { value: "Medellín", label: "Medellín (Antioquia)" },
   { value: "Cartagena", label: "Cartagena (Bolívar)" },
 ];
 
 const Destinos = [
+  { value: "Leticia", label: "Leticia (Amazonas)" },
   { value: "Medellín", label: "Medellín (Antioquia)" },
+  { value: "Arauca", label: "Arauca (Arauca)" },
+  { value: "Barranquilla", label: "Barranquilla (Atlántico)" },
   { value: "Cartagena", label: "Cartagena (Bolívar)" },
+  { value: "Tunja", label: "Tunja (Boyacá)" },
+  { value: "Manizales", label: "Manizales (Caldas)" },
+  { value: "Florencia", label: "Florencia (Caquetá)" },
+  { value: "Yopal", label: "Yopal (Casanare)" },
+  { value: "Popayán", label: "Popayán (Cauca)" },
+  { value: "Valledupar", label: "Valledupar (Cesar)" },
+  { value: "Quibdó", label: "Quibdó (Chocó)" },
+  { value: "Montería", label: "Montería (Córdoba)" },
+  { value: "Bogotá", label: "Bogotá (Cundinamarca)" },
+  { value: "Inírida", label: "Inírida (Guainía)" },
+  {
+    value: "San José del Guaviare",
+    label: "San José del Guaviare (Guaviare)",
+  },
+  { value: "Neiva", label: "Neiva (Huila)" },
+  { value: "Riohacha", label: "Riohacha (La Guajira)" },
+  { value: "Santa Marta", label: "Santa Marta (Magdalena)" },
+  { value: "Villavicencio", label: "Villavicencio (Meta)" },
+  { value: "Pasto", label: "Pasto (Nariño)" },
+  { value: "Cúcuta", label: "Cúcuta (Norte de Santander)" },
+  { value: "Mocoa", label: "Mocoa (Putumayo)" },
+  { value: "Armenia", label: "Armenia (Quindío)" },
+  { value: "Pereira", label: "Pereira (Risaralda)" },
+  { value: "San Andrés", label: "San Andrés (San Andrés y Providencia)" },
+  { value: "Bucaramanga", label: "Bucaramanga (Santander)" },
+  { value: "Sincelejo", label: "Sincelejo (Sucre)" },
+  { value: "Ibagué", label: "Ibagué (Tolima)" },
+  { value: "Cali", label: "Cali (Valle del Cauca)" },
+  { value: "Mitú", label: "Mitú (Vaupés)" },
+  { value: "Puerto Carreño", label: "Puerto Carreño (Vichada)" },
 ];
 
 export function Buscador() {
@@ -46,12 +127,51 @@ export function Buscador() {
   const [duracion, setDuracion] = useState(0);
   const navigate = useNavigate();
 
+  const availableDestinos = useMemo(() => {
+    if (!origen) return Destinos;
+
+    // If origin is an international departure city
+    if (origenesInternacionales.some((city) => city.value === origen)) {
+      // Combine both international and national destinations, excluding the origin
+      return [
+        ...destinosInternacionales,
+        ...Destinos.filter((ciudad) => ciudad.value !== origen),
+      ];
+    }
+
+    // Filter out the origin from possible destinations
+    return Destinos.filter((ciudad) => ciudad.value !== origen);
+  }, [origen]);
+
   const handleOrigenChange = (event) => {
-    setOrigen(event.target.value);
+    const selectedOrigen = event.target.value;
+    setOrigen(selectedOrigen);
+
+    // Reset destination if it's no longer valid
+    if (destino === selectedOrigen) {
+      setDestino("");
+    }
   };
 
   const handleDestinoChange = (event) => {
-    setDestino(event.target.value);
+    const selectedDestino = event.target.value;
+
+    // Check international destination restrictions
+    if (
+      destinosInternacionales.some((city) => city.value === selectedDestino)
+    ) {
+      const validInternationalOrigins = origenesInternacionales.map(
+        (city) => city.value
+      );
+      if (!validInternationalOrigins.includes(origen)) {
+        alert(
+          "Solo puedes viajar a destinos internacionales desde Cali, Pereira, Bogotá, Medellín o Cartagena"
+        );
+        return;
+      }
+    }
+
+    setDestino(selectedDestino);
   };
 
   const handleFechaSalida = (event) => {
@@ -104,12 +224,13 @@ export function Buscador() {
             style={{ color: "black", borderColor: "black", width: "60%" }}
           >
             <option value="">Selecciona un destino</option>
-            {Destinos.map((ciudad) => (
+            {availableDestinos.map((ciudad) => (
               <option key={ciudad.value} value={ciudad.value}>
                 {ciudad.label}
               </option>
             ))}
           </select>
+
           <div className="fechas" style={{ width: "58%" }}>
             <label>Fecha de ida:</label>
             <input

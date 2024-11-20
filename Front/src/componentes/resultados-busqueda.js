@@ -8,6 +8,7 @@ import "../hojas-de-estilo/resultados-busqueda.css";
 export default function ResultadosVuelos({
   vuelos,
   onAddToCart,
+  onAddToReserve, // New prop for reservation
   cartItems = [],
 }) {
   const [role, setRole] = useState(null);
@@ -16,6 +17,7 @@ export default function ResultadosVuelos({
   const [quantity, setQuantity] = useState(1);
   const [equipaje, setEquipaje] = useState("0");
   const [seatClass, setSeatClass] = useState("0");
+  const [modalMode, setModalMode] = useState("compra"); // New state to track modal mode
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,6 +47,23 @@ export default function ResultadosVuelos({
 
     setSelectedVuelo(vuelo);
     setModalVisible(true);
+    setModalMode("compra");
+    setQuantity(1);
+    setEquipaje("0");
+    setSeatClass("0");
+  };
+
+  const handleReservar = (vuelo) => {
+    const currentTickets = calculateCurrentTicketsForFlight(vuelo.id_vuelo);
+
+    if (currentTickets >= 5) {
+      alert("No puede reservar más de 5 tiquetes para este vuelo.");
+      return;
+    }
+
+    setSelectedVuelo(vuelo);
+    setModalVisible(true);
+    setModalMode("reserva");
     setQuantity(1);
     setEquipaje("0");
     setSeatClass("0");
@@ -56,6 +75,7 @@ export default function ResultadosVuelos({
     setQuantity(1);
     setEquipaje("0");
     setSeatClass("0");
+    setModalMode("compra");
   };
 
   const incrementQuantity = () => {
@@ -67,7 +87,11 @@ export default function ResultadosVuelos({
     if (quantity < availableSlots) {
       setQuantity(quantity + 1);
     } else {
-      alert("No puede comprar más de 5 tiquetes para este vuelo.");
+      alert(
+        "No puede " +
+          (modalMode === "compra" ? "comprar" : "reservar") +
+          " más de 5 tiquetes para este vuelo."
+      );
     }
   };
 
@@ -81,16 +105,15 @@ export default function ResultadosVuelos({
     if (!selectedVuelo) return 0;
     let basePrice = selectedVuelo.precio * quantity;
     if (equipaje === "B") {
-      basePrice *= 1.1; // Increase price by 10% for checked baggage
+      basePrice *= 1.1;
     }
     if (seatClass === "P") {
-      basePrice *= 1.3; // Increase price by 30% for first class
+      basePrice *= 1.3;
     }
     return basePrice.toFixed(2);
   };
 
   const calculateCurrentTicketsForFlight = (flightId) => {
-    // Ensure cartItems is an array before calling filter
     const items = Array.isArray(cartItems) ? cartItems : [];
     return items
       .filter((item) => item.id_vuelo === flightId)
@@ -136,9 +159,48 @@ export default function ResultadosVuelos({
     }
   };
 
+  const handleAddToReserve = () => {
+    if (!selectedVuelo || !onAddToReserve) {
+      console.error(
+        "Error: No hay vuelo seleccionado o onAddToReserve no está definida"
+      );
+      return;
+    }
+
+    const currentTickets = calculateCurrentTicketsForFlight(
+      selectedVuelo.id_vuelo
+    );
+
+    if (currentTickets + quantity > 5) {
+      alert("No puede reservar más de 5 tiquetes para este vuelo.");
+      return;
+    }
+
+    try {
+      const precioTotal = parseFloat(calculateTotalPrice());
+      const precioUnitario = precioTotal / quantity;
+
+      const itemToReserve = {
+        ...selectedVuelo,
+        quantity: quantity,
+        equipaje: equipaje,
+        precioUnitario: precioUnitario.toFixed(2),
+        precioTotal: precioTotal.toFixed(2),
+        equipajeBodega: equipaje === "B",
+        primeraClase: seatClass === "P",
+      };
+
+      onAddToReserve(itemToReserve);
+      closeModal();
+      alert("¡Vuelo agregado a reservas!");
+    } catch (error) {
+      console.error("Error específico al agregar a reservas:", error);
+    }
+  };
+
   const renderBotonesUsuario = (vuelo) => (
     <>
-      <button>Reservar</button>
+      <button onClick={() => handleReservar(vuelo)}>Reservar</button>
       <button onClick={() => handleComprar(vuelo)}>Comprar</button>
     </>
   );
@@ -293,15 +355,19 @@ export default function ResultadosVuelos({
             </p>
 
             <button
-              onClick={handleAddToCart}
+              onClick={
+                modalMode === "compra" ? handleAddToCart : handleAddToReserve
+              }
               disabled={
                 !selectedVuelo ||
-                !onAddToCart ||
+                (!onAddToCart && !onAddToReserve) ||
                 equipaje === "0" ||
                 seatClass === "0"
               }
             >
-              Agregar al Carrito
+              {modalMode === "compra"
+                ? "Agregar al Carrito"
+                : "Agregar a Reservas"}
             </button>
           </div>
         </div>
