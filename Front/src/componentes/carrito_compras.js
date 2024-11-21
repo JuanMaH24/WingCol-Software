@@ -99,7 +99,12 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
   const handlePay = () => {
     // Verifica si todos los tiquetes están registrados
     if (items.every((item) => item.registrado)) {
-      navigate("/pasarela-de-pagos", { state: { total: calculateTotal() } });
+      navigate("/pasarela-de-pagos", {
+        state: {
+          total: calculateTotal(),
+          cartItems: items, // Añadimos los items del carrito al state
+        },
+      });
     } else {
       alert("Por favor, registre todos los pasajeros antes de continuar.");
     }
