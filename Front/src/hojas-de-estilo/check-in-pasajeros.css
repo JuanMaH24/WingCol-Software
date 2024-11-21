@@ -1,11 +1,19 @@
 .contenedor-principal-pasajeros {
-  max-width: 800px;
+  max-width: 1000px;
+  width: 1000px;
   margin: 0 auto;
   padding: 20px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(30px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual ancho */
+  gap: 20px; /* Espacio entre los campos */
+  max-width: 800px; /* Ancho máximo del formulario */
+  margin: 0 auto; /* Centrar el formulario horizontalmente */
+  padding: 20px;
 }
 
 h1 {
@@ -39,8 +47,8 @@ select {
   border-radius: 4px;
 }
 
-.genero-check-in option,
-.tipo-de-documento-check-in option {
+.campo-genero option,
+.campo-tipo-documento option {
   color: black;
 }
 .PhoneInputCountrySelect option {
@@ -58,17 +66,48 @@ select {
 }
 
 /* Estilos básicos para los botones */
-.botones-check-in button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
+
+.aceptar-registro:hover {
+  background-color: #1e7e34;
 }
 
-.botones-check-in button:last-child {
-  background-color: #6c757d;
+.volver-carrito {
+  background-color: #c82333;
+}
+
+.boton-aceptar {
+  background-color: #218838;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.boton-volver {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.boton-aceptar:hover {
+  background-color: #1e7e34;
+}
+
+.boton-volver:hover {
+  background-color: #c82333;
+}
+
+.botones-formulario {
+  text-align: center; /* Centra los botones */
+  display: flex; /* Utiliza Flexbox para alinear los botones */
+  justify-content: center; /* Centra los botones horizontalmente */
+  gap: 20px; /* Espacio entre los botones */
 }
 
 /* Responsive */

@@ -1,30 +1,148 @@
+/* pasarela-de-pagos.css */
 .pasarela-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
+}
+
+.pasarela-container h1 {
+  color: #333333;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.card-info {
+  font-size: 1rem;
+  color: #2d3748;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-info span {
+  font-weight: bold;
+  color: #4a5568;
+}
+
+.pasarela-container h2 {
+  color: #2c5282;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+}
+
+.error-message {
+  color: #e53e3e;
+  text-align: center;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 4px;
 }
 
 .tarjetas-container {
-  margin-top: 20px;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .tarjeta-item {
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  width: 100%;
+}
+
+.tarjeta-item:hover {
+  background-color: #edf2f7;
+  border-color: #cbd5e0;
+}
+
+.tarjeta-item.selected {
+  border-color: #4299e1;
+  background-color: #ebf8ff;
+}
+
+.tarjeta-item input[type="radio"] {
+  margin-right: 1rem;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #4299e1;
+}
+
+.card-info {
+  font-size: 1rem;
+  color: #4a5568;
+  cursor: pointer;
+  flex: 1;
+  font-family: monospace;
+  letter-spacing: 1px;
 }
 
 .pagar-button,
 .volver-button {
-  display: block;
   width: 100%;
-  padding: 10px;
-  margin-top: 20px;
-  background-color: #007bff;
-  color: white;
+  padding: 1rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagar-button {
+  background-color: #48bb78;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.pagar-button:hover:not(:disabled) {
+  background-color: #38a169;
+}
+
+.pagar-button:disabled {
+  background-color: #9ae6b4;
+  cursor: not-allowed;
 }
 
 .volver-button {
-  background-color: #6c757d;
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.volver-button:hover {
+  background-color: #cbd5e0;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .pasarela-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .pasarela-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .pasarela-container h2 {
+    font-size: 1.25rem;
+  }
+
+  .tarjeta-item {
+    padding: 0.75rem;
+  }
 }

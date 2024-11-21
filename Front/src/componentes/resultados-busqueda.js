@@ -138,22 +138,23 @@ export default function ResultadosVuelos({
     }
 
     try {
-      const precioTotal = parseFloat(calculateTotalPrice());
-      const precioUnitario = precioTotal / quantity;
+      const precioUnitario = parseFloat(calculateTotalPrice()) / quantity;
 
-      const itemToAdd = {
+      // Crear entradas individuales para cada tiquete
+      const itemsToAdd = Array.from({ length: quantity }, () => ({
         ...selectedVuelo,
-        quantity: quantity,
+        quantity: 1, // Cada tiquete es individual
         equipaje: equipaje,
         precioUnitario: precioUnitario.toFixed(2),
-        precioTotal: precioTotal.toFixed(2),
+        precioTotal: precioUnitario.toFixed(2),
         equipajeBodega: equipaje === "B",
         primeraClase: seatClass === "P",
-      };
+      }));
 
-      onAddToCart(itemToAdd);
+      // Llamar a onAddToCart para cada entrada
+      itemsToAdd.forEach((item) => onAddToCart(item));
       closeModal();
-      alert("¡Vuelo agregado al carrito!");
+      alert("¡Tiquetes agregados al carrito!");
     } catch (error) {
       console.error("Error específico al agregar al carrito:", error);
     }

@@ -59,6 +59,20 @@
   margin-top: 10px;
 }
 
+.boton-registro-pasajeros-carrito {
+  background-color: #218838;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.boton-registro-pasajeros-carrito:hover {
+  background-color: #1e7e34;
+}
+
 .remove-button:hover {
   background-color: #c82333;
 }

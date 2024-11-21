@@ -34,6 +34,7 @@ import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
 import CarritoCompras from "./componentes/carrito_compras";
 import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
 import { Reservas } from "./componentes/reservas";
+import { RegistroPasajeros } from "./componentes/registro-pasajeros";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -218,6 +219,22 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={[1]}>
                 <EditarPerfil />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pasarela-de-pagos"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <PasarelaDePagos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/registro-pasajeros"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <RegistroPasajeros />
               </ProtectedRoute>
             }
           />

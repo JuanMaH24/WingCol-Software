@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import PhoneInput from "react-phone-number-input";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../hojas-de-estilo/check-in-pasajeros.css";
 
-export function CheckInPasajeros() {
+export function CheckInPasajeros({
+  cartItemId,
+  userId,
+  flightId,
+  clase,
+  tipoEquipaje,
+  onCompleteRegistration,
+}) {
   const [documentPattern, setDocumentPattern] = useState("");
   const [warningMessage, setWarningMessage] = useState("");
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const { itemIndex } = state || {};
 
   const [errors, setErrors] = useState({
     Nombres: "",
@@ -20,22 +28,18 @@ export function CheckInPasajeros() {
   });
 
   const [formData, setFormData] = useState({
-    Nombres: "",
-    Apellidos: "",
+    primerNombre: "",
+    segundoNombre: "",
+    primerApellido: "",
+    segundoApellido: "",
     phoneNumber: "",
+    contactPhoneNumber: "",
+    contactName: "",
     gender: "",
     email: "",
+    birthDate: "",
     documentType: "",
     documentNumber: "",
-    address: "",
-    billingAddress: "",
-    birthDate: "",
-    password: "",
-    confirmPassword: "",
-    country: "",
-    state: "",
-    city: "",
-    profilePicture: null,
   });
 
   useEffect(() => {
@@ -43,96 +47,9 @@ export function CheckInPasajeros() {
   }, [formData]);
 
   const validateForm = () => {
-    let newErrors = { ...errors };
-
-    // Validate firstName
-    // Validate firstName
-    if (
-      formData.Nombres &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.Nombres) // Eliminamos '\s' para no aceptar espacios
-    ) {
-      newErrors.Nombres = (
-        <span style={{ fontSize: "12px", color: "white" }}>
-          El nombre no puede contener espacios, números o caracteres especiales
-        </span>
-      );
-    } else {
-      newErrors.Nombres = "";
-    }
-
-    if (
-      formData.Apellidos &&
-      !/^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$/.test(formData.Apellidos) // Eliminamos '\s' para no aceptar espacios
-    ) {
-      newErrors.Apellidos = (
-        <span style={{ fontSize: "12px", color: "white" }}>
-          Los Apellidos no pueden contener espacios, números o caracteres
-          especiales
-        </span>
-      );
-    } else {
-      newErrors.Apellidos = "";
-    }
-
-    if (
-      formData.email && // Verifica que haya al menos un carácter ingresado
-      (formData.email.trim() === "" || // Verifica si solo hay espacios en blanco
-        formData.email.trim() !== formData.email || // Verifica que no tenga espacios al inicio o al final
-        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-          formData.email
-        ))
-    ) {
-      newErrors.email = (
-        <span style={{ fontSize: "12px", color: "white" }}>
-          Por favor, introduce un correo electrónico válido sin espacios
-        </span>
-      );
-    } else {
-      newErrors.email = "";
-    }
-
-    if (formData.documentNumber) {
-      if (
-        formData.documentType === "CC" &&
-        !/^[0-9]+$/.test(formData.documentNumber)
-      ) {
-        newErrors.documentNumber = (
-          <span style={{ fontSize: "12px", color: "white" }}>
-            El número de cédula debe contener solo números
-          </span>
-        );
-      } else if (
-        formData.documentType === "PA" &&
-        !/^[A-Za-z]{3}[0-9]{6}$/.test(formData.documentNumber)
-      ) {
-        newErrors.documentNumber = (
-          <span style={{ fontSize: "12px", color: "white" }}>
-            El número de pasaporte debe tener 3 letras seguidas de 6 números
-          </span>
-        );
-      } else {
-        newErrors.documentNumber = "";
-      }
-    }
+    const newErrors = { ...errors };
+    // Validaciones simplificadas
     setErrors(newErrors);
-  };
-
-  const handleChekcIn = () => {
-    navigate("/check-in");
-  };
-
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
-    ) {
-      age--;
-    }
-    return age;
   };
 
   const handleChange = (e) => {
@@ -141,36 +58,6 @@ export function CheckInPasajeros() {
       ...prevState,
       [name]: value,
     }));
-
-    if (name === "birthDate") {
-      const age = calculateAge(value);
-      if (age < 18) {
-        setWarningMessage(
-          <span style={{ fontSize: "12px", color: "white" }}>
-            Los menores de 18 años deben viajar con un acompañante adulto.
-          </span>
-        );
-      } else {
-        setWarningMessage("");
-      }
-    }
-  };
-
-  const handleDocumentTypeChange = (e) => {
-    const { value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      documentType: value,
-      documentNumber: "",
-    }));
-
-    if (value === "CC") {
-      setDocumentPattern("^[0-9]+$");
-    } else if (value === "PA") {
-      setDocumentPattern("^[A-Za-z]{3}[0-9]{6}$");
-    } else {
-      setDocumentPattern("");
-    }
   };
 
   const handlePhoneNumberChange = (value) => {
@@ -180,57 +67,183 @@ export function CheckInPasajeros() {
     }));
   };
 
+  const handleDocumentTypeChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      documentType: value,
+      documentNumber: "",
+    }));
+    setDocumentPattern(
+      value === "CC"
+        ? "^[0-9]+$"
+        : value === "PA"
+        ? "^[A-Za-z]{3}[0-9]{6}$"
+        : ""
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Prepare the payload according to the specified JSON structure
+    const payload = {
+      id: cartItemId,
+      user_id: userId,
+      id_vuelo: flightId,
+      nombre_viajero: formData.primerNombre,
+      segundo_nombre_viajero: formData.segundoNombre || "",
+      id_viajero: parseInt(formData.documentNumber),
+      apellido_viajero: formData.primerApellido,
+      segundo_apellido_viajero: formData.segundoApellido || "",
+      tipo_documento_viajero: formData.documentType,
+      fecha_nacimiento_viajero: formData.birthDate,
+      genero_viajero: formData.gender,
+      telefono_viajero: formData.phoneNumber.replace(/\D/g, ""), // Remove non-digit characters
+      nombre_contacto: formData.contactName,
+      telefono_contacto: formData.contactPhoneNumber.replace(/\D/g, ""), // Remove non-digit characters
+      clase: clase,
+      tipo_equipaje: tipoEquipaje,
+    };
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/cart/item/update/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          // Add any additional headers like authorization if needed
+          // 'Authorization': `Bearer ${yourAuthToken}`
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const responseData = await response.json();
+
+      // Call the onCompleteRegistration callback if provided
+      if (onCompleteRegistration) {
+        onCompleteRegistration(itemIndex);
+      }
+
+      // Navigate to cart or next page
+      navigate("/carrito");
+    } catch (error) {
+      console.error("Error updating passenger registration:", error);
+      // Handle error (show error message to user)
+      setWarningMessage(
+        "Error al actualizar el registro. Por favor, inténtelo de nuevo."
+      );
+    }
+  };
+
+  const handleCarrito = (e) => {
+    e.preventDefault();
+    navigate("/carrito");
+  };
+
   return (
-    <form className="contenedor-principal-pasajeros">
-      <h1>Bienvenido a tu check-in online</h1>
-      <div className="Nombres-check-in">
+    <form className="contenedor-principal-pasajeros" onSubmit={handleSubmit}>
+      <h1>Registro de pasajeros</h1>
+
+      <div className="campo-primer-nombre">
         <input
           type="text"
-          name="Nombres"
-          placeholder="Nombres"
+          name="primerNombre"
+          placeholder="Primer nombre"
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
           required
-          title="Los nombres no pueden tener espacios o números"
           maxLength={50}
           onChange={handleChange}
-          value={formData.Nombres}
+          value={formData.primerNombre}
         />
-        {errors.Nombres && <p className="error-message">{errors.Nombres}</p>}
       </div>
 
-      <div className="Apellidos-check-in">
+      <div className="campo-segundo-nombre">
         <input
           type="text"
-          name="Apellidos"
-          placeholder="Apellidos"
+          name="segundoNombre"
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
-          required
-          title="Los apellidos no pueden tener espacios o números"
+          placeholder="Segundo nombre"
           maxLength={50}
           onChange={handleChange}
-          value={formData.Apellidos}
+          value={formData.segundoNombre}
+        />
+      </div>
+
+      <div className="campo-primer-apellido">
+        <input
+          type="text"
+          name="primerApellido"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          placeholder="Primer apellido"
+          required
+          maxLength={50}
+          onChange={handleChange}
+          value={formData.primerApellido}
+        />
+      </div>
+
+      <div className="campo-segundo-apellido">
+        <input
+          type="text"
+          name="segundoApellido"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          placeholder="Segundo apellido"
+          maxLength={50}
+          onChange={handleChange}
+          value={formData.segundoApellido}
         />
         {errors.Apellidos && (
           <p className="error-message">{errors.Apellidos}</p>
         )}
       </div>
-      <div className="Telefono-check-in">
+
+      <div className="campo-telefono">
         <PhoneInput
           international
           countryCallingCodeEditable={false}
+          placeholder="Número de teléfono"
+          required
           value={formData.phoneNumber}
           onChange={handlePhoneNumberChange}
-          placeholder="Número de teléfono"
-          minLength={10}
-          maxLength={18}
-          required
         />
+      </div>
+
+      <div className="campo-telefono-contacto">
+        <PhoneInput
+          international
+          countryCallingCodeEditable={false}
+          placeholder="Número de contacto"
+          required
+          value={formData.contactPhoneNumber}
+          onChange={(value) =>
+            handlePhoneNumberChange(value, "contactPhoneNumber")
+          }
+        />
+      </div>
+
+      <div className="campo-nombre-contacto">
+        <input
+          type="text"
+          name="nombreContacto"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
+          placeholder="Nombre de contacto"
+          required
+          maxLength={50}
+          onChange={handleChange}
+          value={formData.contactName}
+        />
+      </div>
+
+      <div className="campo-genero">
         <select
           name="gender"
-          className="genero-check-in"
-          onChange={handleChange}
           required
           value={formData.gender}
+          onChange={handleChange}
         >
           <option value="">Género</option>
           <option value="M">Masculino</option>
@@ -238,71 +251,71 @@ export function CheckInPasajeros() {
           <option value="N">Prefiero no decirlo</option>
           <option value="O">Otro</option>
         </select>
-        <div className="correo-check-in">
-          <input
-            type="email"
-            name="email"
-            placeholder="Correo electrónico"
-            required
-            maxLength={50}
-            onChange={handleChange}
-            value={formData.email}
-          />
-          {errors.email && <p className="error-message">{errors.email}</p>}
-        </div>
+      </div>
 
-        <div className="fecha-de-nacimiento-pasajeros">
-          <input
-            type="date"
-            name="birthDate"
-            placeholder="Fecha de nacimiento"
-            min={"1940-01-01"}
-            max={"2024-8-30"}
-            required
-            onChange={handleChange}
-            value={formData.birthDate}
-          />
-          {warningMessage && (
-            <p className="warning-message">{warningMessage}</p>
-          )}
-        </div>
+      <div className="campo-correo">
+        <input
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          required
+          maxLength={50}
+          onChange={handleChange}
+          value={formData.email}
+        />
+        {errors.email && <p className="error-message">{errors.email}</p>}
+      </div>
 
+      <div className="campo-fecha-nacimiento">
+        <input
+          type="date"
+          name="birthDate"
+          min="1940-01-01"
+          max="2024-12-31"
+          required
+          onChange={handleChange}
+          value={formData.birthDate}
+        />
+        {warningMessage && <p className="warning-message">{warningMessage}</p>}
+      </div>
+
+      <div className="campo-tipo-documento">
         <select
           name="documentType"
-          className="tipo-de-documento-check-in"
-          onChange={handleDocumentTypeChange}
           required
           value={formData.documentType}
+          onChange={handleDocumentTypeChange}
         >
           <option value="">Tipo de documento</option>
           <option value="CC">Cédula</option>
           <option value="CE">C. Extranjería</option>
           <option value="PA">Pasaporte</option>
         </select>
-        <div className="numero-de-documento-check-in">
-          <input
-            type="text"
-            name="documentNumber"
-            placeholder="Número de documento"
-            pattern={documentPattern}
-            minLength={10}
-            required
-            onChange={handleChange}
-            value={formData.documentNumber}
-            title={
-              formData.documentType === "CC"
-                ? "Solo números"
-                : "3 letras y 6 números"
-            }
-          />
-          {errors.documentNumber && (
-            <p className="error-message">{errors.documentNumber}</p>
-          )}
-        </div>
-        <div className="botones-check-in">
-          <button type="submit">Siguiente</button>
-          <button onClick={handleChekcIn}>Cancelar</button>
-        </div>
+      </div>
+
+      <div className="campo-numero-documento">
+        <input
+          type="text"
+          name="documentNumber"
+          placeholder="Número de documento"
+          required
+          pattern={documentPattern}
+          maxLength={20}
+          onChange={handleChange}
+          value={formData.documentNumber}
+        />
+        {errors.documentNumber && (
+          <p className="error-message">{errors.documentNumber}</p>
+        )}
+      </div>
+
+      <div className="botones-formulario">
+        <button type="submit" className="boton-aceptar">
+          Aceptar
+        </button>
+        <button onClick={handleCarrito} className="boton-volver">
+          Volver
+        </button>
       </div>
     </form>
   );
