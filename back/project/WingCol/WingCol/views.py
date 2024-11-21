@@ -503,9 +503,7 @@ def get_cart(request):
         cart_serializer = CartSerializer(cart)
         items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
         items_serializer = ItemSerializer(items, many = True)
-        # combined_data = user_serializer.data.copy() 
-        # combined_data.update(admin_serializer.data)
-        combined_data = items_serializer.copy()
+        combined_data = items_serializer.data.copy()
         for item in combined_data:
             flight_id = item['id_vuelo']
             flight = Vuelos.objects.get(id_vuelo=flight_id)
@@ -521,6 +519,7 @@ def get_cart(request):
 def create_cart(request):
     try:
         user = request.data['user_id']
+        check_active_carts()
         cart = CartSerializer(data=request.data)
         if cart.is_valid():
             cart.save()
@@ -528,6 +527,8 @@ def create_cart(request):
         return Response(cart.errors, status=status.HTTP_400_BAD_REQUEST)
     except NormalUser.DoesNotExist:
         return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @authentication_classes([ClientAuthentication])

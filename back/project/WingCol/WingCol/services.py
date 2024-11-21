@@ -40,3 +40,8 @@ def validate_unique_passenger(passenger_id):
 	item_duplicated = ItemCarrito.objects.filter(id_viajero=passenger_id, activo=True)
 	if ticket_duplicated or item_duplicated:
 		raise ValueError("El pasajero ya esta registrado en el vuelo")
+	
+def check_active_carts():
+	active_cart = CarritoCompras.objects.filter(activo=True)
+	if active_cart:
+		raise ValueError("Ya hay un carrito activo")
