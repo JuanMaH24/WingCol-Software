@@ -1,5 +1,5 @@
 from django.utils import timezone
-from .models import Sillas
+from .models import *
 import random
 # from datetime import datetime
 
@@ -32,3 +32,9 @@ def confirm_payment(cart, items):
 		item.soft_delete()
 		item.save()
 	cart.soft_delete()
+
+def validate_unique_passenger(passenger_id):
+	ticket_duplicated = Tiquete.objects.filter(id_viajero=passenger_id, activo=True)
+	item_duplicated = ItemCarrito.objects.filter(id_viajero=passenger_id, activo=True)
+	if ticket_duplicated or item_duplicated:
+		raise ValueError("El pasajero ya esta registrado en el vuelo")

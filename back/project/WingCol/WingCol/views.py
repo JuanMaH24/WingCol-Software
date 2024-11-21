@@ -497,7 +497,9 @@ def get_cart(request):
         user = request.query_params.get('user_id')
         cart = CarritoCompras.objects.get(user_id=user, activo=True)
         cart_serializer = CartSerializer(cart)
-        return Response(cart_serializer.data, status=status.HTTP_200_OK)
+        items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
+        items_serializer = ItemSerializer(items, many = True)
+        return Response(items_serializer.data, status=status.HTTP_200_OK)
     except CarritoCompras.DoesNotExist:
         return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -532,21 +534,44 @@ def add_to_cart(request):
     except CarritoCompras.DoesNotExist:
         return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['PUT'])
+@api_view(['DELETE'])
 def remove_from_cart(request):
     try:
         user = request.data['user_id']
-        flight = request.data['id_vuelo']
+        id_item = request.data['id']
         cart = CarritoCompras.objects.get(user_id=user, activo=True)
-        item = ItemCarrito.objects.get(id_vuelo=flight, id_carrito=cart.id_carrito)
-        item.soft_delete()
+        item = ItemCarrito.objects.get(id=id_item)
+        item.delete()
         return Response({"message": "Vuelo eliminado del carrito correctamente."}, status=status.HTTP_200_OK)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except ItemCarrito.DoesNotExist:
+        return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['PUT'])
+def update_item_cart(request):
+    try:
+        user = request.data['user_id']
+        id_item = request.data['id']
+        cart = CarritoCompras.objects.get(user_id=user, activo=True)
+        validate_unique_passenger(request.data['id_viajero'])
+        request.data['id_carrito'] = cart.id_carrito
+        item = ItemCarrito.objects.get(id=id_item)
+        item_serializer = ItemSerializer(item, data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response({"message": "Información añadida al tiquete correctamente."}, status=status.HTTP_200_OK)
+        return Response({"user_errors": item_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     except NormalUser.DoesNotExist:
         return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     except Vuelos.DoesNotExist:
         return Response({"error": "Vuelo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     except CarritoCompras.DoesNotExist:
         return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except ValueError:
+        return Response({"error": "El pasajero ya esta registrado en el vuelo"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 @api_view(['PUT'])
 def delete_cart(request):
@@ -569,8 +594,8 @@ def make_payment(request):
         card = Tarjetas.objects.get(id_tarjeta=request.data['id_tarjeta'], activo=True)  
         cart = CarritoCompras.objects.get(user_id=user_id, activo=True)
         items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
-        tickets = Tiquete.objects.filter(id_tiquete__in=[item.id_tiquete.id_tiquete for item in items], activo=True)
-        price = sum([item.id_tiquete.precio for item in items])
+        flights = Vuelos.objects.filter(id_vuelo__in=[item.id_vuelo.id_vuelo for item in items], activo=True)
+        price = sum([item.id_vuelo.precio for item in items])
         validate_card(card.saldo, price, card.fecha_expiracion)
         # payment_intent = stripe.PaymentIntent.create(
         #     amount=price,
@@ -579,11 +604,10 @@ def make_payment(request):
         #     description=f'Compra de tiquetes realizada por {user_id}',
         #     # confirmation_method='manual',
         #     # confirm=True,
-        # ) 
-        print("pagando")    
+        # )   
         card.saldo -= price
         card.save() 
-        confirm_payment(cart, items)
+        # confirm_payment(cart, items)
         # return Response({'client_secret': payment_intent['client_secret']}, status=status.HTTP_200_OK)
         return Response({"message": "Pago realizado correctamente."}, status=status.HTTP_200_OK)
     except CarritoCompras.DoesNotExist:
@@ -601,25 +625,24 @@ def make_payment(request):
         print(error)
         return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
-# @api_view(['POST'])
-# def confirm_payment(request):
-#     try:
-#         print("ya pagó")
-#         user_id = request.data['user_id']
-#         cart = CarritoCompras.objects.get(user_id=user_id, activo=True)
-#         items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
-#         for item in items:
-#             ticket = Tiquete.objects.get(id_tiquete=item.id_tiquete.id_tiquete)
-#             ticket.soft_delete()
-#             item.soft_delete()
-#         cart.soft_delete()
-#         return Response({"message": "Pago realizado correctamente."}, status=status.HTTP_200_OK)
-#     except CarritoCompras.DoesNotExist:
-#         return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-#     except NormalUser.DoesNotExist:
-#         return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-#     except Exception as error:
-#         return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def confirm_payment(request):
+    try:
+        user_id = request.data['user_id']
+        cart = CarritoCompras.objects.get(user_id=user_id, activo=True)
+        items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
+        for item in items:
+            ticket = Tiquete.objects.get(id_tiquete=item.id_tiquete.id_tiquete)
+            ticket.soft_delete()
+            item.soft_delete()
+        cart.soft_delete()
+        return Response({"message": "Pago realizado correctamente."}, status=status.HTTP_200_OK)
+    except CarritoCompras.DoesNotExist:
+        return Response({"error": "Carrito no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except NormalUser.DoesNotExist:
+        return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 @authentication_classes([ClientAuthentication])

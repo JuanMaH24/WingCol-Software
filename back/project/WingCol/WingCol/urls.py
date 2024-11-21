@@ -55,9 +55,10 @@ urlpatterns = [
 	path('cart/create/', create_cart),
     path('cart/delete/', delete_cart),
 	path('cart/add/', add_to_cart),
+    path('cart/item/update/', update_item_cart),
 	path('cart/remove/', remove_from_cart),
 	path('cart/pay/', make_payment),#
-	# path('cart/pay/confirm/', confirm_payment),#
+	path('cart/pay/confirm/', confirm_payment),#
 	path('cart/', get_cart),
     path('password_reset/', include('django_rest_passwordreset.urls')),
 ]
