@@ -4,18 +4,15 @@ import random
 # from datetime import datetime
 
 def select_seat(flight, seat_class):
-	try:
-		available_seats = Sillas.objects.filter(id_vuelo=flight, estado='L')
-		if seat_class == 'E':
-			seats = available_seats.filter(clase='E')
-		if seat_class == 'P':
-			seats = available_seats.filter(clase='P')
-		random_seat = random.choice(seats)
-		return random_seat.id_silla
-
-	except Sillas.DoesNotExist:
-		raise ValueError("No hay sillas disponibles para este vuelo")
-
+	available_seats = Sillas.objects.filter(id_vuelo=flight, estado='L')
+	if available_seats.count() == 0:
+		raise ValueError("No hay sillas disponibles")
+	if seat_class == 'E':
+		seats = available_seats.filter(clase='E')
+	if seat_class == 'P':
+		seats = available_seats.filter(clase='P')
+	random_seat = random.choice(seats)
+	return random_seat.id_silla
 
 def validate_card(charge, total_price, expiration_date):
 	if charge < total_price:
