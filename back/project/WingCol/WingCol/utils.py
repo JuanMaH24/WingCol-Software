@@ -1,7 +1,8 @@
 import random
 import string
-
-
+import random
+import string
+from math import radians, sin, cos, sqrt, atan2
 
 def create_verification_code():
 	verification_code = ""
@@ -11,9 +12,6 @@ def create_verification_code():
 		verification_code += str(random.randint(0, 9))
 	print(verification_code)
 	return verification_code
-import random
-import string
-from math import radians, sin, cos, sqrt, atan2
 
 def generate_password():
     length = random.randint(8, 20)
