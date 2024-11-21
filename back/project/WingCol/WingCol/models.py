@@ -3,6 +3,7 @@ from .manager import UsersManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import MinValueValidator, MaxValueValidator
+from .utils import *
 
 
 class NormalUser(AbstractBaseUser, PermissionsMixin):
@@ -187,17 +188,109 @@ class Tiquete(models.Model):
 	class ClaseVuelo(models.TextChoices):
 		ECONOMICA = 'E', 'Clase económica'
 		PRIMERA_CLASE = 'P', 'Primera clase'
+	
 	class TipoEquipaje(models.TextChoices):
-		PERSONAL = 'EP', 'Equipaje personal'
-		MANO = 'EM', 'Equipaje de mano'
-		MALETA = 'MB', 'Maleta de bodega'
+		PERSONAL = 'P', 'Equipaje personal'
+		MANO = 'M', 'Equipaje de mano'
+		MALETA = 'B', 'Maleta de bodega'
+		PERSONAL_Y_MANO = 'PM', 'Personal y Mano'
+		PERSONAL_Y_BODEGA = 'PB', 'Personal y Bodega'
+		MANO_Y_BODEGA = 'MB', 'Mano y Bodega'
+		TODOS = 'T', 'Todos'
+	
+	class Genero(models.TextChoices):
+		MASCULINO = 'M', 'Masculino'
+		FEMENINO = 'F', 'Femenino'
+		NO_DICE = 'N', 'Prefiero No Decirlo'
+		OTRO = 'O', 'Otro'
+
+	class TipoDocumento(models.TextChoices):
+		CC = 'CC', 'Cédula de Ciudadanía'
+		TI = 'TI', 'Tarjeta de Identidad'
+		CE = 'CE', 'Cédula de Extranjería'
+		PA = 'PA', 'Pasaporte'
 
 	id_tiquete = models.AutoField(primary_key=True)
-	user_id = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-	id_silla = models.ForeignKey(Sillas, on_delete=models.CASCADE)
+	user_id = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
+	id_silla = models.OneToOneField(Sillas, on_delete=models.CASCADE)
+	id_viajero = models.PositiveBigIntegerField()
+	nombre_viajero = models.CharField(max_length=50)
+	segundo_nombre_viajero = models.CharField(max_length=50, blank=True)
+	apellido_viajero = models.CharField(max_length=50)
+	segundo_apellido_viajero = models.CharField(max_length=50)
+	tipo_documento_viajero = models.CharField(max_length=2, choices=TipoDocumento.choices)
+	fecha_nacimiento_viajero = models.DateField()
+	genero_viajero = models.CharField(max_length=1, choices=Genero.choices)	
+	telefono_viajero = models.CharField(max_length=20)	
+	nombre_contacto =  models.CharField(max_length=50)
+	telefono_contacto = models.CharField(max_length=20)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)
+	verificado = models.BooleanField(default=False)
+	activo = models.BooleanField(default=True)
+	precio = models.PositiveIntegerField()
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()	
+
+	def create_code(self):
+		self.verificacion = create_verification_code()
+
+
+class CarritoCompras(models.Model):
+	id_carrito = models.AutoField(primary_key=True)
+	user_id = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
+	fecha_creada = models.DateTimeField(auto_now_add=True)
+	fecha_actualizada = models.DateTimeField(auto_now=True)
+	activo = models.BooleanField(default=True)
+
+	def soft_delete(self):
+		self.activo = False
+		self.save()	
+
+class ItemCarrito(models.Model):
+	class ClaseVuelo(models.TextChoices):
+		ECONOMICA = 'E', 'Clase económica'
+		PRIMERA_CLASE = 'P', 'Primera clase'
+	
+	class TipoEquipaje(models.TextChoices):
+		PERSONAL = 'P', 'Equipaje personal'
+		MANO = 'M', 'Equipaje de mano'
+		MALETA = 'B', 'Maleta de bodega'
+		PERSONAL_Y_MANO = 'PM', 'Personal y Mano'
+		PERSONAL_Y_BODEGA = 'PB', 'Personal y Bodega'
+		MANO_Y_BODEGA = 'MB', 'Mano y Bodega'
+		TODOS = 'T', 'Todos'
+	
+	class Genero(models.TextChoices):
+		MASCULINO = 'M', 'Masculino'
+		FEMENINO = 'F', 'Femenino'
+		NO_DICE = 'N', 'Prefiero No Decirlo'
+		OTRO = 'O', 'Otro'
+
+	class TipoDocumento(models.TextChoices):
+		CC = 'CC', 'Cédula de Ciudadanía'
+		TI = 'TI', 'Tarjeta de Identidad'
+		CE = 'CE', 'Cédula de Extranjería'
+		PA = 'PA', 'Pasaporte'
+
+	id_carrito = models.ForeignKey(CarritoCompras, on_delete=models.CASCADE)
+	id_vuelo = models.ForeignKey(Vuelos, on_delete=models.CASCADE)
+	id_viajero = models.PositiveBigIntegerField(blank=True, null=True)
+	nombre_viajero = models.CharField(max_length=50, blank=True, null=True)
+	segundo_nombre_viajero = models.CharField(max_length=50, blank=True, null=True)
+	apellido_viajero = models.CharField(max_length=50, blank=True, null=True)
+	segundo_apellido_viajero = models.CharField(max_length=50, blank=True, null=True)
+	tipo_documento_viajero = models.CharField(max_length=2, choices=TipoDocumento.choices, blank=True, null=True)
+	fecha_nacimiento_viajero = models.DateField(blank=True, null=True)
+	genero_viajero = models.CharField(max_length=1, choices=Genero.choices, blank=True, null=True)	
+	telefono_viajero = models.CharField(max_length=20, blank=True, null=True)	
+	nombre_contacto =  models.CharField(max_length=50, blank=True, null=True)
+	telefono_contacto = models.CharField(max_length=20, blank=True, null=True)
+	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices, blank=True, null=True)
+	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices, blank=True, null=True)
 	activo = models.BooleanField(default=True)
 
 	def soft_delete(self):

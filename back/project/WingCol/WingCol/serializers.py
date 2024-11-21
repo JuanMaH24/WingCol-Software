@@ -111,15 +111,28 @@ class CardSerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tiquete
-        fields = ['id_silla', 'id_cliente', 'clase', 'tipo_equipaje', 'id_silla', 'verificacion', 'activo']
+        fields =    [
+                        'id_silla', 'user_id', 'nombre_viajero', 'segundo_nombre_viajero', 
+                        'id_viajero', 'apellido_viajero', 'segundo_apellido_viajero', 
+                        'tipo_documento_viajero', 'fecha_nacimiento_viajero', 'genero_viajero', 
+                        'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 
+                        'clase', 'tipo_equipaje', 'precio', 'verificacion', 'verificado'
+                    ]
+        extra_kwargs = {'verificacion': {'read_only': True}, 'verificado': {'read_only': True}, 'activo': {'required': False}}
 
-    def validate(self, data):
-        if data['fecha_compra'] > data['fecha_vuelo']:
-            raise serializers.ValidationError('La fecha de compra debe ser menor a la fecha de vuelo')
-        return data
-
-class CarSerializer(serializers.ModelSerializer):
+class CartSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComprasReservas
-        fields = ['id_vuelo', 'id_cliente', 'estado', 'valor']
-        extra_kwargs = {'carro_pic': {'required': False}}
+        model = CarritoCompras
+        fields = ['user_id', 'fecha_creada', 'fecha_actualizada']
+        extra_kwargs = {'fecha_creada': {'read_only': True}, 'fecha_actualizada': {'read_only': True}}
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemCarrito
+        fields = ['id', 'id_carrito', 'id_vuelo','nombre_viajero', 'segundo_nombre_viajero', 
+                        'id_viajero', 'apellido_viajero', 'segundo_apellido_viajero', 
+                        'tipo_documento_viajero', 'fecha_nacimiento_viajero', 'genero_viajero', 
+                        'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 
+                        'clase', 'tipo_equipaje']
+        extra_kwargs = {'id': {'read_only': True}}
+        
