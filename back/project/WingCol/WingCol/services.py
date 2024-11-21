@@ -26,7 +26,12 @@ def validate_card(charge, total_price, expiration_date):
 def validate_tickets_per_flight(tickets_count):
 	if tickets_count >= 5:
 		raise ValueError("No se pueden comprar más de 5 tiquetes por vuelo")
-	
+
+def validate_cart_items_per_flight(cart, flight):
+	count_items_per_flight = ItemCarrito.objects.filter(id_carrito=cart, id_vuelo=flight).count()
+	if count_items_per_flight >= 5:
+		raise ValueError("No se pueden comprar más de 5 tiquetes por vuelo")
+
 def confirm_payment(cart, items):
 	for item in items:
 		item.soft_delete()
