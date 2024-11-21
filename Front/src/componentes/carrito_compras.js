@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import "../hojas-de-estilo/carrito-compras.css";
 import Navbar from "./navbar";
 import { useNavigate } from "react-router-dom";
+import { getUser } from "../services/jwt-decode";
 import { CheckInPasajeros } from "./check-in-pasajeros";
 
 export default function CarritoCompras({ userId, onRemoveFromCart }) {
+  const user = getUser();
+  const apiHost = process.env.REACT_APP_API_HOST;
+  const jwtToken = localStorage.getItem("access");
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,13 +22,13 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `http://127.0.0.1:8000/cart/?user_id=${userId}`,
+        `${apiHost}/cart/?user_id=${user.user_id}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            // Add any additional headers like authorization if needed
-            // 'Authorization': `Bearer ${yourAuthToken}`
+            Authorization: `Bearer ${jwtToken}`,
+
           },
         }
       );
@@ -124,18 +128,21 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
       // Implement cart item removal logic here
       // You might want to call a backend endpoint to remove the item
       const itemToRemove = items[index];
-      const response = await fetch(`http://127.0.0.1:8000/cart/item/delete/`, {
+      console.log(`${jwtToken}`);
+      const response = await fetch(`${apiHost}/cart/remove/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
         },
         body: JSON.stringify({
           id: itemToRemove.id,
-          user_id: userId,
+          user_id: user.user_id,
         }),
       });
 
       if (!response.ok) {
+        console.log(`${response.status} ${response}`);
         throw new Error("Failed to remove item from cart");
       }
 

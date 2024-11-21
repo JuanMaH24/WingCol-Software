@@ -13,7 +13,7 @@ export function HomeCliente() {
   const jwtToken = localStorage.getItem("access");
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
-    async function fetchSoppingCart() {
+    async function fetchShoppingCart() {
       try {
         const params = new URLSearchParams({ user_id: currentUser.user_id });
         const response = await fetch(
@@ -55,7 +55,7 @@ export function HomeCliente() {
       }
     }
 
-    fetchSoppingCart();
+    fetchShoppingCart();
   }, []);
 
   const navigate = useNavigate();

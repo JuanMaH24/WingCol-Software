@@ -11,6 +11,8 @@ export default function ResultadosVuelos({
   onAddToReserve, // New prop for reservation
   cartItems = [],
 }) {
+  const apiHost = process.env.REACT_APP_API_HOST;
+  const jwtToken = localStorage.getItem("access");
   const [role, setRole] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedVuelo, setSelectedVuelo] = useState(null);
@@ -37,7 +39,7 @@ export default function ResultadosVuelos({
     navigate(`/editar-vuelos/${idVuelo}`);
   };
 
-  const handleComprar = (vuelo) => {
+  const handleComprar = async (vuelo) => {
     const currentTickets = calculateCurrentTicketsForFlight(vuelo.id_vuelo);
 
     if (currentTickets >= 5) {
@@ -53,7 +55,7 @@ export default function ResultadosVuelos({
     setSeatClass("0");
   };
 
-  const handleReservar = (vuelo) => {
+  const handleReservar = async (vuelo) => {
     const currentTickets = calculateCurrentTicketsForFlight(vuelo.id_vuelo);
 
     if (currentTickets >= 5) {
@@ -120,7 +122,7 @@ export default function ResultadosVuelos({
       .reduce((total, item) => total + item.quantity, 0);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async (vuelo) => {
     if (!selectedVuelo || !onAddToCart) {
       console.error(
         "Error: No hay vuelo seleccionado o onAddToCart no está definida"
@@ -151,10 +153,38 @@ export default function ResultadosVuelos({
         primeraClase: seatClass === "P",
       }));
 
+      try {
+        const userID = getUser().user_id;
+        const flightId = vuelo.id_vuelo
+        const response = await fetch(`${apiHost}/cart/add/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({
+            user_id: userID,
+            id_vuelo: flightId,
+            // quantity: quantity,
+            // equipaje: equipaje,
+            // seatClass: seatClass,
+          }),
+        });
+        if(!response.ok){
+          console.log(`${response.status} - ${response}`);
+          throw new Error("Error de red al agregar al carrito");
+        }
+  
+        const responseData = await response.json();
+        console.log("Tiquete agregado al carrito:", responseData);
+        itemsToAdd.forEach((item) => onAddToCart(item));
+        closeModal();
+        alert("¡Tiquetes agregados al carrito!");
+      } catch(error){
+        console.error("Error al agregar al carrito:", error);
+      }
       // Llamar a onAddToCart para cada entrada
-      itemsToAdd.forEach((item) => onAddToCart(item));
-      closeModal();
-      alert("¡Tiquetes agregados al carrito!");
+      
     } catch (error) {
       console.error("Error específico al agregar al carrito:", error);
     }
@@ -357,7 +387,8 @@ export default function ResultadosVuelos({
 
             <button
               onClick={
-                modalMode === "compra" ? handleAddToCart : handleAddToReserve
+                () => handleAddToCart(selectedVuelo)
+                // modalMode === "compra" ? handleAddToCart(selectedVuelo) : handleAddToReserve
               }
               disabled={
                 !selectedVuelo ||

@@ -11,6 +11,8 @@ export function CheckInPasajeros({
   tipoEquipaje,
   onCompleteRegistration,
 }) {
+  const apiHost = process.env.REACT_APP_API_HOST;
+  const jwtToken = localStorage.getItem("access");
   const [documentPattern, setDocumentPattern] = useState("");
   const [warningMessage, setWarningMessage] = useState("");
   const navigate = useNavigate();
@@ -107,12 +109,13 @@ export function CheckInPasajeros({
     };
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/cart/item/update/`, {
+      //checkin/identify/
+      const response = await fetch(`${apiHost}/cart/item/update/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           // Add any additional headers like authorization if needed
-          // 'Authorization': `Bearer ${yourAuthToken}`
+          Authorization: `Bearer ${jwtToken}`,
         },
         body: JSON.stringify(payload),
       });
