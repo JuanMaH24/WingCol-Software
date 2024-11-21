@@ -519,6 +519,7 @@ def add_to_cart(request):
         user = request.data['user_id']
         flight = Vuelos.objects.get(id_vuelo=request.data['id_vuelo'], activo=True)
         cart = CarritoCompras.objects.get(user_id=user, activo=True)
+        validate_cart_items_per_flight(cart, flight.id_vuelo)
         request.data['id_carrito'] = cart.id_carrito
         item = ItemSerializer(data=request.data)
         if item.is_valid():
