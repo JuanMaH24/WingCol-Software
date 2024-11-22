@@ -407,9 +407,9 @@ def create_ticket(request):
             ticket = ticket_serializer.save()
             ticket.create_code()
             ticket.save()
-            silla = Sillas.objects.get(id_silla=ticket.data.id_silla, activo=True)
-            vuelo = Vuelos.objects.get(id_vuelo=ticket.data.id_vuelo, activo=True)
-            send_verification_code(user, silla, vuelo, ticket.data.verificacion)
+            silla = Sillas.objects.get(id_silla=ticket.id_silla.id_silla, activo=True)
+            vuelo = Vuelos.objects.get(id_vuelo=silla.id_vuelo.id_vuelo, activo=True)
+            send_verification_code(user, silla, vuelo, ticket.data)
             seat.estado = request.data['estado']
             seat.save()
             return Response(ticket_serializer.data, status=status.HTTP_201_CREATED)

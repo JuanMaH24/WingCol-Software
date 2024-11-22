@@ -228,6 +228,10 @@ class Tiquete(models.Model):
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices)
 	verificacion = models.CharField(unique=True, max_length=50)
 	verificado = models.BooleanField(default=False)
+	# email_viajero = models.EmailField(
+	# 	verbose_name="direccion de correo electrónico",
+	# 	max_length=100
+	# )
 	activo = models.BooleanField(default=True)
 	precio = models.PositiveIntegerField()
 
@@ -292,6 +296,11 @@ class ItemCarrito(models.Model):
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices, blank=True, null=True)
 	precio_modificado = models.PositiveIntegerField(blank=True, null=True)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices, blank=True, null=True)
+	email = models.EmailField(
+		verbose_name="direccion de correo electrónico",
+		max_length=100, blank=True, 
+		null=True
+	)
 	activo = models.BooleanField(default=True)
 
 	def soft_delete(self):

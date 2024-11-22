@@ -28,14 +28,19 @@ def notify_admin_creation(instance, password):
     msg.attach_alternative(html_message, "text/html")
     msg.send()
 
-def send_verification_code(user, silla, vuelo, verification_code):
+def send_verification_code(user, silla, vuelo, ticket):
     context = {
         'current_user': user.user_id,
-        'email': user.email,
-        'codigo_reserva': verification_code,
-		'ciudad_origen_abreviado': vuelo.ciudad_origen, 
-		'ciudad_destino_abreviado': vuelo.ciudad_destino, 
+        'email': ticket.email,
+        'codigo_reserva': ticket.verificacion,
+		'ciudad_origen_abreviado': vuelo.ciudad_origen[:3], 
+		'ciudad_destino_abreviado': vuelo.ciudad_destino[:3], 
+		'ciudad_origen': vuelo.ciudad_origen, 
+		'ciudad_destino': vuelo.ciudad_destino, 
 		'duracion_vuelo': vuelo.duracion,
+		'hora_tiquete': vuelo.fecha_salida,
+		'clase_tiquete': ticket.clase,
+		'silla_tiquete': silla.id_silla,
     }
 
     html_message = render_to_string("verification-code.html", context)

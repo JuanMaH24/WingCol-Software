@@ -11,6 +11,7 @@ import { getUser } from "../services/jwt-decode";
 export function HomeCliente() {
   const currentUser = getUser();
   const jwtToken = localStorage.getItem("access");
+  
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
     async function fetchShoppingCart() {

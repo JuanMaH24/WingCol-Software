@@ -71,7 +71,7 @@ export function CheckInPasajeros() {
           contactPhoneNumber: itemData.telefono_contacto || "",
           contactName: itemData.nombre_contacto || "",
           gender: itemData.genero_viajero || "",
-          email: "",
+          email: itemData.email || "",
           birthDate: itemData.fecha_nacimiento_viajero || "",
           documentType: itemData.tipo_documento_viajero || "",
           documentNumber: itemData.id_viajero || "",
@@ -150,6 +150,7 @@ export function CheckInPasajeros() {
       nombre_contacto: formData.contactName,
       telefono_contacto: formData.contactPhoneNumber.replace(/\D/g, ""), // Remove non-digit characters
       clase: formData.seatClass,
+      email: formData.email,
       tipo_equipaje: formData.typeEquipement,
     };
 
