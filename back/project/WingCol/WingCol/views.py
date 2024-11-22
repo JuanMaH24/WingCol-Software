@@ -430,8 +430,13 @@ def get_ticket(request):
     try:
         ticket_id = request.query_params.get('id_tiquete')
         ticket = Tiquete.objects.get(id_tiquete=ticket_id, activo=True)
+        flight_id = ticket.id_silla.id_vuelo.id_vuelo
+        flight = Vuelos.objects.get(id_vuelo=flight_id)
         ticket_serializer = TicketSerializer(ticket)
-        return Response(ticket_serializer.data, status=status.HTTP_200_OK)
+        combined_data = ticket_serializer.data.copy()
+        flight_serializer = FlightSerializer(flight)
+        combined_data.update(flight_serializer.data)
+        return Response(combined_data, status=status.HTTP_200_OK)
     except Tiquete.DoesNotExist:
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -698,7 +703,7 @@ def update_seat(request):
 @permission_classes([IsAuthenticated])
 def get_seats_by_flight_id(request):
     try:
-        flight_id = request.query_params_get['id_vuelo']
+        flight_id = request.query_params.get('id_vuelo')
         seats = Sillas.objects.filter(id_vuelo__id_vuelo=flight_id, activo=True)
         seats_serializer = SeatSerializer(seats, many=True)
         return Response(seats_serializer.data, status=status.HTTP_200_OK)

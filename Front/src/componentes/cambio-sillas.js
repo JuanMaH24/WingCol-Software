@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { useLoader } from "@react-three/fiber";
@@ -9,7 +10,14 @@ import { MapControls, Text } from "@react-three/drei";
 
 export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobalSeats}) {
   const [seats, setSeats] = useState([]);
+  const location = useLocation();
+  // const id_vuelo = location.state?.id_vuelo
+  // const selectedSeat = location.state?.selectedSeat
+  // const setSelectedSeat = location.state?.setSelectedSeat
+  // const setGlobalSeats = location.state?.setGlobalSeats
   const apiHost = process.env.REACT_APP_API_HOST;
+  const jwtToken = localStorage.getItem("access");
+  // console.log(id_vuelo, selectedSeat, setSelectedSeat, setGlobalSeats);
   // const currentUser = getUser();
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
@@ -17,7 +25,11 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
       try {
         const param = new URLSearchParams({id_vuelo: id_vuelo});
         const response = await fetch(
-          `${apiHost}/checkin/seat/get/?${param.toString()}`,
+          `${apiHost}/checkin/seat/get/?${param.toString()}`,{
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
         );
         const allSeats = await response.json();
         if (Array.isArray(allSeats)){
@@ -29,7 +41,7 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
       }
     }  
     fetchSeats();
-  }, []);
+  }, [id_vuelo, setGlobalSeats]);
 
   const colors = {
     "L":"#00d221",

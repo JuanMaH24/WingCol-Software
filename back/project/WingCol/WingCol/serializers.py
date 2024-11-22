@@ -116,9 +116,9 @@ class TicketSerializer(serializers.ModelSerializer):
                         'id_viajero', 'apellido_viajero', 'segundo_apellido_viajero', 
                         'tipo_documento_viajero', 'fecha_nacimiento_viajero', 'genero_viajero', 
                         'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 
-                        'clase', 'tipo_equipaje', 'precio', 'verificacion', 'verificado'
+                        'clase', 'tipo_equipaje', 'precio', 'verificacion', 'verificado', 'id_tiquete'
                     ]
-        extra_kwargs = {'verificacion': {'read_only': True}, 'verificado': {'read_only': True}, 'activo': {'required': False}}
+        extra_kwargs = {'id_tiquete': {'read_only': True}, 'verificacion': {'read_only': True}, 'activo': {'required': False}}
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:

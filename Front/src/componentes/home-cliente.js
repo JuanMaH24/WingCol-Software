@@ -27,33 +27,33 @@ export function HomeCliente() {
         const shoppingcartData = await response.json();
         console.log(shoppingcartData);
 
-  //       if (!response.ok) {
-  //         console.log("Carrito de compras no encontrado, creando uno nuevo.");
-  //         const createCartResponse = await fetch(
-  //           `${process.env.REACT_APP_API_HOST}/cart/create/`,
-  //           {
-  //             method: "POST",
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //               Authorization: `Bearer ${jwtToken}`, // Asegúrate también de envolver esta parte correctamente.
-  //             },
-  //             body: JSON.stringify({ user_id: currentUser.user_id }),
-  //           }
-  //         );
+        if (!response.ok) {
+          console.log("Carrito de compras no encontrado, creando uno nuevo.");
+          const createCartResponse = await fetch(
+            `${process.env.REACT_APP_API_HOST}/cart/create/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwtToken}`, // Asegúrate también de envolver esta parte correctamente.
+              },
+              body: JSON.stringify({ user_id: currentUser.user_id }),
+            }
+          );
 
-  //         if (!createCartResponse.ok) {
-  //           throw new Error("Error al crear un nuevo carrito de compras");
-  //         }
+          if (!createCartResponse.ok) {
+            throw new Error("Error al crear un nuevo carrito de compras");
+          }
 
-  //         const newShoppingCartData = await createCartResponse.json();
-  //         console.log("Nuevo carrito de compra creado:", newShoppingCartData);
-  //         return newShoppingCartData;
-  //       }
-  //     } catch (error) {
-  //       console.error("Error al cargar el carrito de compras", error);
-  //       throw error;
-  //     }
-  //   }
+          const newShoppingCartData = await createCartResponse.json();
+          console.log("Nuevo carrito de compra creado:", newShoppingCartData);
+          return newShoppingCartData;
+        }
+      } catch (error) {
+        console.error("Error al cargar el carrito de compras", error);
+        throw error;
+      }
+    }
 
     fetchShoppingCart();
   }, []);

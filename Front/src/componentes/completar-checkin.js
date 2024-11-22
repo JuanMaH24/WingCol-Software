@@ -3,15 +3,18 @@
 // import Internacionales from "./asientos-internacionales";
 import React, { useState, useEffect } from "react";
 import { getUser } from "../services/jwt-decode";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CambioSillas } from "./cambio-sillas";
 import "../hojas-de-estilo/completar-checkin.css"
 
-export function CompletarCheckin( {id_tiquete} ) {
+export function CompletarCheckin() {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [changeSeat, setChangeSeat] = useState(false);
   const [globalSeats, setGlobalSeats] = useState([]);
   const [previousSeat, setPreviousSeat] = useState("");
   const currentUser = getUser();
+  const location = useLocation();
+  const id_tiquete = location.state?.id_tiquete
   const apiHost = process.env.REACT_APP_API_HOST;
   const jwtToken = localStorage.getItem("access");
 
@@ -48,7 +51,6 @@ export function CompletarCheckin( {id_tiquete} ) {
           }
         ); // Reemplaza con la URL real de la API
         const itemData = await response.json();
-        // console.log(data);
         setFormData({
           primerNombre: itemData.nombre_viajero || "",
           segundoNombre: itemData.segundo_nombre_viajero || "",
@@ -112,16 +114,16 @@ export function CompletarCheckin( {id_tiquete} ) {
       telefono_contacto: formData.contactPhoneNumber, // Remove non-digit characters
       clase: selectedSeat.clase,
       tipo_equipaje: formData.typeEquipement,
-      verificacion: true
+      // verificacion: true
     };
 
     try {
+      console.log(dataToSend)
       const response = await fetch(`${apiHost}/ticket/update/`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${jwtToken}`,
-        },
-        body: dataToSend,
+        },body: dataToSend
       });
 
       if (!response.ok) {
@@ -187,7 +189,7 @@ export function CompletarCheckin( {id_tiquete} ) {
         selectedSeat={selectedSeat} 
         setSelectedSeat={setSelectedSeat}
         setGlobalSeats={setGlobalSeats} 
-        vuelo_id={formData.flightId} 
+        id_vuelo={formData.flightId} 
       />
       <div className="seleccion-equipaje">
         <select

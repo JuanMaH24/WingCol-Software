@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../hojas-de-estilo/check-in-ingreso.css";
-import CompletarCheckIn from "./CompletarCheckIn"; // Importa el componente donde se usará id_tiquete
+import CompletarCheckin from "./completar-checkin"; // Importa el componente donde se usará id_tiquete
 
 export function CheckInIngreso() {
+  const apiHost = process.env.REACT_APP_API_HOST;
   const [codigoReserva, setCodigoReserva] = useState("");
+  const jwtToken = localStorage.getItem("access");
   const [idTiquete, setIdTiquete] = useState(null);
   const navigate = useNavigate();
 
@@ -17,13 +19,15 @@ export function CheckInIngreso() {
 
     try {
       // Realiza el fetch al backend
-      const response = await fetch("checkin/fast/", {
+      console.log(codigoReserva)
+      const response = await fetch(`${apiHost}/checkin/fast/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
         },
         body: JSON.stringify({
-          codigo_reserva: codigoReserva, // Enviar el código de reserva
+          verificacion: codigoReserva, // Enviar el código de reserva
         }),
       });
 
@@ -32,13 +36,12 @@ export function CheckInIngreso() {
       }
 
       const data = await response.json();
-
       // Extrae el id_tiquete del JSON de respuesta
-      const { id_tiquete } = data;
-
+      const id_tiquete = data.id_tiquete;
       if (id_tiquete) {
         setIdTiquete(id_tiquete); // Guarda el id_tiquete en el estado
-        navigate("/completar-check-in", { state: { idTiquete: id_tiquete } }); // Navega al componente con el prop
+        console.log(id_tiquete)
+        navigate("/completar-checkin", { state: { id_tiquete: id_tiquete } }); // Navega al componente con el prop
       } else {
         alert("No se encontró el id_tiquete en la respuesta");
       }
@@ -59,12 +62,12 @@ export function CheckInIngreso() {
             value={codigoReserva}
             onChange={(e) => setCodigoReserva(e.target.value)}
             required
-            pattern="^[A-Z]{3}\d{3}$"
+            pattern="^[a-zA-Z]{3}\d{3}$"
             title="El código de reserva debe tener 3 letras mayúsculas seguidas de 3 dígitos"
             maxLength={6}
           />
         </div>
-        <p>O ingresa con:</p>
+        {/* <p>O ingresa con:</p>
         <div className="documento-check-in">
           <input
             type="text"
@@ -72,7 +75,7 @@ export function CheckInIngreso() {
             required
             maxLength={13}
           />
-        </div>
+        </div> */}
 
         <div className="botones-ingreso-check-in">
           <button
