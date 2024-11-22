@@ -1,0 +1,91 @@
+/* TableStyles.css */
+
+.table-container {
+  margin: 2rem auto;
+  max-width: 1200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Estilos para el encabezado de la tabla */
+.MuiTableHead-root {
+  background-color: #f8f9fa;
+}
+
+.MuiTableHead-root .MuiTableCell-root {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #2c3e50;
+  padding: 16px;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Estilos para las celdas del cuerpo */
+.MuiTableBody-root .MuiTableCell-root {
+  padding: 16px;
+  color: #495057;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Estilos para las filas */
+.MuiTableRow-root:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+/* Estilos para los botones */
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+  padding: 8px 12px;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* Estilos para el número de tarjeta */
+.MuiTableCell-root:nth-child(2) {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+/* Estilos para el saldo */
+.MuiTableCell-root:nth-child(3) {
+  font-weight: 600;
+  color: #27ae60;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+  .MuiTable-root {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .MuiTableCell-root {
+    white-space: nowrap;
+  }
+}

@@ -74,8 +74,6 @@ export function HomeCliente() {
       <Buscador />
       <div className="cards-home">
         <ImgMediaCard />
-        <ImgMediaCard />
-        <ImgMediaCard />
       </div>
       <div className="tarjeta-check-in">
         <CheckInBanner />

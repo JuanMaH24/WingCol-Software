@@ -249,7 +249,7 @@ export function Buscador() {
           className="input-vuelo"
           style={{ paddingBottom: "10px", width: "30px" }}
         >
-          <h3 style={{ color: "black" }}>Hora de salida</h3>
+          <h3 style={{ color: "black", fontWeight: "bold" }}>Hora de salida</h3>
           <input type="time" name="horaSalida" />
         </div>
       </div>

@@ -1,0 +1,107 @@
+/* MenuStyles.css */
+
+.menu-desplegable {
+  position: relative;
+}
+
+/* Estilo para el botón principal */
+#basic-button {
+  color: #2c3e50;
+  text-transform: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+#basic-button:hover {
+  background-color: rgba(44, 62, 80, 0.1);
+}
+
+/* Estilo para el icono de usuario */
+#basic-button svg {
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.perfil {
+  margin-left: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Estilos para el menú desplegable */
+.MuiMenu-paper {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  margin-top: 8px !important;
+  min-width: 200px !important;
+}
+
+/* Estilos para los items del menú */
+.MuiMenuItem-root {
+  font-size: 0.95rem !important;
+  padding: 10px 20px !important;
+  color: #2c3e50 !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.MuiMenuItem-root:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Estilo especial para el último item (Cerrar sesión) */
+.MuiMenuItem-root:last-child {
+  color: #e53e3e !important;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 8px;
+}
+
+.MuiMenuItem-root:last-child:hover {
+  background-color: #fff5f5 !important;
+}
+
+/* Estilos para los iconos dentro de los items del menú (si decides agregarlos) */
+.MuiMenuItem-root svg {
+  margin-right: 12px;
+  font-size: 1.1rem;
+  color: #64748b;
+}
+
+/* Estilo para el estado de carga */
+.menu-desplegable div:first-child {
+  padding: 8px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Estilo para mensajes de error */
+.menu-desplegable div[role="alert"] {
+  color: #e53e3e;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Animación suave para el menú */
+.MuiMenu-paper {
+  transform-origin: top right !important;
+  transition: transform 0.2s ease, opacity 0.2s ease !important;
+}
+
+/* Estilos para diferentes opciones según el rol */
+/* Para el rol de usuario normal (role === 1) */
+[data-role="1"] .MuiMenuItem-root {
+  color: #2c3e50 !important;
+}
+
+/* Para el rol de administrador (role === 2) */
+[data-role="2"] .MuiMenuItem-root {
+  color: #1a365d !important;
+}
+
+/* Para el super admin (role === 3) */
+[data-role="3"] .MuiMenuItem-root {
+  color: #1a365d !important;
+}

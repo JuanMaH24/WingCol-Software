@@ -130,7 +130,7 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
       // You might want to call a backend endpoint to remove the item
       const itemToRemove = items[index];
       const response = await fetch(`http://127.0.0.1:8000/cart/item/delete/`, {
-        method: "DELETE",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },

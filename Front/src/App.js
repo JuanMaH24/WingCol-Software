@@ -37,6 +37,7 @@ import { Reservas } from "./componentes/reservas";
 import  { CambioSillas } from "./componentes/cambio-sillas";
 import { RegistroPasajeros } from "./componentes/registro-pasajeros";
 import { CompletarCheckin } from "./componentes/completar-checkin";
+import { TicketDisplay } from "./componentes/display-tiquete";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -314,6 +315,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={[1]}>
                 <ListaTarjetas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lista-tiquetes"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <TicketDisplay />
               </ProtectedRoute>
             }
           />
