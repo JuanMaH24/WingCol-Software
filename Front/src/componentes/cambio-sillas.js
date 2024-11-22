@@ -7,37 +7,48 @@ import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { useLoader } from "@react-three/fiber";
 import { MapControls, Text } from "@react-three/drei";
 
-export function CambioSillas() {
-  const chairs = [];
-  const randomChoice = (array) => array[Math.floor(Math.random() * array.length)];
-  for (let i = 1; i <= 250; i++) {
-    const record = {
-        id_silla: i,
-        id_vuelo: Math.floor(Math.random() * 100) + 101,
-        ubicacion: i,
-        clase: randomChoice(["E", "P"]),
-        estado: randomChoice(["L", "R", "O"]),
-    };
-    chairs.push(record);
-  }
+export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobalSeats}) {
+  const [seats, setSeats] = useState([]);
+  const apiHost = process.env.REACT_APP_API_HOST;
+  // const currentUser = getUser();
+  useEffect(() => {
+    // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
+    async function fetchSeats() {
+      try {
+        const param = new URLSearchParams({id_vuelo: id_vuelo});
+        const response = await fetch(
+          `${apiHost}/checkin/seat/get/?${param.toString()}`,
+        );
+        const allSeats = await response.json();
+        if (Array.isArray(allSeats)){
+          setSeats(allSeats);
+          setGlobalSeats(allSeats);
+        }
+      } catch (error) {
+        console.error("Error al cargar las sillas", error);
+      }
+    }  
+    fetchSeats();
+  }, []);
+
   const colors = {
     "L":"#00d221",
     "O":"red",
     "R":"yellow"
   }
-  const [selectedSeat, setSelectedSeat] = useState(null);
+  // const [selectedSeat, setSelectedSeat] = useState(null);
   const [animationComplete, setAnimationComplete] = useState(false);
 
   const toggleAsiento = useCallback((asientoId) => {
     setSelectedSeat(prevSelected => prevSelected === asientoId ? null : asientoId);
   }, []);
 
-  function Box({ position, size, color, ubication }) {
+  function Box({ position, size, color, ubication, seat, state }) {
     const objRef = useRef()
-    const isSelected = selectedSeat === ubication;
+    const isSelected = selectedSeat === seat;
   
     const handleClick = () => {
-      toggleAsiento(ubication);
+      toggleAsiento(seat);
       if(!isSelected){
         objRef.current.scale.z += 2;
       }else{
@@ -56,7 +67,7 @@ export function CambioSillas() {
     });
   
     return (
-      <group name={ubication} ref={objRef} position={[position[0], animationComplete ? position[1] : position[1]+11, position[2]]} onClick={handleClick}>
+      <group name={ubication} ref={objRef} position={[position[0], animationComplete ? position[1] : position[1]+11, position[2]]} onClick={state ? handleClick : null}>
         <mesh>
           <boxGeometry args={size} />
           <meshStandardMaterial 
@@ -97,19 +108,19 @@ export function CambioSillas() {
         if (objRef.current.position.z < 2) {
           objRef.current.position.z += 0.05;
         }
-        if (objRef.current.position.x < -3) {
+        if (objRef.current.position.x < -4) {
           objRef.current.position.x += 0.05;
         }
       }
     });
-    return <primitive ref={objRef} object={obj} position={animationComplete ? [-3, 0, 2] : [-5, 0, -8]} scale={0.4} />;
+    return <primitive ref={objRef} object={obj} position={animationComplete ? [-4, 0, 2] : [-6, 0, -8]} scale={0.4} />;
   };
 
   return (
-    <div className="App">
+    <div className="CambioSillas">
       <Canvas>
         <Suspense fallback={null}>
-          {chairs.map((item, index) => {
+          {seats.map((item, index) => {
             let groupIndex = Math.floor(index / 6);
             let positionY = 0.5 - (index % 6) * 0.16;
             let positionX = 0.5 - groupIndex * 0.15;
@@ -126,6 +137,8 @@ export function CambioSillas() {
                 position={[positionX, positionY, 3.8]}
                 color={colors[item.estado]}
                 ubication={rowLabel+colLabel}
+                state={item.estado=="L"}
+                seat={item}
               />
             );
           })}

@@ -29,13 +29,14 @@ import { BasicTableTarjetas } from "./componentes/tabla-tarjetas";
 import { ListaTarjetas } from "./componentes/lista-tarjetas";
 import { CheckInIngreso } from "./componentes/check-in-ingreso";
 import { CheckInPasajeros } from "./componentes/check-in-pasajeros";
-import { SeleccionarAsientos } from "./componentes/seleccionar-asientos";
+// import  CompletarCheckin  from "./componentes/completar-checkin";
 import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
 import CarritoCompras from "./componentes/carrito_compras";
 import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
 import { Reservas } from "./componentes/reservas";
 import  { CambioSillas } from "./componentes/cambio-sillas";
 import { RegistroPasajeros } from "./componentes/registro-pasajeros";
+import { CompletarCheckin } from "./componentes/completar-checkin";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -207,10 +208,9 @@ export default function App() {
           <Route path="/check-in" element={<CheckInIngreso />} />
           <Route path="/check-in-pasajeros" element={<CheckInPasajeros />} />
           <Route
-            path="/seleccionar-asientos"
-            element={<SeleccionarAsientos />}
+            path="/completar-checkin"
+            element={<CompletarCheckin />}
           />
-          <Route path="/seleccionar-equipaje" element={<SeleccionEquipaje />} />
 
           {/* Rutas protegidas */}
           <Route
