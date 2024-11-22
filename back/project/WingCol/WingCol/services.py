@@ -12,17 +12,40 @@ def notify_admin_creation(instance, password):
     context = {
         'current_user': instance.user_id,
         'email': instance.email,
-        'token': password
+        'admin_password': password
     }
 
-    html_message = render_to_string("pruebaplantilla.html", context)
+    html_message = render_to_string("admin-pass-template.html", context)
     email_plaintext_message = strip_tags(html_message)
 
     msg = EmailMultiAlternatives(
-        "Creación de cuenta - {title}".format(title="WingCol"),
+        "Creación de cuenta Admin - {title}".format(title="WingCol"),
         email_plaintext_message,
         "wingcolairlines@gmail.com",
         [instance.email]
+    )
+
+    msg.attach_alternative(html_message, "text/html")
+    msg.send()
+
+def send_verification_code(user, silla, vuelo, verification_code):
+    context = {
+        'current_user': user.user_id,
+        'email': user.email,
+        'codigo_reserva': verification_code,
+		'ciudad_origen_abreviado': vuelo.ciudad_origen, 
+		'ciudad_destino_abreviado': vuelo.ciudad_destino, 
+		'duracion_vuelo': vuelo.duracion,
+    }
+
+    html_message = render_to_string("verification-code.html", context)
+    email_plaintext_message = strip_tags(html_message)
+
+    msg = EmailMultiAlternatives(
+        "Código de reserva tiquete - {title}".format(title="WingCol"),
+        email_plaintext_message,
+        "wingcolairlines@gmail.com",
+        [user.email]
     )
 
     msg.attach_alternative(html_message, "text/html")
