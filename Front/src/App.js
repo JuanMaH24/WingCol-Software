@@ -34,6 +34,7 @@ import { SeleccionEquipaje } from "./componentes/seleccion-equipaje";
 import CarritoCompras from "./componentes/carrito_compras";
 import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
 import { Reservas } from "./componentes/reservas";
+import  { CambioSillas } from "./componentes/cambio-sillas";
 import { RegistroPasajeros } from "./componentes/registro-pasajeros";
 import { TicketDisplay } from "./componentes/display-tiquete";
 
@@ -164,6 +165,12 @@ export default function App() {
               <PublicRoute>
                 <HomeVisitante />
               </PublicRoute>
+            }
+          />
+          <Route
+            path="/cambio-silla"
+            element={
+              <CambioSillas />
             }
           />
           <Route
