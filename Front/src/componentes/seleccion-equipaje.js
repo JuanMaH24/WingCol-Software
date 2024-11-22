@@ -24,7 +24,7 @@ const StyledCard = styled(Card)(({ theme, selected }) => ({
   }),
 }));
 
-export function SeleccionEquipaje() {
+export function SeleccionEquipaje({}) {
   const [selectedLuggage, setSelectedLuggage] = useState(null);
   const navigate = useNavigate();
 

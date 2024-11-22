@@ -6,9 +6,12 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^6.1.1",
+    "@react-three/drei": "^9.117.3",
+    "@react-three/fiber": "^8.17.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/three": "^0.170.0",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "country": "^0.2.0",
@@ -26,6 +29,7 @@
     "react-seatmap": "^0.1.2",
     "react-select": "^5.8.1",
     "sass": "^1.80.4",
+    "three": "^0.170.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

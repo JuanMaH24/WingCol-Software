@@ -1,0 +1,64 @@
+.cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+}
+
+.travel-card {
+  width: 345px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.travel-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.card-image {
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.travel-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+.card-content {
+  padding: 1.5rem !important;
+}
+
+.card-title {
+  color: #1a237e;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+}
+
+.card-description {
+  color: #546e7a !important;
+  line-height: 1.6 !important;
+  margin-bottom: 1rem;
+}
+
+.card-actions {
+  padding: 0.5rem 1rem 1rem !important;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.card-button {
+  text-transform: none !important;
+  font-weight: 500 !important;
+  color: #1976d2 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.card-button:hover {
+  background-color: rgba(25, 118, 210, 0.1) !important;
+}

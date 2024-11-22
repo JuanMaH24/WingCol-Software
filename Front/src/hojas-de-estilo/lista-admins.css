@@ -1,0 +1,97 @@
+/* AdminTableStyles.css */
+
+.table-container {
+  margin: 2rem auto;
+  max-width: 900px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+/* Estilos para el encabezado de la tabla */
+.MuiTableHead-root {
+  background-color: #2c3e50;
+}
+
+.MuiTableHead-root .MuiTableCell-root {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  padding: 16px;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #34495e;
+}
+
+/* Estilos para las celdas del cuerpo */
+.MuiTableBody-root .MuiTableCell-root {
+  padding: 14px 16px;
+  color: #2c3e50;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #edf2f7;
+}
+
+/* Estilos para las filas */
+.MuiTableRow-root:hover {
+  background-color: #f8fafc;
+  transition: background-color 0.2s ease;
+}
+
+/* Estilo para el ID */
+.MuiTableCell-root:first-child {
+  font-family: monospace;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Estilo para el correo */
+.MuiTableCell-root:nth-child(2) {
+  color: #1e40af;
+  font-weight: 500;
+}
+
+/* Estilos para el botón de eliminar */
+.btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
+
+/* Estilo para las filas vacías */
+div:empty {
+  display: none;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+  .MuiTable-root {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .MuiTableCell-root {
+    white-space: nowrap;
+    padding: 12px;
+  }
+
+  .table-container {
+    margin: 1rem;
+    max-width: 100%;
+  }
+}
