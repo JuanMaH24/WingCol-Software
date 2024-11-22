@@ -10,15 +10,63 @@ export function PasarelaDePagos() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [items, setItems] = useState([]);
   const total = location.state?.total || 0;
   const ticketId = location.state?.ticketId;
-  const cartItems = location.state?.cartItems || [];
 
   // Movemos estas variables fuera del cuerpo del componente
   const apiHost = process.env.REACT_APP_API_HOST;
   const jwtToken = localStorage.getItem("access");
   const currentUser = getUser();
 
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `${apiHost}/cart/?user_id=${currentUser.user_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwtToken}`,
+  
+            },
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+  
+        const data = await response.json();
+        console.log(data);
+        const processedItems = data.map((item) => ({
+          ...item,
+          registrado: item.id_viajero !== null, // Check if traveler ID is not null
+          referencia: item.referencia || `Vuelo ${item.id_vuelo}`, // Fallback reference
+          precioUnitario: item.precio_modificado,
+          precioTotal: item.precio_total,
+          ciudad_origen: item.ciudad_origen,
+          ciudad_destino: item.ciudad_destino,
+          fecha_salida: item.fecha_salida,
+          equipajeBodega: item.tipo_equipaje === "M", // Assuming 'M' means bodega
+          seatClass: item.clase,
+          quantity: 1, // Assuming single ticket per item
+        }));
+        console.log(processedItems);
+        setItems(processedItems);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+        setError(error.message);
+        setIsLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  
   // Memoizamos la función fetchCards
   const fetchCards = useCallback(async () => {
     if (!currentUser?.user_id) return;
@@ -69,7 +117,7 @@ export function PasarelaDePagos() {
 
   // Memoizamos la función handlePayment
   const handlePayment = useCallback(async () => {
-    if (!selectedCard || cartItems.length === 0) {
+    if (!selectedCard || items.length === 0) {
       setError(
         "No hay items en el carrito o no se ha seleccionado una tarjeta"
       );
@@ -80,7 +128,7 @@ export function PasarelaDePagos() {
     setError(null);
 
     try {
-      const response = await fetch(`${apiHost}/cart/pay/`, {
+      const paymentResponse = await fetch(`${apiHost}/cart/pay/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,33 +137,30 @@ export function PasarelaDePagos() {
         body: JSON.stringify({
           user_id: currentUser.user_id,
           id_tarjeta: selectedCard,
-          total: total,
+          precio: parseInt(total),
         }),
       });
 
       if (!paymentResponse.ok) {
-        throw new Error("Error en el pago");
+        const errorData = await paymentResponse.json();
+        console.log("Error realizando el pago:", errorData);
+        throw new Error(errorData.message || "Error realizando el pago");
       }
-
       // 2. Crear tiquetes para cada item del carrito
       const createdTickets = [];
-      for (const item of cartItems) {
+      for (const item of items) {
         const ticket = await createTicket(item);
         createdTickets.push(ticket);
       }
 
       // 3. Verificar que todos los tiquetes se crearon correctamente
-      if (createdTickets.length !== cartItems.length) {
+      if (createdTickets.length !== items.length) {
         throw new Error("No se pudieron crear todos los tiquetes");
       }
 
       alert("Pago procesado y tiquetes creados con éxito");
-      navigate("/confirmacion", {
-        state: {
-          tickets: createdTickets,
-          total: total,
-        },
-      });
+      const confirmResponse = await confirmPayment();
+      navigate("/home-cliente");
     } catch (error) {
       console.error("Error en el proceso:", error);
       setError(
@@ -127,7 +172,7 @@ export function PasarelaDePagos() {
     }
   }, [
     selectedCard,
-    cartItems,
+    items,
     total,
     currentUser?.user_id,
     jwtToken,
@@ -138,7 +183,7 @@ export function PasarelaDePagos() {
     try {
       console.log("Creando ticket para:", cartItem); // Para debugging
 
-      const response = await fetch("http://127.0.0.1:8000/ticket/create/", {
+      const response = await fetch(`${apiHost}/ticket/create/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,15 +203,17 @@ export function PasarelaDePagos() {
           genero_viajero: cartItem.genero_viajero,
           nombre_contacto: cartItem.nombre_contacto,
           telefono_contacto: cartItem.telefono_contacto,
-          precio: cartItem.precioTotal,
+          // precio: cartItem.precioTotal,
           clase: cartItem.clase,
           tipo_equipaje: cartItem.tipo_equipaje,
           estado: "R",
+          precio: cartItem.precioUnitario,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log("Error creating ticket:", errorData);
         throw new Error(errorData.message || "Error al crear el tiquete");
       }
 
@@ -177,6 +224,31 @@ export function PasarelaDePagos() {
       throw error;
     }
   };
+
+  const confirmPayment = async () => {
+    try {
+      const response = await fetch(`${apiHost}/cart/pay/confirm/`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: JSON.stringify({
+          user_id: currentUser.user_id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error finalizando el pago");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error finalizando el pago:", error);
+      throw error;
+    }
+  }
 
   return (
     <div className="pasarela-container">
@@ -208,9 +280,9 @@ export function PasarelaDePagos() {
       <button
         onClick={handlePayment}
         className="pagar-button"
-        disabled={isLoading || selectedCard === null || cartItems.length === 0}
+        disabled={selectedCard === null || items.length === 0}
       >
-        {isLoading ? "Procesando..." : "Pagar"}
+        Pagar
       </button>
       <button onClick={() => navigate("/carrito")} className="volver-button">
         Volver al Carrito

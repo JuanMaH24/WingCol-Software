@@ -483,8 +483,6 @@ def fast_verification(request):
     try:
         verification_code = request.data['verificacion']
         ticket = Tiquete.objects.get(verificacion=verification_code, activo=True)
-        ticket.verificado = True
-        ticket.save()
         ticket_serializer = TicketSerializer(ticket)
         return Response(ticket_serializer.data, status=status.HTTP_200_OK)
     except Tiquete.DoesNotExist:
@@ -497,8 +495,6 @@ def identify_verification(request):
     try:
         passenger_id = request.data['id_viajero']
         ticket = Tiquete.objects.get(id_viajero=passenger_id, activo=True)
-        ticket.verificado = True
-        ticket.save()
         ticket_serializer = TicketSerializer(ticket)
         return Response(ticket_serializer.data, status=status.HTTP_200_OK)
     except Tiquete.DoesNotExist:
@@ -542,6 +538,18 @@ def create_cart(request):
         return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as error:
         return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])    
+def get_item(request):
+    try:
+        item_id = request.query_params.get('id_item')
+        item = ItemCarrito.objects.get(id=item_id, activo=True)
+        item_serializer = ItemSerializer(item)
+        return Response(item_serializer.data, status=status.HTTP_200_OK)
+    except ItemCarrito.DoesNotExist:
+        return Response({"error": "Item no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 @authentication_classes([ClientAuthentication])
@@ -629,11 +637,10 @@ def delete_cart(request):
 def make_payment(request):
     try:
         user_id = request.data['user_id']
+        price = request.data['precio']
         card = Tarjetas.objects.get(id_tarjeta=request.data['id_tarjeta'], activo=True)  
         cart = CarritoCompras.objects.get(user_id=user_id, activo=True)
         items = ItemCarrito.objects.filter(id_carrito=cart.id_carrito, activo=True)
-        flights = Vuelos.objects.filter(id_vuelo__in=[item.id_vuelo.id_vuelo for item in items], activo=True)
-        price = sum([item.id_vuelo.precio for item in items])
         validate_card(card.saldo, price, card.fecha_expiracion)
         card.saldo -= price
         card.save() 
@@ -645,6 +652,7 @@ def make_payment(request):
     except Tarjetas.DoesNotExist:
         return Response({"error": "Tarjeta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as error:
+        print(str(error))
         return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
@@ -669,8 +677,8 @@ def confirm_payment(request):
         return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-# @authentication_classes([ClientAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
 def update_seat(request):
     try:    
         seat_id = request.data['id_silla']
@@ -679,6 +687,18 @@ def update_seat(request):
         seat.estado = state
         seat.save
         return Response({"message": "Silla actualizada correctamente."}, status=status.HTTP_200_OK)
+    except Sillas.DoesNotExist:
+        return Response({"error": "Silla no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@authentication_classes([ClientAuthentication])
+@permission_classes([IsAuthenticated])
+def get_seats_by_flight_id(request):
+    try:
+        flight_id = request.query_params_get['id_vuelo']
+        seats = Sillas.objects.filter(id_vuelo__id_vuelo=flight_id, activo=True)
+        seats_serializer = SeatSerializer(seats, many=True)
+        return Response(seats_serializer.data, status=status.HTTP_200_OK)
     except Sillas.DoesNotExist:
         return Response({"error": "Silla no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 

@@ -112,7 +112,7 @@ export default function ResultadosVuelos({
     if (seatClass === "P") {
       basePrice *= 1.3;
     }
-    return basePrice.toFixed(2);
+    return basePrice;
   };
 
   const calculateCurrentTicketsForFlight = (flightId) => {
@@ -166,8 +166,9 @@ export default function ResultadosVuelos({
             user_id: userID,
             id_vuelo: flightId,
             // quantity: quantity,
-            // equipaje: equipaje,
-            // seatClass: seatClass,
+            tipo_equipaje: equipaje,
+            clase: seatClass,
+            precio_modificado: calculateTotalPrice(),
           }),
         });
         if(!response.ok){
@@ -352,7 +353,7 @@ export default function ResultadosVuelos({
                 onChange={(e) => setEquipaje(e.target.value)}
               >
                 <option value="0">Elegir equipaje</option>
-                <option value="C">Solo equipaje de cabina</option>
+                <option value="M">Solo equipaje de cabina</option>
                 <option value="B">Añadir equipaje de bodega</option>
               </select>
             </div>

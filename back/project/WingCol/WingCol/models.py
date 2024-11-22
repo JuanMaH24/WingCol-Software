@@ -290,6 +290,7 @@ class ItemCarrito(models.Model):
 	nombre_contacto =  models.CharField(max_length=50, blank=True, null=True)
 	telefono_contacto = models.CharField(max_length=20, blank=True, null=True)
 	clase = models.CharField(max_length=20, choices=ClaseVuelo.choices, blank=True, null=True)
+	precio_modificado = models.PositiveIntegerField(blank=True, null=True)
 	tipo_equipaje = models.CharField(max_length=20, choices=TipoEquipaje.choices, blank=True, null=True)
 	activo = models.BooleanField(default=True)
 

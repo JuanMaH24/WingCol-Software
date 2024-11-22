@@ -51,6 +51,7 @@ urlpatterns = [
 	path('ticket/user/', get_ticket_by_user),
 	path('checkin/fast/', fast_verification),
 	path('checkin/identify/', identify_verification),
+	path('checkin/seat/get/', get_seats_by_flight_id),
 	path('checkin/seat/', update_seat),
 	path('cart/create/', create_cart),
     path('cart/delete/', delete_cart),
@@ -60,5 +61,6 @@ urlpatterns = [
 	path('cart/pay/', make_payment),
 	path('cart/pay/confirm/', confirm_payment),
 	path('cart/', get_cart),
+    path('cart/item/', get_item),
     path('password_reset/', include('django_rest_passwordreset.urls')),
 ]

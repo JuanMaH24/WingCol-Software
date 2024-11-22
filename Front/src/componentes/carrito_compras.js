@@ -63,10 +63,21 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
     }
   };
 
+  const calculateTotalPrice = (item) => {
+    // if (!selectedVuelo) return 0;
+    let basePrice = item.precio;
+    if (item.tipo_equipaje === "B") {
+      basePrice *= 1.1;
+    }
+    if (item.clase === "P") {
+      basePrice *= 1.3;
+    }
+    return basePrice;
+  };
+
   const calculateTotal = () => {
     return items
-      .reduce((total, item) => total + parseFloat(item.precioTotal), 0)
-      .toFixed(2);
+      .reduce((total, item) => total + parseFloat(calculateTotalPrice(item)), 0).toFixed(2);
   };
 
   if (isLoading) {
@@ -106,7 +117,6 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
       navigate("/pasarela-de-pagos", {
         state: {
           total: calculateTotal(),
-          cartItems: items, // Añadimos los items del carrito al state
         },
       });
     } else {
@@ -115,17 +125,8 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
   };
 
   const handleRegister = (index) => {
-    const item = items[index];
-    navigate("/registro-pasajeros", {
-      state: {
-        itemIndex: index,
-        cartItemId: item.id,
-        userId: userId,
-        flightId: item.id_vuelo,
-        clase: item.clase,
-        tipoEquipaje: item.tipo_equipaje,
-      },
-    });
+    // const item = items[index];
+    navigate(`/registro-pasajeros/${index}`);
   };
 
   const handleRemoveFromCart = async (index) => {
@@ -133,7 +134,6 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
       // Implement cart item removal logic here
       // You might want to call a backend endpoint to remove the item
       const itemToRemove = items[index];
-      console.log(`${jwtToken}`);
       const response = await fetch(`${apiHost}/cart/remove/`, {
         method: "DELETE",
         headers: {
@@ -162,6 +162,7 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
 
   return (
     <div className="carrito-container">
+      <Navbar/>      
       <h1 className="carrito-title">Carrito de Compras</h1>
       <div className="carrito-items">
         {items.map((item, index) => (
@@ -200,10 +201,10 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
                   <strong>Cantidad:</strong> {item.quantity}
                 </p>
                 <p>
-                  <strong>Precio por boleto:</strong> ${item.precioUnitario}
+                  <strong>Precio por boleto:</strong> ${item.precio}
                 </p>
                 <p>
-                  <strong>Subtotal:</strong> ${item.precioTotal}
+                  <strong>Subtotal:</strong> ${calculateTotalPrice(item)}
                 </p>
                 <button
                   onClick={() => handleRemoveFromCart(index)}
@@ -214,7 +215,7 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
                 {!item.registrado && (
                   <button
                     className="boton-registro-pasajeros-carrito"
-                    onClick={() => handleRegister(index)}
+                    onClick={() => handleRegister(item.id)}
                   >
                     Hacer registro de pasajeros
                   </button>
@@ -232,7 +233,7 @@ export default function CarritoCompras({ userId, onRemoveFromCart }) {
           <button
             className="checkout-button"
             onClick={handlePay}
-            disabled={items.some((item) => !item.registrado)}
+            disabled={items.every((item) => item.registrado) ? false : true}
           >
             Finalizar Compra
           </button>

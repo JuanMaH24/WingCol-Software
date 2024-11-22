@@ -133,6 +133,11 @@ class ItemSerializer(serializers.ModelSerializer):
                         'id_viajero', 'apellido_viajero', 'segundo_apellido_viajero', 
                         'tipo_documento_viajero', 'fecha_nacimiento_viajero', 'genero_viajero', 
                         'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 
-                        'clase', 'tipo_equipaje']
+                        'clase', 'tipo_equipaje', 'precio_modificado']
         extra_kwargs = {'id': {'read_only': True}}
-        
+
+class SeatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sillas
+        fields = ['id_silla', 'id_vuelo', 'clase', 'estado', 'ubicacion', 'activo']
+        extra_kwargs = {'id_silla': {'read_only': True}, 'id_vuelo': {'read_only': True}, 'estado': {'read_only': True}, 'ubicacion': {'read_only': True}, 'activo': {'required': False}}

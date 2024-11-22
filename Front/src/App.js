@@ -231,7 +231,7 @@ export default function App() {
             }
           />
           <Route
-            path="/registro-pasajeros"
+            path="/registro-pasajeros/:id_item"
             element={
               <ProtectedRoute allowedRoles={[1]}>
                 <RegistroPasajeros />

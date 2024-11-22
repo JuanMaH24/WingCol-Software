@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
 import PhoneInput from "react-phone-number-input";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getUser } from "../services/jwt-decode";
 import "../hojas-de-estilo/check-in-pasajeros.css";
 
-export function CheckInPasajeros({
-  cartItemId,
-  userId,
-  flightId,
-  clase,
-  tipoEquipaje,
-  onCompleteRegistration,
-}) {
+export function CheckInPasajeros() {
   const apiHost = process.env.REACT_APP_API_HOST;
   const jwtToken = localStorage.getItem("access");
+  const { id_item } = useParams();
+  const user = getUser();
   const [documentPattern, setDocumentPattern] = useState("");
   const [warningMessage, setWarningMessage] = useState("");
   const navigate = useNavigate();
@@ -34,6 +30,7 @@ export function CheckInPasajeros({
     segundoNombre: "",
     primerApellido: "",
     segundoApellido: "",
+    flightId: "",
     phoneNumber: "",
     contactPhoneNumber: "",
     contactName: "",
@@ -42,11 +39,52 @@ export function CheckInPasajeros({
     birthDate: "",
     documentType: "",
     documentNumber: "",
+    seatClass: "",
+    typeEquipement: "",
   });
 
   useEffect(() => {
     validateForm();
   }, [formData]);
+
+  useEffect(() => {
+    // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
+    async function fetchItemData() {
+      try {
+        const params = new URLSearchParams({ id_item: id_item });
+        const response = await fetch(
+          `${apiHost}/cart/item/?${params.toString()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        );
+        const itemData = await response.json();
+        setFormData({
+          primerNombre: itemData.nombre_viajero || "",
+          segundoNombre: itemData.segundo_nombre_viajero || "",
+          flightId: itemData.id_vuelo || "",
+          primerApellido: itemData.apellido_viajero || "",
+          segundoApellido: itemData.segundo_apellido_viajero || "",
+          phoneNumber: itemData.telefono_viajero || "",
+          contactPhoneNumber: itemData.telefono_contacto || "",
+          contactName: itemData.nombre_contacto || "",
+          gender: itemData.genero_viajero || "",
+          email: "",
+          birthDate: itemData.fecha_nacimiento_viajero || "",
+          documentType: itemData.tipo_documento_viajero || "",
+          documentNumber: itemData.id_viajero || "",
+          seatClass: itemData.clase || "",
+          typeEquipement: itemData.tipo_equipaje || "",
+        });
+      } catch (error) {
+        console.error("Error al cargar el perfil", error);
+      }
+    }
+
+    fetchItemData();
+  }, []);
 
   const validateForm = () => {
     const newErrors = { ...errors };
@@ -66,6 +104,13 @@ export function CheckInPasajeros({
     setFormData((prevState) => ({
       ...prevState,
       phoneNumber: value,
+    }));
+  };
+
+  const handleContactPhoneNumberChange = (value) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      contactPhoneNumber: value,
     }));
   };
 
@@ -90,9 +135,9 @@ export function CheckInPasajeros({
 
     // Prepare the payload according to the specified JSON structure
     const payload = {
-      id: cartItemId,
-      user_id: userId,
-      id_vuelo: flightId,
+      id: id_item,
+      user_id: user.user_id,
+      id_vuelo: formData.flightId,
       nombre_viajero: formData.primerNombre,
       segundo_nombre_viajero: formData.segundoNombre || "",
       id_viajero: parseInt(formData.documentNumber),
@@ -104,8 +149,8 @@ export function CheckInPasajeros({
       telefono_viajero: formData.phoneNumber.replace(/\D/g, ""), // Remove non-digit characters
       nombre_contacto: formData.contactName,
       telefono_contacto: formData.contactPhoneNumber.replace(/\D/g, ""), // Remove non-digit characters
-      clase: clase,
-      tipo_equipaje: tipoEquipaje,
+      clase: formData.seatClass,
+      tipo_equipaje: formData.typeEquipement,
     };
 
     try {
@@ -125,12 +170,6 @@ export function CheckInPasajeros({
       }
 
       const responseData = await response.json();
-
-      // Call the onCompleteRegistration callback if provided
-      if (onCompleteRegistration) {
-        onCompleteRegistration(itemIndex);
-      }
-
       // Navigate to cart or next page
       navigate("/carrito");
     } catch (error) {
@@ -223,7 +262,7 @@ export function CheckInPasajeros({
           required
           value={formData.contactPhoneNumber}
           onChange={(value) =>
-            handlePhoneNumberChange(value, "contactPhoneNumber")
+            handleContactPhoneNumberChange(value, "contactPhoneNumber")
           }
         />
       </div>
@@ -231,7 +270,7 @@ export function CheckInPasajeros({
       <div className="campo-nombre-contacto">
         <input
           type="text"
-          name="nombreContacto"
+          name="contactName"
           pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜņŅ][a-zA-ZáéíóúÁÉÍÓÚüÜņŅ]*$"
           placeholder="Nombre de contacto"
           required
