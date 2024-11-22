@@ -16,7 +16,8 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
   // const setSelectedSeat = location.state?.setSelectedSeat
   // const setGlobalSeats = location.state?.setGlobalSeats
   const apiHost = process.env.REACT_APP_API_HOST;
-  console.log(id_vuelo, selectedSeat, setSelectedSeat, setGlobalSeats);
+  const jwtToken = localStorage.getItem("access");
+  // console.log(id_vuelo, selectedSeat, setSelectedSeat, setGlobalSeats);
   // const currentUser = getUser();
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
@@ -24,7 +25,11 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
       try {
         const param = new URLSearchParams({id_vuelo: id_vuelo});
         const response = await fetch(
-          `${apiHost}/checkin/seat/get/?${param.toString()}`,
+          `${apiHost}/checkin/seat/get/?${param.toString()}`,{
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
         );
         const allSeats = await response.json();
         if (Array.isArray(allSeats)){

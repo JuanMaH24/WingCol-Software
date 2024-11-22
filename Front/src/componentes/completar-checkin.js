@@ -51,7 +51,6 @@ export function CompletarCheckin() {
           }
         ); // Reemplaza con la URL real de la API
         const itemData = await response.json();
-        console.log(itemData);
         setFormData({
           primerNombre: itemData.nombre_viajero || "",
           segundoNombre: itemData.segundo_nombre_viajero || "",
@@ -115,16 +114,16 @@ export function CompletarCheckin() {
       telefono_contacto: formData.contactPhoneNumber, // Remove non-digit characters
       clase: selectedSeat.clase,
       tipo_equipaje: formData.typeEquipement,
-      verificacion: true
+      // verificacion: true
     };
 
     try {
+      console.log(dataToSend)
       const response = await fetch(`${apiHost}/ticket/update/`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${jwtToken}`,
-        },
-        body: dataToSend,
+        },body: dataToSend
       });
 
       if (!response.ok) {
@@ -190,7 +189,7 @@ export function CompletarCheckin() {
         selectedSeat={selectedSeat} 
         setSelectedSeat={setSelectedSeat}
         setGlobalSeats={setGlobalSeats} 
-        vuelo_id={formData.flightId} 
+        id_vuelo={formData.flightId} 
       />
       <div className="seleccion-equipaje">
         <select
