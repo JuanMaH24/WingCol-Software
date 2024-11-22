@@ -9,7 +9,7 @@ import Paper from "@mui/material/Paper";
 // import EditIcon from '@mui/icons-material/Edit';
 import { getUser } from "../services/jwt-decode";
 import { useNavigate } from "react-router-dom";
-
+import "../hojas-de-estilo/lista-tarjetas.css";
 
 export function BasicTableTarjetas() {
   const apiHost = process.env.REACT_APP_API_HOST;
@@ -21,17 +21,15 @@ export function BasicTableTarjetas() {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
     async function fetchCards() {
       try {
-        const param = new URLSearchParams({user_id: currentUser.user_id});
-        const response = await fetch(`${apiHost}/card/?${param.toString()}`,
-          {
-            headers: {
-              "Authorization": `Bearer ${jwtToken}`,
-            },
-          }
-        ); //Ver si hay que modificar ruta
+        const param = new URLSearchParams({ user_id: currentUser.user_id });
+        const response = await fetch(`${apiHost}/card/?${param.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }); //Ver si hay que modificar ruta
         const allCards = await response.json();
         console.log(allCards);
-        if (Array.isArray(allCards)){
+        if (Array.isArray(allCards)) {
           setCardData(allCards);
         }
       } catch (error) {
@@ -49,16 +47,14 @@ export function BasicTableTarjetas() {
     );
     if (isConfirmed) {
       try {
-        const response = await fetch(`${apiHost}/card/delete/`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${jwtToken}`,
-            },
-            body: JSON.stringify({id_tarjeta: name})
-          }
-        );
+        const response = await fetch(`${apiHost}/card/delete/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ id_tarjeta: name }),
+        });
 
         if (response.ok) {
           window.location.reload();
@@ -77,7 +73,7 @@ export function BasicTableTarjetas() {
       }
     }
   };
-  
+
   const handleEditarTarjeta = (e) => {
     const { name } = e.target;
     navigate(`/editar-tarjetas/${name}`);
@@ -95,36 +91,35 @@ export function BasicTableTarjetas() {
         </TableHead>
         <TableBody>
           {cardData.map((card) => (
-              <TableRow
-                key={card.id_tarjeta}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell align="right">{card.tipo_tarjeta}</TableCell>
-                <TableCell align="right">{card.id_tarjeta}</TableCell>
-                <TableCell align="right">{card.saldo}</TableCell>
-                <TableCell align="right">
-                  <button
-                    type="submit"
-                    name={card.id_tarjeta}
-                    onClick={handleEditarTarjeta}
-                    className="btn btn-primary"
-                  >
-                    Editar
-                  </button>
-                </TableCell>
-                <TableCell align="right">
-                  <button
-                    type="submit"
-                    name={card.id_tarjeta}
-                    onClick={handleDelete}
-                    className="btn btn-danger"
-                  >
-                    X
-                  </button>
-                </TableCell>
-              </TableRow>
-            )
-          )}
+            <TableRow
+              key={card.id_tarjeta}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell align="right">{card.tipo_tarjeta}</TableCell>
+              <TableCell align="right">{card.id_tarjeta}</TableCell>
+              <TableCell align="right">{card.saldo}</TableCell>
+              <TableCell align="right">
+                <button
+                  type="submit"
+                  name={card.id_tarjeta}
+                  onClick={handleEditarTarjeta}
+                  className="btn btn-primary"
+                >
+                  Editar
+                </button>
+              </TableCell>
+              <TableCell align="right">
+                <button
+                  type="submit"
+                  name={card.id_tarjeta}
+                  onClick={handleDelete}
+                  className="btn btn-danger"
+                >
+                  X
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

@@ -6,22 +6,21 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import "../hojas-de-estilo/lista-admins.css";
 
 export default function BasicTable() {
   const apiHost = process.env.REACT_APP_API_HOST;
   const [userData, setUserData] = useState([]);
-  const jwtToken = localStorage.getItem('access');
+  const jwtToken = localStorage.getItem("access");
 
   useEffect(() => {
     // Aquí deberías hacer una llamada al backend para obtener los datos del usuario
     async function fetchUsers() {
       try {
         // const params = new URLSearchParams({user_id: currentUser.user_id});
-        const response = await fetch(
-          `${apiHost}/allusers/`,
-        );
+        const response = await fetch(`${apiHost}/allusers/`);
         const allUsers = await response.json();
-        if (Array.isArray(allUsers)){
+        if (Array.isArray(allUsers)) {
           setUserData(allUsers);
         }
       } catch (error) {
@@ -39,19 +38,16 @@ export default function BasicTable() {
     );
     if (isConfirmed) {
       try {
-        const response = await fetch(
-          `${apiHost}/users/admin/delete/`,
-          {
-            method: "PUT", //
-            headers: {
-              "Authorization": `Bearer ${jwtToken}`,
-              "Content-Type": "application/json",
-              // Asegúrate de incluir el token de autenticación si es necesario
-              // "Authorization": "Bearer " + yourAuthToken
-            },
-            body: JSON.stringify({ user_id: name }), // Incluye el cuerpo si el backend espera algún dato
-          }
-        );
+        const response = await fetch(`${apiHost}/users/admin/delete/`, {
+          method: "PUT", //
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "application/json",
+            // Asegúrate de incluir el token de autenticación si es necesario
+            // "Authorization": "Bearer " + yourAuthToken
+          },
+          body: JSON.stringify({ user_id: name }), // Incluye el cuerpo si el backend espera algún dato
+        });
 
         if (response.ok) {
           window.location.reload();
@@ -81,17 +77,29 @@ export default function BasicTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {userData.map((user) => (
-            user.roles == 2 ?
-            <TableRow
-            key={user.user_id}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-          >
-            <TableCell align="right">{user.user_id}</TableCell>
-            <TableCell align="right">{user.email}</TableCell>
-            <TableCell align="right"><button type="submit" name={user.user_id} onClick={handleDelete} className="btn btn-danger">X</button></TableCell>
-          </TableRow> : <div></div>
-          ))}
+          {userData.map((user) =>
+            user.roles == 2 ? (
+              <TableRow
+                key={user.user_id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell align="right">{user.user_id}</TableCell>
+                <TableCell align="right">{user.email}</TableCell>
+                <TableCell align="right">
+                  <button
+                    type="submit"
+                    name={user.user_id}
+                    onClick={handleDelete}
+                    className="btn btn-danger"
+                  >
+                    X
+                  </button>
+                </TableCell>
+              </TableRow>
+            ) : (
+              <div></div>
+            )
+          )}
         </TableBody>
       </Table>
     </TableContainer>

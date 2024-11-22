@@ -35,6 +35,7 @@ import CarritoCompras from "./componentes/carrito_compras";
 import { PasarelaDePagos } from "./componentes/pasarela-de-pagos";
 import { Reservas } from "./componentes/reservas";
 import { RegistroPasajeros } from "./componentes/registro-pasajeros";
+import { TicketDisplay } from "./componentes/display-tiquete";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -307,6 +308,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={[1]}>
                 <ListaTarjetas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lista-tiquetes"
+            element={
+              <ProtectedRoute allowedRoles={[1]}>
+                <TicketDisplay />
               </ProtectedRoute>
             }
           />
