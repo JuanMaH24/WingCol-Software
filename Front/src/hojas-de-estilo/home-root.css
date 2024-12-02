@@ -148,7 +148,7 @@
   font-size: 1.2rem; /* Ajustar tamaño del texto si lo prefieres */
 }
 
-* Estilo para la tabla */ .tabla-admins {
+/* Estilo para la tabla */ .tabla-admins {
   width: 80%; /* Aumenta el tamaño de la tabla */
   margin: 20px 0;
 }
