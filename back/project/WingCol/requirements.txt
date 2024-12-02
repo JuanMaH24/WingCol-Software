@@ -22,7 +22,8 @@ frozenlist==1.5.0
 idna==3.10
 iniconfig==2.0.0
 multidict==6.1.0
-mysqlclient==2.2.4
+dj-database-url==2.0.0
+PyMySQL==1.0.3
 opencage==3.0.3
 packaging==24.1
 pillow==10.4.0
