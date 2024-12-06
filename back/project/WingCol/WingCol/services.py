@@ -56,6 +56,34 @@ def send_verification_code(silla, vuelo, ticket):
     msg.attach_alternative(html_message, "text/html")
     msg.send()
 
+def send_pasabordo(silla, vuelo, ticket):
+    context = {
+        'current_user': ticket.user_id,
+        'email': ticket.email_viajero,
+        'codigo_reserva': ticket.verificacion,
+		'ciudad_origen_abreviado': vuelo.ciudad_origen[:3], 
+		'ciudad_destino_abreviado': vuelo.ciudad_destino[:3], 
+		'ciudad_origen': vuelo.ciudad_origen, 
+		'ciudad_destino': vuelo.ciudad_destino, 
+		'duracion_vuelo': vuelo.duracion,
+		'hora_tiquete': vuelo.fecha_salida,
+		'clase_tiquete': ticket.clase,
+		'silla_tiquete': silla.id_silla,
+    }
+
+    html_message = render_to_string("pasabordo-enviar.html", context)
+    email_plaintext_message = strip_tags(html_message)
+
+    msg = EmailMultiAlternatives(
+        "PASABORDO - {title}".format(title="WingCol"),
+        email_plaintext_message,
+        "wingcolairlines@gmail.com",
+        [ticket.email_viajero]
+    )
+
+    msg.attach_alternative(html_message, "text/html")
+    msg.send()
+
 def geocode_city(city):
     api_key=settings.OPENCAGE_APIKEY
     geocoder = OpenCageGeocode(api_key)

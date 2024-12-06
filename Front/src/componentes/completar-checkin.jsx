@@ -5,15 +5,17 @@ import React, { useState, useEffect } from "react";
 import { getUser } from "../services/jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CambioSillas } from "./cambio-sillas";
+import { SeatLegend } from "./colores";
 import "../hojas-de-estilo/completar-checkin.css"
 
 export function CompletarCheckin() {
   const [selectedSeat, setSelectedSeat] = useState(null);
-  const [changeSeat, setChangeSeat] = useState(false);
+  // const [changeSeat, setChangeSeat] = useState(false);
   const [globalSeats, setGlobalSeats] = useState([]);
-  const [previousSeat, setPreviousSeat] = useState("");
+  // const [previousSeat, setPreviousSeat] = useState("");
   const currentUser = getUser();
   const location = useLocation();
+  const navigate = useNavigate();
   const id_tiquete = location.state?.id_tiquete
   const apiHost = import.meta.env.VITE_API_HOST;
   const jwtToken = localStorage.getItem("access");
@@ -46,11 +48,13 @@ export function CompletarCheckin() {
           `${apiHost}/ticket/?${params.toString()}`,
           {
             headers: {
-              Authorization: `Bearer ${jwtToken}`,
+              // Authorization: `Bearer ${jwtToken}`,
             },
           }
         ); // Reemplaza con la URL real de la API
         const itemData = await response.json();
+        console.log("Response");
+        console.log(itemData);
         setFormData({
           primerNombre: itemData.nombre_viajero || "",
           segundoNombre: itemData.segundo_nombre_viajero || "",
@@ -61,7 +65,8 @@ export function CompletarCheckin() {
           contactPhoneNumber: itemData.telefono_contacto || "",
           contactName: itemData.nombre_contacto || "",
           gender: itemData.genero_viajero || "",
-          email: "",
+          email_viajero: itemData.email_viajero || "",
+          precio: itemData.precio || 0,
           birthDate: itemData.fecha_nacimiento_viajero || "",
           documentType: itemData.tipo_documento_viajero || "",
           documentNumber: itemData.id_viajero || "",
@@ -69,11 +74,7 @@ export function CompletarCheckin() {
           seatId: itemData.id_silla || "",
           typeEquipement: itemData.tipo_equipaje || "",
         });
-        globalSeats.map((item)=>{
-          if(item.id_silla == formData.seatId){
-            setSelectedSeat(item);
-          }
-        })
+        setSelectedSeat(itemData.id_silla);
       } catch (error) {
         console.error("Error al obtener los datos del vuelo:", error);
       }
@@ -91,11 +92,6 @@ export function CompletarCheckin() {
   };
 
   const handleSubmit = async (e) => {
-    if(formData.id_silla != selectedSeat.id_silla){
-      setChangeSeat(!changeSeat);
-      setPreviousSeat(formData.id_silla);
-    }
-
     const dataToSend = {
       id_tiquete: id_tiquete,
       id_silla: selectedSeat.id_silla,
@@ -113,8 +109,10 @@ export function CompletarCheckin() {
       nombre_contacto: formData.contactName,
       telefono_contacto: formData.contactPhoneNumber, // Remove non-digit characters
       clase: selectedSeat.clase,
+      precio: formData.precio,
+      email_viajero: formData.email_viajero,
       tipo_equipaje: formData.typeEquipement,
-      // verificacion: true
+      verificado: 1
     };
 
     try {
@@ -122,10 +120,11 @@ export function CompletarCheckin() {
       const response = await fetch(`${apiHost}/ticket/update/`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },body: dataToSend
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${jwtToken}`,
+        },body: JSON.stringify(dataToSend)
       });
-
+      console.log(response);
       if (!response.ok) {
         const errorData = await response.json();
         console.log(errorData);
@@ -135,51 +134,52 @@ export function CompletarCheckin() {
     } catch (error) {
       console.error(error);
     }
-
-    if(changeSeat){
-      const updatePreviousSeat = {
-        id_silla: previousSeat,
-        estado: "L"
-      }
-      try{
-        const response = await fetch(`${apiHost}/checkin/seat/`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          body: updatePreviousSeat,
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.log(errorData);
-        }else{
-          console.log("Check-In Correcto");
-        }
-      }catch (error) {
-        console.error(error);
-      }
-      const updateCurrentSeat = {
-        id_silla: formData.id_silla,
-        estado: "O"
-      }
-      try{
-        const response = await fetch(`${apiHost}/checkin/seat/`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          body: updateCurrentSeat,
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.log(errorData);
-        }else{
-          console.log("Check-In Correcto");
-        }
-      }catch (error) {
-        console.error(error);
-      }
+    
+    const updatePreviousSeat = {
+      id_silla: formData.seatId,
+      estado: "L"
     }
+    try{
+      const response = await fetch(`${apiHost}/checkin/seat/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${jwtToken}`,
+        },
+        body: JSON.stringify(updatePreviousSeat),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+      }else{
+        console.log("Check-In Correcto");
+      }
+    }catch (error) {
+      console.error(error);
+    }
+    const updateCurrentSeat = {
+      id_silla: dataToSend.id_silla,
+      estado: "O"
+    }
+    try{
+      const response = await fetch(`${apiHost}/checkin/seat/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${jwtToken}`,
+        },
+        body: JSON.stringify(updateCurrentSeat),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+      }else{
+        console.log("Check-In Correcto");
+      }
+    }catch (error) {
+      console.error(error);
+    }
+    navigate("/");
   };
 
   return (
@@ -191,6 +191,7 @@ export function CompletarCheckin() {
         setGlobalSeats={setGlobalSeats} 
         id_vuelo={formData.flightId} 
       />
+      <SeatLegend />
       <div className="seleccion-equipaje">
         <select
           className="opciones-equipaje"
@@ -198,8 +199,8 @@ export function CompletarCheckin() {
           value={formData.typeEquipement}
           onChange={handleChange}
         >
-          <option value="0">Elegir equipaje</option>
-          <option value="C">Equipaje de cabina</option>
+          <option value="P">Equipaje Personal</option>
+          <option value="M">Equipaje de Mano</option>
           <option value="B">Equipaje de bodega</option>
         </select>
       </div>

@@ -24,7 +24,7 @@ export function CheckInIngreso() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${jwtToken}`,
+          // Authorization: `Bearer ${jwtToken}`,
         },
         body: JSON.stringify({
           verificacion: codigoReserva, // Enviar el código de reserva
@@ -32,7 +32,7 @@ export function CheckInIngreso() {
       });
 
       if (!response.ok) {
-        throw new Error("Error al comunicarse con el backend");
+        throw new Error("Código no válido");
       }
 
       const data = await response.json();
@@ -43,11 +43,11 @@ export function CheckInIngreso() {
         console.log(id_tiquete)
         navigate("/completar-checkin", { state: { id_tiquete: id_tiquete } }); // Navega al componente con el prop
       } else {
-        alert("No se encontró el id_tiquete en la respuesta");
+        alert("No se encontró el Tiquete en la respuesta");
       }
     } catch (error) {
       console.error("Error en el proceso de fetch:", error);
-      alert("Hubo un error procesando tu solicitud, intenta de nuevo.");
+      alert(`Hubo un error: ${error}, intenta de nuevo.`);
     }
   };
 

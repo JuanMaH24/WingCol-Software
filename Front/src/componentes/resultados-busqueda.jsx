@@ -352,7 +352,7 @@ export default function ResultadosVuelos({
                 value={equipaje}
                 onChange={(e) => setEquipaje(e.target.value)}
               >
-                <option value="0">Elegir equipaje</option>
+                <option value="P">Equipaje de mano</option>
                 <option value="M">Solo equipaje de cabina</option>
                 <option value="B">Añadir equipaje de bodega</option>
               </select>

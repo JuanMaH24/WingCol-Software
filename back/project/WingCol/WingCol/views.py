@@ -425,8 +425,8 @@ def create_ticket(request):
         return Response({"error": str(e)}, status=status.HTTP_406_NOT_ACCEPTABLE)
     
 @api_view(['GET'])
-@authentication_classes([ClientAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([ClientAuthentication])
+# @permission_classes([IsAuthenticated])
 def get_ticket(request):
     try:
         ticket_id = request.query_params.get('id_tiquete')
@@ -470,8 +470,8 @@ def cancel_ticket(request):
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
-@authentication_classes([ClientAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([ClientAuthentication])
+# @permission_classes([IsAuthenticated])
 def update_ticket(request):
     try:
         id = request.data['id_tiquete']
@@ -479,19 +479,22 @@ def update_ticket(request):
         ticket_serializer = TicketSerializer(ticket, request.data)
         ticket_serializer.is_valid()
         if ticket_serializer.is_valid():
-            ticket_serializer.save()
+            ticket = ticket_serializer.save()
+            silla = Sillas.objects.get(id_silla=ticket.id_silla.id_silla, activo=True)
+            vuelo = Vuelos.objects.get(id_vuelo=silla.id_vuelo.id_vuelo, activo=True)
+            send_pasabordo(silla, vuelo, ticket)
             return Response(ticket_serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response({'errors': ticket_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     except Tiquete.DoesNotExist:
         return Response({"error": "Tiquete no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
-@authentication_classes([ClientAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([ClientAuthentication])
+# @permission_classes([IsAuthenticated])
 def fast_verification(request):
     try:
         verification_code = request.data['verificacion']
-        ticket = Tiquete.objects.get(verificacion=verification_code, activo=True)
+        ticket = Tiquete.objects.get(verificacion=verification_code, activo=True, verificado=False)
         ticket_serializer = TicketSerializer(ticket)
         return Response(ticket_serializer.data, status=status.HTTP_200_OK)
     except Tiquete.DoesNotExist:
@@ -686,15 +689,15 @@ def confirm_payment(request):
         return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-@authentication_classes([ClientAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([ClientAuthentication])
+# @permission_classes([IsAuthenticated])
 def update_seat(request):
     try:    
         seat_id = request.data['id_silla']
         state = request.data['estado']
         seat = Sillas.objects.get(id_silla=seat_id)
         seat.estado = state
-        seat.save
+        seat.save()
         return Response({"message": "Silla actualizada correctamente."}, status=status.HTTP_200_OK)
     except Sillas.DoesNotExist:
         return Response({"error": "Silla no encontrada"}, status=status.HTTP_404_NOT_FOUND)

@@ -11,6 +11,8 @@ import { MapControls, Text } from "@react-three/drei";
 export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobalSeats}) {
   const [seats, setSeats] = useState([]);
   const location = useLocation();
+  console.log("TIENES AGUA FRESCA EN UN JARRÓN")
+  // console.log(setSelectedSeat);
   // const id_vuelo = location.state?.id_vuelo
   // const selectedSeat = location.state?.selectedSeat
   // const setSelectedSeat = location.state?.setSelectedSeat
@@ -46,7 +48,8 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
   const colors = {
     "L":"#00d221",
     "O":"red",
-    "R":"yellow"
+    "R":"yellow",
+    "Me": "blue"
   }
   // const [selectedSeat, setSelectedSeat] = useState(null);
   const [animationComplete, setAnimationComplete] = useState(false);
@@ -135,7 +138,7 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
           {seats.map((item, index) => {
             let groupIndex = Math.floor(index / 6);
             let positionY = 0.5 - (index % 6) * 0.16;
-            let positionX = 0.5 - groupIndex * 0.15;
+            let positionX = -0.5 - groupIndex * 0.15;
             if(index%6 >= 3){
               positionY-=0.15
             }
@@ -147,7 +150,7 @@ export function CambioSillas({id_vuelo, selectedSeat, setSelectedSeat, setGlobal
                 key={index}
                 size={[0.1, 0.1, 0.01]}
                 position={[positionX, positionY, 3.8]}
-                color={colors[item.estado]}
+                color={colors[ selectedSeat == item.id_silla ? "Me" : item.estado]}
                 ubication={rowLabel+colLabel}
                 state={item.estado=="L"}
                 seat={item}
