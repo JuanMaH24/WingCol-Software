@@ -28,10 +28,10 @@ def notify_admin_creation(instance, password):
     msg.attach_alternative(html_message, "text/html")
     msg.send()
 
-def send_verification_code(user, silla, vuelo, ticket):
+def send_verification_code(silla, vuelo, ticket):
     context = {
-        'current_user': user.user_id,
-        'email': ticket.email,
+        'current_user': ticket.user_id,
+        'email': ticket.email_viajero,
         'codigo_reserva': ticket.verificacion,
 		'ciudad_origen_abreviado': vuelo.ciudad_origen[:3], 
 		'ciudad_destino_abreviado': vuelo.ciudad_destino[:3], 
@@ -50,7 +50,7 @@ def send_verification_code(user, silla, vuelo, ticket):
         "Código de reserva tiquete - {title}".format(title="WingCol"),
         email_plaintext_message,
         "wingcolairlines@gmail.com",
-        [user.email]
+        [ticket.email_viajero]
     )
 
     msg.attach_alternative(html_message, "text/html")
@@ -107,7 +107,7 @@ def validate_unique_passenger(passenger_id):
 	if ticket_duplicated or item_duplicated:
 		raise ValueError("El pasajero ya esta registrado en el vuelo")
 	
-def check_active_carts():
-	active_cart = CarritoCompras.objects.filter(activo=True)
+def check_active_carts(user_id):
+	active_cart = CarritoCompras.objects.filter(user_id=user_id, activo=True)
 	if active_cart:
 		raise ValueError("Ya hay un carrito activo")

@@ -50,6 +50,7 @@ export function PasarelaDePagos() {
           ciudad_origen: item.ciudad_origen,
           ciudad_destino: item.ciudad_destino,
           fecha_salida: item.fecha_salida,
+          email_viajero: item.email,
           equipajeBodega: item.tipo_equipaje === "M", // Assuming 'M' means bodega
           seatClass: item.clase,
           quantity: 1, // Assuming single ticket per item
@@ -203,7 +204,7 @@ export function PasarelaDePagos() {
           genero_viajero: cartItem.genero_viajero,
           nombre_contacto: cartItem.nombre_contacto,
           telefono_contacto: cartItem.telefono_contacto,
-          // precio: cartItem.precioTotal,
+          email_viajero: cartItem.email_viajero,
           clase: cartItem.clase,
           tipo_equipaje: cartItem.tipo_equipaje,
           estado: "R",

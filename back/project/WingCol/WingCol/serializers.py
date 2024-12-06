@@ -112,7 +112,7 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tiquete
         fields =    [
-                        'id_silla', 'user_id', 'nombre_viajero', 'segundo_nombre_viajero', 
+                        'id_silla', 'user_id', 'nombre_viajero', 'email_viajero','segundo_nombre_viajero', 
                         'id_viajero', 'apellido_viajero', 'segundo_apellido_viajero', 
                         'tipo_documento_viajero', 'fecha_nacimiento_viajero', 'genero_viajero', 
                         'telefono_viajero', 'nombre_contacto', 'telefono_contacto', 

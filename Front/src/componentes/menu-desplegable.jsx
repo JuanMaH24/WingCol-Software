@@ -63,7 +63,7 @@ export default function BasicMenu() {
   const handleCerrarSesion = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
-    navigate("/inicio-de-sesion", { replace: true });
+    window.location.reload();
     setAnchorEl(null);
   };
 

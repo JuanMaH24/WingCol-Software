@@ -404,12 +404,13 @@ def create_ticket(request):
         tickets = Tiquete.objects.filter(user_id=request.data['user_id'], id_silla__id_vuelo__id_vuelo=seat.id_vuelo.id_vuelo, activo=True)
         validate_tickets_per_flight(tickets.count())
         if ticket_serializer.is_valid():
+            print(request.data)
             ticket = ticket_serializer.save()
             ticket.create_code()
             ticket.save()
             silla = Sillas.objects.get(id_silla=ticket.id_silla.id_silla, activo=True)
             vuelo = Vuelos.objects.get(id_vuelo=silla.id_vuelo.id_vuelo, activo=True)
-            send_verification_code(user, silla, vuelo, ticket.data)
+            send_verification_code(silla, vuelo, ticket)
             seat.estado = request.data['estado']
             seat.save()
             return Response(ticket_serializer.data, status=status.HTTP_201_CREATED)
@@ -536,7 +537,7 @@ def get_cart(request):
 def create_cart(request):
     try:
         user = request.data['user_id']
-        check_active_carts()
+        check_active_carts(user)
         cart = CartSerializer(data=request.data)
         if cart.is_valid():
             cart.save()
